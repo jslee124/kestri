@@ -60,7 +60,7 @@ The startup line identifies the bot and says owner-only private chat. Missing or
 
 ## Research and follow up
 
-Send `/help` to display the command keyboard. Click `/status`, `/runs`, or `/usage` instead of typing them; the buttons send the same commands. You can still type research questions normally. `/stop` cancels work, and `/new` starts fresh context only when idle while preserving history.
+Open the Menu beside the input field to see all commands, including `/runs` and `/start`; close it to return to normal chat. If the old reply keyboard is still visible, send `/help` to remove it. Selecting a menu command has the same effect as typing it. `/stop` cancels work, and `/new` starts fresh context only when idle while preserving history.
 
 Send: “Use official LangChain documentation to explain the relationship between agents and checkpoints. Cite the pages you read.” Expect an acknowledgement and a saved answer with source links. The application adds retrieval status independently of the model's prose: snippet only, extracted excerpt, truncated saved material, or extraction failed.
 

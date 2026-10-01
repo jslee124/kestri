@@ -169,16 +169,41 @@ async def test_telegram_sends_plain_bounded_message_without_link_preview() -> No
         )
     assert "parse_mode" not in requests[0]
     assert requests[0]["link_preview_options"]["is_disabled"]
-    keyboard = requests[0]["reply_markup"]
-    commands = [button["text"] for row in keyboard["keyboard"] for button in row]
-    assert set(commands) == {"/status", "/runs", "/usage", "/stop", "/new", "/help"}
-    for text in commands:
-        message = authorized_message(update(text=text), 111)
-        assert message is not None
-        assert command_for(message["text"]) == text[1:]
-        assert authorized_message(update(text=text, user_id=222), 111) is None
-    assert keyboard["is_persistent"] and keyboard["resize_keyboard"]
-    assert not keyboard["one_time_keyboard"]
+    assert requests[0]["reply_markup"] == {"remove_keyboard": True}
+
+
+async def test_native_menu_exposes_all_commands_to_owner_in_both_languages() -> None:
+    requests = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        requests.append((request.url.path.rsplit("/", 1)[-1], json.loads(request.content)))
+        return httpx.Response(200, json={"ok": True, "result": True})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+        await TelegramClient("123:placeholder", client).configure_menu(111)
+    for method, payload in requests[:2]:
+        assert method == "setMyCommands"
+        assert payload["scope"] == {"type": "chat", "chat_id": 111}
+        commands = payload["commands"]
+        assert {item["command"] for item in commands} == {
+            "start",
+            "status",
+            "runs",
+            "usage",
+            "stop",
+            "new",
+            "help",
+        }
+        for item in commands:
+            text = "/" + item["command"]
+            assert item["description"]
+            assert command_for(text) == item["command"]
+            assert authorized_message(update(text=text, user_id=222), 111) is None
+    assert [payload["language_code"] for _, payload in requests[:2]] == ["", "zh"]
+    assert requests[2] == (
+        "setChatMenuButton",
+        {"chat_id": 111, "menu_button": {"type": "commands"}},
+    )
 
 
 async def test_opt_in_doh_verifies_public_records_and_rejects_private_records() -> None:

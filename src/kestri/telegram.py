@@ -43,6 +43,32 @@ class TelegramClient:
             raise ProviderFailure("InvalidBotIdentity")
         return result
 
+    async def configure_menu(self, owner_id: int) -> None:
+        commands = [
+            ("start", "Start and show capabilities", "开始使用与能力说明"),
+            ("status", "View execution status", "查看执行状态"),
+            ("runs", "View recent runs", "查看最近执行"),
+            ("usage", "View estimated usage", "查看估算用量"),
+            ("stop", "Stop the current task", "停止当前任务"),
+            ("new", "Start fresh context; keep history", "新建对话上下文，保留历史"),
+            ("help", "Show help", "查看使用帮助"),
+        ]
+        for language, description_index in (("", 1), ("zh", 2)):
+            await self.call(
+                "setMyCommands",
+                {
+                    "scope": {"type": "chat", "chat_id": owner_id},
+                    "language_code": language,
+                    "commands": [
+                        {"command": item[0], "description": item[description_index]}
+                        for item in commands
+                    ],
+                },
+            )
+        await self.call(
+            "setChatMenuButton", {"chat_id": owner_id, "menu_button": {"type": "commands"}}
+        )
+
     async def poll(self, offset: int | None = None, wait_seconds: int = 25) -> list[dict[str, Any]]:
         payload: dict[str, Any] = {
             "timeout": wait_seconds,
@@ -61,17 +87,7 @@ class TelegramClient:
             "chat_id": chat_id,
             "text": text,
             "link_preview_options": {"is_disabled": True},
-            "reply_markup": {
-                "keyboard": [
-                    [{"text": "/status"}, {"text": "/runs"}],
-                    [{"text": "/usage"}, {"text": "/stop"}],
-                    [{"text": "/new"}, {"text": "/help"}],
-                ],
-                "resize_keyboard": True,
-                "is_persistent": True,
-                "one_time_keyboard": False,
-                "input_field_placeholder": "输入研究问题，或点击指令按钮",
-            },
+            "reply_markup": {"remove_keyboard": True},
         }
         if reply_to is not None:
             payload["reply_parameters"] = {
