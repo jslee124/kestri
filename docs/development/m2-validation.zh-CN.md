@@ -6,7 +6,7 @@
 
 ## 修订与环境
 
-工作分支：`codex/m2-recurring-briefings`，基于 `fe04df6`。本地环境：macOS、Python 3.14.7、uv 0.12.3、OrbStack Docker/Linux arm64 和 PostgreSQL 17。核心 agent 依赖保留 M1 锁定版本，新增 `tzdata` 2026.4。真实重启验证使用镜像 `sha256:3d3b0804af74a3edaebdfff332febc807271fcb6ed36a156fed70a48cd874202`。后续 SQL 格式整理保持字符串常量完全一致，最终菜单说明区分停止执行与暂停任务。最终部署成功重启镜像 `sha256:f6953e2effe9af754fff3db385df506ca307f30e383b92f97c127a2768b27639`，没有剩余持续任务。远程 CI 状态和最终实现修订在发布后记录。
+工作分支：`codex/m2-recurring-briefings`，基于 `fe04df6`。本地环境：macOS、Python 3.14.7、uv 0.12.3、OrbStack Docker/Linux arm64 和 PostgreSQL 17。核心 agent 依赖保留 M1 锁定版本，新增 `tzdata` 2026.4。真实重启验证使用镜像 `sha256:3d3b0804af74a3edaebdfff332febc807271fcb6ed36a156fed70a48cd874202`。后续 SQL 格式整理保持字符串常量完全一致，最终菜单说明区分停止执行与暂停任务。最终部署成功重启镜像 `sha256:f6953e2effe9af754fff3db385df506ca307f30e383b92f97c127a2768b27639`，没有剩余持续任务。实现修订：[`9d7fb6d`](https://github.com/jslee124/kestri/commit/9d7fb6d9c20d1e85f748efaa270bd322f74d4245)。远程 push [CI 36873055093](https://github.com/jslee124/kestri/actions/runs/36873055093) 与 PR [CI 36873113262](https://github.com/jslee124/kestri/actions/runs/36873113262) 均在该修订通过，环境为 Linux/Python 3.14、一次性 PostgreSQL，无真实凭据。已在 [draft PR 3](https://github.com/jslee124/kestri/pull/3)发布审阅，未合并 main。
 
 ## 受控检查
 
