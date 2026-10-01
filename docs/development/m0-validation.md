@@ -6,7 +6,7 @@ Validation date: 2026-10-01. Status: M0 verified within the scope below.
 
 ## Revision and environment
 
-Revision: the Git commit introducing this record, discoverable with `git log --diff-filter=A --format=%H -- docs/development/m0-validation.md`. The documents-only baseline is `e07e2d4`.
+Implementation revision: [`84a727b`](https://github.com/jslee124/kestri/commit/84a727b28c57dc0888753c7a104eb359474105e4). The documents-only baseline is `e07e2d4`.
 
 Implementation fingerprint (SHA-256): `212b31a71cf466ed3f4a23544ae16baa9e401c68f7782b3d0aaa9a670ec0dfe8`. Compute it by concatenating each path, a NUL byte, its file bytes, and another NUL byte, for sorted `src/kestri/*.py`, followed by `pyproject.toml` and `uv.lock`. This identifies the implementation used for the live checks independently of later documentation changes.
 
@@ -24,7 +24,7 @@ Local environment: macOS, arm64, CPython 3.14.7, uv 0.12.3. Locked integration v
 
 The tests execute the real framework loop and SDK request serialization over mocked HTTP. They cover two-turn continuity, reasoning replay across tool calls and turns, empty assistant tool-call content, strict tool inputs, known tool errors, provider authentication failure, model/tool limits, deadline cancellation, explicit cancellation, configured endpoint, and secret-free evidence. A session cannot continue after failure or interruption. Provider error bodies are suppressed.
 
-The [CI workflow](../../.github/workflows/checks.yml) repeats offline checks and package build on Linux with Python 3.14. Remote results are available in [GitHub Actions](https://github.com/jslee124/kestri/actions/workflows/checks.yml); this initial record makes no remote-pass claim before the workflow completes.
+The [CI workflow](../../.github/workflows/checks.yml) also passed on Linux with Python 3.14 for implementation revision `84a727b`: [run 36834367301](https://github.com/jslee124/kestri/actions/runs/36834367301). It completed the same offline checks and package build, without live provider calls.
 
 ## Live DeepSeek evidence
 

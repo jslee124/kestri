@@ -6,7 +6,7 @@
 
 ## 代码版本与环境
 
-代码版本：引入本记录的 Git 提交，可用 `git log --diff-filter=A --format=%H -- docs/development/m0-validation.md` 查询。纯文档基线为 `e07e2d4`。
+实现版本：[`84a727b`](https://github.com/jslee124/kestri/commit/84a727b28c57dc0888753c7a104eb359474105e4)。纯文档基线为 `e07e2d4`。
 
 实现指纹（SHA-256）：`212b31a71cf466ed3f4a23544ae16baa9e401c68f7782b3d0aaa9a670ec0dfe8`。计算方法为依次拼接每个路径、一个 NUL 字节、文件内容及另一个 NUL 字节；文件顺序为排序后的 `src/kestri/*.py`，再接 `pyproject.toml` 和 `uv.lock`。该指纹独立于后续文档修改，标识真实调用检查使用的实现。
 
@@ -24,7 +24,7 @@
 
 测试在模拟 HTTP 上执行真实框架循环与 SDK 请求序列化，覆盖两轮连续性、工具调用及跨轮思考状态回传、空 assistant 工具调用内容、严格工具参数、已知工具错误、服务认证失败、模型和工具上限、期限取消、显式取消、配置服务地址与无密钥证据。失败或中断后的会话不能继续。服务错误正文被隐藏。
 
-[CI 工作流](../../.github/workflows/checks.yml)在 Linux、Python 3.14 上重复离线检查和包构建。远程结果见 [GitHub Actions](https://github.com/jslee124/kestri/actions/workflows/checks.yml)；本初始记录不在工作流完成前声称远程通过。
+实现版本 `84a727b` 的 [CI 工作流](../../.github/workflows/checks.yml)也已在 Linux、Python 3.14 上通过：[运行 36834367301](https://github.com/jslee124/kestri/actions/runs/36834367301)。它完成同样的离线检查和包构建，没有调用真实模型服务。
 
 ## 真实 DeepSeek 证据
 
