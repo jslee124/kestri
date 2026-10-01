@@ -1,0 +1,47 @@
+name: kestri
+services:
+  postgres:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: kestri
+      POSTGRES_USER: kestri
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD locally}
+    volumes:
+      - database:/var/lib/postgresql/data
+    networks: [database]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U kestri -d kestri']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 256
+  app:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://kestri:${POSTGRES_PASSWORD}@postgres:5432/kestri
+      KESTRI_WORKSPACE_DIR: /workspace
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - workspace:/workspace
+    networks: [database, outbound]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    init: true
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+volumes:
+  database:
+  workspace:
+networks:
+  database:
+    internal: true
+  outbound:

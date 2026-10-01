@@ -2,10 +2,13 @@
 
 [简体中文](README.zh-CN.md) · [Project home](../README.md)
 
-Updated: 2026-10-01. Status: M0 implemented and verified; first-version design remains the target.
+Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemented and verified; later first-version capabilities remain the target.
 
 ## Start using the implemented increment
 
+- [Telegram research](tutorials/telegram-research.md): owner setup and the first product workflow.
+- [M1 reference](reference/telegram.md): controls, persistence, deployment, and bounds.
+- [M1 validation record](development/m1-validation.md): offline, live-service, and deployment evidence.
 - [First agent run](tutorials/first-agent-run.md): a guided live model/tool exercise.
 - [Run offline checks](how-to/run-checks.md): validate a development change.
 - [M0 configuration](reference/configuration.md): exact implemented settings and results.
@@ -19,12 +22,12 @@ Updated: 2026-10-01. Status: M0 implemented and verified; first-version design r
 | [Requirements](design/requirements.md) | Identified requirements and acceptance criteria | Draft specification based on agreed behavior |
 | [Architecture](design/architecture.md) | Responsibilities, boundaries, and execution flows | Design draft; major choices accepted |
 | [Security and data](design/security-and-data.md) | Permissions, isolation, memory, context, and data lifecycle | Design draft; policy direction accepted |
-| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0 verified; next target M1 |
+| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0 verified; M1 verified |
 | [ADR-0001](decisions/0001-agent-stack.md) | Python, LangChain Agent, and DeepSeek official API | Accepted |
 | [ADR-0002](decisions/0002-local-deployment-and-tool-boundaries.md) | Local deployment and controlled tools | Accepted |
 | [ADR-0003](decisions/0003-persistence-and-state-separation.md) | PostgreSQL and separation of state categories | Accepted |
 
-“Accepted” records a design decision. It does not establish that its implementation works. The requirements document is the source of acceptance criteria; [M0 evidence](development/m0-validation.md) covers only the initial model/tool integration.
+“Accepted” records a design decision. It does not establish that its implementation works. The requirements document is the source of acceptance criteria; [M0 evidence](development/m0-validation.md) covers initial model/tool integration; [M1 evidence](development/m1-validation.md) separately tracks the product workflow.
 
 ## Documentation organization
 
@@ -32,12 +35,12 @@ Kestri uses [Diátaxis](https://diataxis.fr/) to distinguish learning tutorials,
 
 | Category | Reader need | Availability |
 | --- | --- | --- |
-| Tutorials | Learn by completing a guided experience | First agent run available |
+| Tutorials | Learn by completing a guided experience | First agent run and Telegram research available |
 | How-to guides | Complete a specific task | Offline development checks available |
-| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration available |
+| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration and M1 Telegram reference available |
 | Explanation | Understand concepts, mechanisms, and tradeoffs | Current design documents provide design-stage explanations |
 | Design | Review intended product behavior and system boundaries | Available above |
-| Development | Follow runnable delivery increments and verification progress | Milestones and M0 evidence available |
+| Development | Follow runnable delivery increments and verification progress | Milestones, M0 evidence, and M1 progress available |
 | Decisions | Understand why a major choice was made | Available above |
 
 Do not present a proposal as reference documentation for an implemented feature. Tutorials and reference describe only verified implementation; future capabilities remain in the design.

@@ -2,7 +2,7 @@
 
 [简体中文](security-and-data.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: design draft; policy direction accepted. The full controls below remain first-version requirements. [M0 evidence](../development/m0-validation.md) covers only the limited arithmetic-tool runtime, configuration, and execution bounds; it does not establish deployment isolation.
+Updated: 2026-10-01. Status: design draft; policy direction accepted. The full controls below remain first-version requirements. [M1 evidence](../development/m1-validation.md) records research boundaries and container checks; future memory, scheduling, retention, and backup controls below are not yet implemented. The [M1 reference](../reference/telegram.md) is authoritative for current behavior.
 
 ## Objectives and trust boundaries
 
@@ -25,11 +25,11 @@ The owner and explicitly configured application policy authorize operations. The
 
 Run the application and PostgreSQL locally through Docker Compose. Use a non-root application user, minimal capabilities, the default seccomp profile, bounded resources, and only necessary mounts. Keep the database on an internal service network with no published database port. Do not mount the Docker daemon socket into the application.
 
-A dedicated host directory may be bind-mounted as the workspace. It is the only user-file directory exposed by default. A writable bind mount changes real host files, including deletion; it is not a disposable copy. Docker documents this behavior and supports read-only mounts. Docker Desktop itself runs its daemon in a Linux VM, but bind-mounted native files remain exposed. See [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/) and [Engine security](https://docs.docker.com/engine/security/).
+M1 defaults to a dedicated named workspace volume and a separate database volume, exposing no existing host user directories. A dedicated host directory may later be bind-mounted as the workspace. A writable bind mount changes real host files, including deletion; it is not a disposable copy. Docker documents this behavior and supports read-only mounts. Docker Desktop itself runs its daemon in a Linux VM, but bind-mounted native files remain exposed. See [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/) and [Engine security](https://docs.docker.com/engine/security/).
 
 Workspace operations must validate resolved paths, reject traversal and symlink escape, and bind operations to the current task/run scope. They must not overwrite or delete important originals silently. User-provided originals should be copied or accessed read-only through a later explicit import design. Broad home-directory access is outside the first version.
 
-Database data, credentials, and backups stay outside the model-visible workspace. A backup inside the same writable workspace does not provide an independent recovery boundary. Storage paths and the backup mechanism remain open.
+Database data, credentials, and backups stay outside the model-visible workspace. A backup inside the same writable workspace does not provide an independent recovery boundary. M1 volume/path choices are recorded in its reference; the backup mechanism remains open.
 
 When arbitrary code is introduced, use a separate short-lived tool container with only task inputs and outputs. Do not provide personal databases, service credentials, host control sockets, or unrelated files. Default file-processing jobs to no network and impose process/time/output/resource quotas. VM isolation may be reconsidered for heavier untrusted execution. The sandbox broker and implementation are not selected in this baseline.
 
@@ -78,6 +78,7 @@ Local storage does not imply that all processing stays local. The chosen service
 | Telegram | Conversation messages, status updates, and delivered results |
 | DeepSeek official API | Assembled prompts, selected memory, conversation material, tool definitions, and relevant tool results |
 | Tavily | Search queries and extraction URLs; retrieved material returns to Kestri |
+| Cloudflare, only with opt-in DNS mode | Candidate public-page hostnames for DNS verification; no service credentials |
 
 Send relevant data rather than full archives or databases. Service credentials are available only to their application adapters and must not appear in prompts, source-control files, artifacts, or logs. Avoid unrestricted HTTP tools that could export secrets or private data. No cloud tracing service is selected by default.
 
@@ -95,7 +96,7 @@ Provider-side retention and Telegram message deletion are separate from local de
 | Checkpoints | Exact pruning policy open; retain the usable current state of active threads while removing obsolete history |
 | Backups and deletion markers | Exact lifetime and restore mechanism open |
 
-These defaults govern Kestri's local copies. Research material attached to an explicitly saved result requires a documented promotion/retention rule; saving a result must not silently retain every temporary page forever. Expired source URLs may remain as metadata even when their stored content is gone.
+These are proposed defaults for Kestri's local copies. M1 does not automatically prune or expire records, checkpoints, or artifacts. Research material attached to an explicitly saved result requires a documented promotion/retention rule; saving a result must not silently retain every temporary page forever. Expired source URLs may remain as metadata even when their stored content is gone.
 
 Archive deletion must account for checkpoints, summaries, indexes, artifacts, and caches containing copies. Active-data deletion and backup expiration are different boundaries. A restore procedure must reconcile deleted tasks and forgotten memories before enabling execution or retrieval. Export, backup, restore, and archive deletion interfaces remain unresolved.
 

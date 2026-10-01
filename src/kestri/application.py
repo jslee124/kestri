@@ -1,0 +1,240 @@
+"""Concurrent polling, serialized foreground execution, and independent durable delivery."""
+
+import asyncio
+import signal
+from typing import Any
+
+import httpx
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+
+from kestri.budget import RunControl
+from kestri.errors import PolicyDenied, ProviderFailure
+from kestri.redaction import Redactor
+from kestri.research import ResearchAgent
+from kestri.runtime import build_model
+from kestri.settings import ResearchSettings, TelegramCredentials
+from kestri.store import Store
+from kestri.telegram import DeliveryProblem, TelegramClient, authorized_message, command_for
+from kestri.url_policy import CloudflareResolver, PublicURLPolicy
+from kestri.workspace import Workspace
+
+
+class Application:
+    def __init__(
+        self,
+        settings: ResearchSettings,
+        store: Store,
+        telegram: TelegramClient,
+        researcher: ResearchAgent,
+    ) -> None:
+        self.settings, self.store = settings, store
+        self.telegram, self.researcher = telegram, researcher
+        self.active: tuple[RunControl, asyncio.Task[None]] | None = None
+        self.wake_run = asyncio.Event()
+        self.wake_delivery = asyncio.Event()
+
+    async def accept_update(self, update: dict[str, Any]) -> bool:
+        message = authorized_message(update, self.settings.telegram_owner_id)
+        if message is None:
+            return False
+        reply = message.get("reply_to_message") or {}
+        command = command_for(message["text"])
+        accepted, run_id = await self.store.accept(
+            update["update_id"],
+            message["chat"]["id"],
+            message["message_id"],
+            message["text"],
+            reply.get("message_id"),
+            command,
+            self.settings.queue_limit,
+        )
+        if accepted:
+            if command == "stop" and self.active and self.active[0].run_id == run_id:
+                self.active[0].cancel.set()
+                self.active[1].cancel()
+            self.wake_run.set()
+            self.wake_delivery.set()
+        return accepted
+
+    async def polling(self) -> None:
+        while True:
+            try:
+                updates = await self.telegram.poll(await self.store.offset())
+            except DeliveryProblem as error:
+                if error.kind != "RateLimited":
+                    raise
+                await asyncio.sleep(max(1, min(error.delay, 120)))
+                continue
+            except httpx.HTTPError, ProviderFailure:
+                await asyncio.sleep(3)
+                continue
+            for update in updates:
+                if not isinstance(update.get("update_id"), int):
+                    raise ProviderFailure("InvalidUpdateIdentity")
+                await self.accept_update(update)
+                # A poll confirms only offsets whose updates have already been handled durably.
+                await self.store.advance_offset(update["update_id"])
+
+    async def work_once(self) -> bool:
+        row = await self.store.claim_run()
+        if row is None:
+            return False
+        control = RunControl(self.store, row["id"])
+        task = asyncio.create_task(self.researcher.run(row, control))
+        self.active = control, task
+        try:
+            await task
+            current = asyncio.current_task()
+            if current is not None and current.cancelling():
+                raise asyncio.CancelledError
+        except asyncio.CancelledError:
+            await self.store.finish(row["id"], "cancelled", "执行已停止。", "Cancelled")
+            current = asyncio.current_task()
+            if current is not None and current.cancelling():
+                raise
+        except Exception as error:
+            await self.store.finish(
+                row["id"], "failed", "执行失败，未自动重跑。", type(error).__name__
+            )
+        finally:
+            self.active = None
+            self.wake_delivery.set()
+        return True
+
+    async def working(self) -> None:
+        while True:
+            self.wake_run.clear()
+            if not await self.work_once():
+                try:
+                    await asyncio.wait_for(self.wake_run.wait(), timeout=1)
+                except TimeoutError:
+                    pass
+
+    async def deliver_once(self) -> bool:
+        row = await self.store.claim_delivery()
+        if row is None:
+            return False
+        try:
+            identity = await self.telegram.send(row["chat_id"], row["content"], row["reply_to"])
+        except DeliveryProblem as error:
+            await self.store.delivery_failed(
+                row,
+                error.kind,
+                uncertain=error.uncertain,
+                delay=error.delay,
+            )
+        else:
+            await self.store.delivered(row, identity)
+        return True
+
+    async def delivering(self) -> None:
+        while True:
+            self.wake_delivery.clear()
+            if not await self.deliver_once():
+                try:
+                    await asyncio.wait_for(self.wake_delivery.wait(), timeout=1)
+                except TimeoutError:
+                    pass
+            else:
+                # Telegram private-chat rate limits apply across status and result messages.
+                await asyncio.sleep(1.1)
+
+    async def serve(self) -> None:
+        await self.store.recover()
+        async with asyncio.TaskGroup() as group:
+            group.create_task(self.polling())
+            group.create_task(self.working())
+            group.create_task(self.delivering())
+
+
+async def run_telegram(settings: ResearchSettings) -> None:
+    task = asyncio.current_task()
+    if task is not None:
+        asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, task.cancel)
+    secrets = [
+        secret.get_secret_value()
+        for secret in (
+            settings.deepseek_api_key,
+            settings.telegram_bot_token,
+            settings.tavily_api_key,
+            settings.database_url,
+        )
+    ]
+    store = Store(settings.database_url.get_secret_value(), Redactor(secrets))
+    model = build_model(settings)
+    try:
+        await store.open()
+        async with (
+            httpx.AsyncClient(timeout=40, follow_redirects=False) as telegram_http,
+            httpx.AsyncClient(timeout=5, follow_redirects=False) as dns_http,
+            httpx.AsyncClient(
+                timeout=settings.request_timeout_seconds,
+                follow_redirects=False,
+                headers={"Authorization": f"Bearer {settings.tavily_api_key.get_secret_value()}"},
+            ) as web_http,
+            store.pool.connection() as lock_connection,
+        ):
+            telegram = TelegramClient(settings.telegram_bot_token.get_secret_value(), telegram_http)
+            identity = await telegram.identity()
+            webhook = await telegram.call("getWebhookInfo", {})
+            if webhook.get("url"):
+                raise PolicyDenied("ExistingWebhook")
+            locked = await (
+                await lock_connection.execute(
+                    "SELECT pg_try_advisory_lock(hashtext(%s)) AS locked",
+                    (f"kestri-bot-{identity['id']}",),
+                )
+            ).fetchone()
+            if not locked or not locked["locked"]:
+                raise PolicyDenied("BotAlreadyRunning")
+            try:
+                await store.bind_identity(identity["id"], settings.telegram_owner_id)
+                saver = AsyncPostgresSaver(store.pool)
+                await saver.setup()
+                researcher = ResearchAgent(
+                    settings,
+                    store,
+                    Workspace(settings.workspace_dir),
+                    saver,
+                    model,
+                    web_http,
+                    PublicURLPolicy(CloudflareResolver(dns_http))
+                    if settings.url_dns_mode == "cloudflare"
+                    else PublicURLPolicy(),
+                )
+                print(
+                    f"Kestri polling @{identity.get('username', '(unnamed)')}; "
+                    "owner-only private chat."
+                )
+                await Application(settings, store, telegram, researcher).serve()
+            finally:
+                await lock_connection.execute("SELECT pg_advisory_unlock_all()")
+    finally:
+        await store.close()
+        if model.root_async_client is not None:
+            await model.root_async_client.close()
+        if model.root_client is not None:
+            model.root_client.close()
+
+
+async def show_telegram_ids(settings: TelegramCredentials) -> None:
+    async with httpx.AsyncClient(timeout=40, follow_redirects=False) as client:
+        telegram = TelegramClient(settings.telegram_bot_token.get_secret_value(), client)
+        identity = await telegram.identity()
+        print(f"Open https://t.me/{identity.get('username', '')} and send /start yourself.")
+        updates = await telegram.poll(wait_seconds=25)
+        ids = {
+            message["from"]["id"]
+            for update in updates
+            if isinstance((message := update.get("message")), dict)
+            and message.get("chat", {}).get("type") == "private"
+            and not message.get("from", {}).get("is_bot", True)
+        }
+        if not ids:
+            print("No private user message found. Send /start, then run this command again.")
+        for identity in sorted(ids):
+            print(
+                f"Observed private user ID: {identity}. "
+                "Set KESTRI_TELEGRAM_OWNER_ID only to your own ID."
+            )
+        print("No owner was enrolled and no model work was started.")

@@ -44,3 +44,5 @@ CLI 退出码：检查通过为 0，检查失败或执行、证据错误为 1，
 ## 计划中的配置
 
 设计提出的 128,000-token 输入预算、压缩阈值、月度费用范围，以及 Telegram、Tavily、PostgreSQL 和调度参数，都不是 M0 配置。此 CLI 不执行这些控制。见[架构](../design/architecture.zh-CN.md)与[里程碑](../development/milestones.zh-CN.md)。
+
+M1 已另行实现输入准入、费用预留、Telegram、Tavily 与 PostgreSQL，见 [M1 参考](telegram.zh-CN.md)。这些行为不适用于 `kestri smoke`。

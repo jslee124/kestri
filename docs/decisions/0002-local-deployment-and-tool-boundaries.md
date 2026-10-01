@@ -5,7 +5,7 @@
 - Status: Accepted
 - Decision date: 2026-09-30
 - Updated: 2026-10-01
-- Implementation: Not started; isolation and deployment unverified
+- Implementation: M1 Compose and controlled research tools available; see [current evidence](../development/m1-validation.md)
 
 ## Context
 

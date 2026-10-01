@@ -5,7 +5,7 @@
 - Status: Accepted
 - Decision date: 2026-09-30
 - Updated: 2026-10-01
-- Implementation: Not started; recovery and retention unverified
+- Implementation: M1 messages, checkpoints, runs, delivery, usage, and evidence implemented; task/memory schemas and retention deferred
 
 ## Context
 
@@ -17,7 +17,7 @@ The project is a single-owner local application, but long-term personal use requ
 
 Use one local PostgreSQL instance for durable application records and LangGraph persistence. Store full research material and generated files in the dedicated workspace, with references and provenance in the database.
 
-Maintain separate logical categories: original message archive, graph checkpoints, personal memory, task agreements, runs/delivery, and evidence metadata. Separation is semantic; final schemas, tables, and access adapters are not defined yet.
+Maintain separate logical categories: original message archive, graph checkpoints, personal memory, task agreements, runs/delivery, and evidence metadata. Separation is semantic; M1 schemas and adapters exist for research; task/memory lifecycle schemas remain open.
 
 Use a main conversation thread and independent contexts for background executions. Retrieve relevant task evidence through message associations instead of merging entire background histories.
 

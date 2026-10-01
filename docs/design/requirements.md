@@ -2,7 +2,7 @@
 
 [简体中文](requirements.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: draft specification based on agreed product behavior. **All full acceptance cases remain unverified.** [M0 evidence](../development/m0-validation.md) covers only initial model/tool foundations and part of AC-12.
+Updated: 2026-10-01. Status: draft specification based on agreed product behavior. **AC-01 and AC-02 are verified for M1; other full cases remain unverified.** See [M1 evidence](../development/m1-validation.md). [M0 evidence](../development/m0-validation.md) covers only initial model/tool foundations and part of AC-12.
 
 ## Interpretation
 
@@ -58,10 +58,10 @@ These cases define outcomes to demonstrate later. They do not prescribe a test f
 
 ## Specification work still open
 
-- The exact owner-facing controls and message format, including uncertain delivery.
-- Bounded concurrency values and the handling of cancelled results after restart.
-- Cost estimation, search credit accounting, and the treatment of in-flight charges.
-- Archive deletion, backup/restore interfaces, and deletion-marker retention.
-- Product-level provider integration beyond the validated M0 arithmetic-tool workflow.
+- Background task controls, scheduling/concurrency, and catch-up behavior.
+- Memory, compression, archive deletion, backup/restore interfaces, and deletion-marker retention.
+- Full-case acceptance beyond the M1 research increment.
+
+M1 foreground controls, queue values, restart handling, reservations, credit estimates, and delivery uncertainty are specified in the [implemented reference](../reference/telegram.md). Evidence status is in the [M1 record](../development/m1-validation.md).
 
 Resolve these through focused design review before the affected behavior is called complete. Link later implementation and evidence to the IDs above; keep every acceptance case unverified until supported by actual results.
