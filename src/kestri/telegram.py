@@ -61,6 +61,17 @@ class TelegramClient:
             "chat_id": chat_id,
             "text": text,
             "link_preview_options": {"is_disabled": True},
+            "reply_markup": {
+                "keyboard": [
+                    [{"text": "/status"}, {"text": "/runs"}],
+                    [{"text": "/usage"}, {"text": "/stop"}],
+                    [{"text": "/new"}, {"text": "/help"}],
+                ],
+                "resize_keyboard": True,
+                "is_persistent": True,
+                "one_time_keyboard": False,
+                "input_field_placeholder": "输入研究问题，或点击指令按钮",
+            },
         }
         if reply_to is not None:
             payload["reply_parameters"] = {

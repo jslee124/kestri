@@ -39,6 +39,8 @@ The shared variable names override both M0 and M1. M0's smaller defaults remain 
 
 ## Commands and associations
 
+Every bot response supplies a compact, persistent reply keyboard with `/status`, `/runs`, `/usage`, `/stop`, `/new`, and `/help`. Clicking sends the literal command as an ordinary message, using the same owner authentication, archiving, and command handling as typing it. Commands do not call the model. Telegram clients control keyboard visibility; use the keyboard icon if hidden. `/new` preserves history and is refused while work is queued or running.
+
 | Interface | Behavior |
 | --- | --- |
 | Ordinary text | Archive, queue, acknowledge, and run; continue latest completed context |

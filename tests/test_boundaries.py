@@ -7,7 +7,7 @@ import pytest
 
 from kestri.errors import PolicyDenied, ProviderFailure
 from kestri.http import post_json
-from kestri.telegram import DeliveryProblem, TelegramClient, authorized_message
+from kestri.telegram import DeliveryProblem, TelegramClient, authorized_message, command_for
 from kestri.url_policy import PublicURLPolicy
 from kestri.workspace import Workspace
 
@@ -169,6 +169,16 @@ async def test_telegram_sends_plain_bounded_message_without_link_preview() -> No
         )
     assert "parse_mode" not in requests[0]
     assert requests[0]["link_preview_options"]["is_disabled"]
+    keyboard = requests[0]["reply_markup"]
+    commands = [button["text"] for row in keyboard["keyboard"] for button in row]
+    assert set(commands) == {"/status", "/runs", "/usage", "/stop", "/new", "/help"}
+    for text in commands:
+        message = authorized_message(update(text=text), 111)
+        assert message is not None
+        assert command_for(message["text"]) == text[1:]
+        assert authorized_message(update(text=text, user_id=222), 111) is None
+    assert keyboard["is_persistent"] and keyboard["resize_keyboard"]
+    assert not keyboard["one_time_keyboard"]
 
 
 async def test_opt_in_doh_verifies_public_records_and_rejects_private_records() -> None:
