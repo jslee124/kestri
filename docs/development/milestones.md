@@ -2,7 +2,7 @@
 
 [简体中文](milestones.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: accepted delivery sequence; implementation and verification not started.
+Updated: 2026-10-01. Status: accepted delivery sequence; M0 verified; M1 not started.
 
 ## Purpose and current position
 
@@ -10,11 +10,11 @@ Deliver Kestri through small, runnable increments. Each milestone defines an obs
 
 [Product](../design/product.md) defines scope, [requirements](../design/requirements.md) defines acceptance, and [architecture](../design/architecture.md) and [security and data](../design/security-and-data.md) define intended mechanisms and defaults. This document orders delivery without replacing those sources.
 
-**Current next target: M0.** No application milestone has been implemented or verified. M1 is the first complete Telegram product workflow. Later milestones build on earlier ones and preserve their accepted behavior.
+**Current next target: M1.** M0 is implemented and verified as a developer CLI; see the [validation record](m0-validation.md). M1 is the first complete Telegram product workflow. Later milestones build on earlier ones and preserve their accepted behavior.
 
 | Milestone | Runnable outcome | Status | Evidence |
 | --- | --- | --- | --- |
-| M0 | Local agent with a real DeepSeek model/tool interaction | Not started | None |
+| M0 | Local agent with a real DeepSeek model/tool interaction | Verified | [M0 record](m0-validation.md) |
 | M1 | Telegram research with sources and follow-up | Not started | None |
 | M2 | Recurring briefing and task management | Not started | None |
 | M3 | Personal memory and managed conversation context | Not started | None |

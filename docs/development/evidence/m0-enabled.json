@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "kind": "deepseek-live-smoke",
+  "recorded_at": "2026-10-01T07:57:34.232476+00:00",
+  "python": "3.14.7",
+  "packages": {
+    "langchain": "1.4.3",
+    "langchain-deepseek": "1.1.1",
+    "langgraph": "1.2.12"
+  },
+  "provider": "deepseek-official",
+  "model": "deepseek-flash",
+  "thinking_mode": "enabled",
+  "limits": {
+    "model_calls_per_turn": 4,
+    "tool_calls_per_turn": 4,
+    "seconds_per_turn": 60.0,
+    "output_tokens_per_request": 1024,
+    "sdk_retries": 0
+  },
+  "passed": true,
+  "turns": [
+    {
+      "status": "completed",
+      "elapsed_seconds": 1.783,
+      "error_type": null,
+      "answer": "17 + 25 = 42.",
+      "model_responses": 2,
+      "tool_calls": [
+        {
+          "name": "checked_add",
+          "arguments": {
+            "left": 17,
+            "right": 25
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "name": "checked_add",
+          "status": "success",
+          "content": "42"
+        }
+      ],
+      "usage": [
+        {
+          "input_tokens": 441,
+          "output_tokens": 54,
+          "total_tokens": 495,
+          "input_token_details": {
+            "cache_read": 256
+          },
+          "output_token_details": {
+            "reasoning": 0
+          }
+        },
+        {
+          "input_tokens": 508,
+          "output_tokens": 9,
+          "total_tokens": 517,
+          "input_token_details": {
+            "cache_read": 256
+          },
+          "output_token_details": {
+            "reasoning": 0
+          }
+        }
+      ],
+      "reasoning_present": [
+        false,
+        false
+      ],
+      "verified": true
+    },
+    {
+      "status": "completed",
+      "elapsed_seconds": 2.026,
+      "error_type": null,
+      "answer": "42 + 8 = 50.",
+      "model_responses": 2,
+      "tool_calls": [
+        {
+          "name": "checked_add",
+          "arguments": {
+            "left": 42,
+            "right": 8
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "name": "checked_add",
+          "status": "success",
+          "content": "50"
+        }
+      ],
+      "usage": [
+        {
+          "input_tokens": 538,
+          "output_tokens": 67,
+          "total_tokens": 605,
+          "input_token_details": {
+            "cache_read": 384
+          },
+          "output_token_details": {
+            "reasoning": 13
+          }
+        },
+        {
+          "input_tokens": 618,
+          "output_tokens": 9,
+          "total_tokens": 627,
+          "input_token_details": {
+            "cache_read": 384
+          },
+          "output_token_details": {
+            "reasoning": 0
+          }
+        }
+      ],
+      "reasoning_present": [
+        true,
+        false
+      ],
+      "verified": true
+    }
+  ]
+}

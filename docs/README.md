@@ -2,7 +2,14 @@
 
 [简体中文](README.zh-CN.md) · [Project home](../README.md)
 
-Updated: 2026-10-01. Status: documentation baseline; application not implemented.
+Updated: 2026-10-01. Status: M0 implemented and verified; first-version design remains the target.
+
+## Start using the implemented increment
+
+- [First agent run](tutorials/first-agent-run.md): a guided live model/tool exercise.
+- [Run offline checks](how-to/run-checks.md): validate a development change.
+- [M0 configuration](reference/configuration.md): exact implemented settings and results.
+- [M0 validation record](development/m0-validation.md): evidence and known limitations.
 
 ## Read the design
 
@@ -12,12 +19,12 @@ Updated: 2026-10-01. Status: documentation baseline; application not implemented
 | [Requirements](design/requirements.md) | Identified requirements and acceptance criteria | Draft specification based on agreed behavior |
 | [Architecture](design/architecture.md) | Responsibilities, boundaries, and execution flows | Design draft; major choices accepted |
 | [Security and data](design/security-and-data.md) | Permissions, isolation, memory, context, and data lifecycle | Design draft; policy direction accepted |
-| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | Delivery sequence accepted; next target M0 |
+| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0 verified; next target M1 |
 | [ADR-0001](decisions/0001-agent-stack.md) | Python, LangChain Agent, and DeepSeek official API | Accepted |
 | [ADR-0002](decisions/0002-local-deployment-and-tool-boundaries.md) | Local deployment and controlled tools | Accepted |
 | [ADR-0003](decisions/0003-persistence-and-state-separation.md) | PostgreSQL and separation of state categories | Accepted |
 
-“Accepted” records a design decision. It does not establish that its implementation works. The requirements document is the source of acceptance criteria; verification evidence will be added when implementation exists.
+“Accepted” records a design decision. It does not establish that its implementation works. The requirements document is the source of acceptance criteria; [M0 evidence](development/m0-validation.md) covers only the initial model/tool integration.
 
 ## Documentation organization
 
@@ -25,15 +32,15 @@ Kestri uses [Diátaxis](https://diataxis.fr/) to distinguish learning tutorials,
 
 | Category | Reader need | Availability |
 | --- | --- | --- |
-| Tutorials | Learn by completing a guided experience | Deferred until a verified end-to-end flow exists |
-| How-to guides | Complete a specific task | Deferred until the relevant operation is implemented |
-| Reference | Look up exact interfaces, configuration, and behavior | Deferred until implementation defines those facts |
+| Tutorials | Learn by completing a guided experience | First agent run available |
+| How-to guides | Complete a specific task | Offline development checks available |
+| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration available |
 | Explanation | Understand concepts, mechanisms, and tradeoffs | Current design documents provide design-stage explanations |
 | Design | Review intended product behavior and system boundaries | Available above |
-| Development | Follow runnable delivery increments and verification progress | Milestones available; no implementation started |
+| Development | Follow runnable delivery increments and verification progress | Milestones and M0 evidence available |
 | Decisions | Understand why a major choice was made | Available above |
 
-Do not present a proposal as reference documentation for an implemented feature. No placeholder tutorials or unverified installation commands are included.
+Do not present a proposal as reference documentation for an implemented feature. Tutorials and reference describe only verified implementation; future capabilities remain in the design.
 
 ## Language and maintenance
 

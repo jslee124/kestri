@@ -5,7 +5,7 @@
 - Status: Accepted
 - Decision date: 2026-09-30
 - Updated: 2026-10-01
-- Implementation: Not started; provider compatibility unverified
+- Implementation: M0 model/tool integration verified; see [evidence](../development/m0-validation.md)
 
 ## Context
 
@@ -15,7 +15,9 @@ Kestri needs a mature agent framework for a usable local personal assistant. The
 
 ## Decision
 
-Use Python and LangChain Agent, with underlying LangGraph persistence and execution control. Use DeepSeek's official API as the first model provider. Kestri is a standalone project with no code or runtime dependency on Forge.
+Use Python 3.14 and LangChain Agent, with underlying LangGraph persistence and execution control. Use DeepSeek's official API as the first model provider. Kestri is a standalone project with no code or runtime dependency on Forge.
+
+Python 3.14 is the implementation baseline, selected on 2026-10-01 for a new project with no older-runtime compatibility requirement. Python 3.12 remains security-supported; 3.14 is in bugfix support according to the [Python version status](https://devguide.python.org/versions/) checked on that date. Actual dependency installation and checks passed on 3.14.7.
 
 Use one configured model initially, including for ordinary conversation, information processing, and context summarization. Keep provider/model configuration replaceable; do not introduce automatic model routing or a second core agent loop in the first version.
 
@@ -38,7 +40,7 @@ The initial suggested model ID is maintained with other adjustable values in [ar
 
 The project can concentrate on tools, persistence, memory, and ongoing tasks while learning Python. Costs and quality still depend on actual workloads and provider behavior; the design does not establish a comparative model benchmark.
 
-DeepSeek tool calls, thinking-mode state, token estimation, summarization, retries, and cancellation need integration validation. API format compatibility alone is insufficient evidence.
+M0 validates DeepSeek tool calls and thinking-mode replay, with controlled cancellation, limit, and failure checks. Its narrow provider adapter compensates for the locked SDK serializer. Token estimation, summarization, and product-level retries/recovery still need validation. API format compatibility alone is insufficient evidence.
 
 Replacing the core harness later may require reviewing state, prompts, middleware, tool permissions, and checkpoints. Deep Agents remains an option, not a promised drop-in upgrade. Reusable application services should not depend on a particular agent loop unnecessarily.
 

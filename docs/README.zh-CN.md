@@ -2,7 +2,14 @@
 
 [English](README.md) · [项目首页](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：文档基线；应用尚未实现。
+更新日期：2026-10-01。状态：M0 已实现且验证；第一版设计仍是后续目标。
+
+## 使用已实现的增量
+
+- [首次运行 agent](tutorials/first-agent-run.zh-CN.md)：有指导的真实模型和工具练习。
+- [运行离线检查](how-to/run-checks.zh-CN.md)：验证开发变更。
+- [M0 配置](reference/configuration.zh-CN.md)：已实现配置与结果的准确说明。
+- [M0 验证记录](development/m0-validation.zh-CN.md)：证据与已知限制。
 
 ## 阅读设计
 
@@ -12,12 +19,12 @@
 | [需求](design/requirements.zh-CN.md) | 带标识符的需求与验收标准 | 基于已达成共识行为的规格草案 |
 | [架构](design/architecture.zh-CN.md) | 职责、边界与执行流程 | 设计草案；主要选择已确认 |
 | [安全与数据](design/security-and-data.zh-CN.md) | 权限、隔离、记忆、上下文与数据生命周期 | 设计草案；策略方向已确认 |
-| [可运行里程碑](development/milestones.zh-CN.md) | 可运行增量、退出条件、需求覆盖与证据 | 交付顺序已确认；下一目标 M0 |
+| [可运行里程碑](development/milestones.zh-CN.md) | 可运行增量、退出条件、需求覆盖与证据 | M0 已验证；下一目标 M1 |
 | [ADR-0001](decisions/0001-agent-stack.zh-CN.md) | Python、LangChain Agent 与 DeepSeek 官方 API | 已接受 |
 | [ADR-0002](decisions/0002-local-deployment-and-tool-boundaries.zh-CN.md) | 本地部署与受控工具 | 已接受 |
 | [ADR-0003](decisions/0003-persistence-and-state-separation.zh-CN.md) | PostgreSQL 与状态分类隔离 | 已接受 |
 
-“已接受”表示已确认的设计决策，并不证明实现有效。需求文档是验收标准的来源；有实现后再加入验证证据。
+“已接受”表示已确认的设计决策，并不证明实现有效。需求文档是验收标准的来源；[M0 证据](development/m0-validation.zh-CN.md)仅覆盖初始模型和工具接入。
 
 ## 文档组织
 
@@ -25,15 +32,15 @@ Kestri 使用 [Diátaxis](https://diataxis.fr/) 区分学习教程、面向任�
 
 | 类别 | 读者需求 | 当前情况 |
 | --- | --- | --- |
-| 教程 | 通过有指导的完整实践学习 | 等存在经过验证的端到端流程后再写 |
-| 操作指南 | 完成具体任务 | 等相关操作实现后再写 |
-| 参考 | 查询准确的接口、配置与行为 | 等实现明确这些事实后再写 |
+| 教程 | 通过有指导的完整实践学习 | 已提供首次运行 agent |
+| 操作指南 | 完成具体任务 | 已提供离线开发检查 |
+| 参考 | 查询准确的接口、配置与行为 | 已提供 M0 配置 |
 | 解释 | 理解概念、机制与取舍 | 当前设计文档提供设计阶段的解释 |
 | 设计 | 审查预期产品行为与系统边界 | 见上方文档 |
-| 开发 | 跟踪可运行交付增量与验证进度 | 已提供里程碑；尚未开始实现 |
+| 开发 | 跟踪可运行交付增量与验证进度 | 已提供里程碑与 M0 证据 |
 | 决策 | 理解重要选择的原因 | 见上方文档 |
 
-不得把提案当作已实现功能的参考文档。当前不提供占位教程或未经验证的安装命令。
+不得把提案当作已实现功能的参考文档。教程与参考只描述经过验证的实现，未来能力留在设计文档中。
 
 ## 语言与维护
 

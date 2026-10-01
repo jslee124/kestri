@@ -2,7 +2,7 @@
 
 [简体中文](architecture.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: design draft; major technology and boundary decisions accepted. No modules, schemas, or deployment below are implemented.
+Updated: 2026-10-01. Status: design draft; major technology and boundary decisions accepted. The full architecture below remains planned; the [M0 CLI](../development/m0-validation.md) implements only model/tool integration with ephemeral state.
 
 ## System boundary
 
@@ -41,7 +41,7 @@ The diagram shows responsibilities, not separate processes or a permission grant
 | Persistence | Checkpoints, canonical message archive, memory, tasks, runs, delivery state, and evidence metadata |
 | Workspace service | Task-scoped evidence and result files; no arbitrary host path access |
 
-These are logical boundaries. The initial application need not become a collection of microservices. The scheduler library, Python package layout, and database schema remain open.
+These are logical boundaries. The initial application need not become a collection of microservices. The M0 package uses `src/kestri`; the scheduler library and database schema remain open.
 
 LangChain provides an agent harness built on LangGraph, which supplies persistence and execution-control primitives. Kestri must still implement its application permissions, task lifecycle, and delivery behavior. See the [official framework overview](https://docs.langchain.com/oss/python/langchain/overview) and [ADR-0001](../decisions/0001-agent-stack.md).
 
@@ -92,15 +92,15 @@ Expose Kestri-owned search and extraction operations rather than leaking provide
 
 The application controls permitted queries/URLs, provider timeouts, metadata, and model-visible output. Search and extraction adapters must not make arbitrary network access or provider-generated summaries authoritative. The [security design](security-and-data.md) specifies the boundary.
 
-DeepSeek official API is selected. The current suggested model identifier is `deepseek-flash`; the exact integration, thinking mode, and tool-call behavior require live validation. Its official documentation advertises a 1M context window; this is provider capacity, not Kestri's active request budget. Provider facts were checked on 2026-09-30 and may change. See [DeepSeek documentation](https://api-docs.deepseek.com/quick_start/pricing/).
+DeepSeek official API is selected. The current suggested model identifier is `deepseek-flash`; M0 has live validation for its two-turn tool workflow in both thinking modes, recorded in [M0 evidence](../development/m0-validation.md). Other workflows require their own validation. Its official documentation advertises a 1M context window; this is provider capacity, not Kestri's active request budget. Provider facts were checked on 2026-09-30 and may change. See [DeepSeek documentation](https://api-docs.deepseek.com/quick_start/pricing/).
 
 ## Adjustable initial defaults
 
-These values are starting points from the design discussion, not benchmark results or immutable requirements. Their actual configuration names have not been defined.
+These values are starting points from the design discussion, not benchmark results or immutable requirements. Implemented M0 settings are defined in [configuration reference](../reference/configuration.md); the remaining values below are planned.
 
 | Setting | Initial value | Interpretation |
 | --- | --- | --- |
-| Model identifier | `deepseek-flash` | Suggested default within the selected official provider; verify during integration |
+| Model identifier | `deepseek-flash` | M0 default verified for its model/tool workflow |
 | Active input budget | 128,000 tokens | Includes system prompt, tool definitions, memory, summaries, messages, and current tool material; reserve output separately |
 | Compression trigger | Approximately 70% of input budget | Account for fixed overhead; do not assume middleware counts all request components |
 | Experiment budget | USD 20 per month | Local estimated spending envelope for model and search use; not a predicted bill or provider-side hard cap |
@@ -108,4 +108,4 @@ These values are starting points from the design discussion, not benchmark resul
 
 LangChain's [summarization middleware](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization) is the intended compression component. Model-visible token estimation, preserved history, summary quality, output reservation, and overflow recovery require verification with the selected DeepSeek integration.
 
-The task timezone has no implicit default: use an explicitly configured owner timezone or clarify it. Call limits, output/time quotas, concurrency, package versions, scheduler selection, delivery uncertainty policy, and backup implementation remain open. No automatic model routing or managed agent server is selected for the first version.
+The task timezone has no implicit default: use an explicitly configured owner timezone or clarify it. M0 defines model/tool/output/time limits and locked dependencies in its configuration reference. Product-level concurrency, spending limits, scheduler selection, delivery uncertainty policy, and backup implementation remain open. No automatic model routing or managed agent server is selected for the first version.

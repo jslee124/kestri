@@ -8,9 +8,9 @@ The working name comes from **kestrel**, with the possibility of a character or 
 
 ## Project status
 
-**Design stage.** This repository currently contains product and engineering documents. There is no runnable application, deployment configuration, or implementation validation yet. Described capabilities are requirements or proposed designs, rather than shipped features.
+**M0 verified.** A Python 3.14 CLI runs a bounded, two-turn LangChain agent against DeepSeek with a controlled arithmetic tool. Both non-thinking and thinking modes have live evidence, alongside offline failure and limit checks. Start with the [first-run tutorial](docs/tutorials/first-agent-run.md) and [validation record](docs/development/m0-validation.md).
 
-The next target is **M0: model integration validation**. The [runnable milestones](docs/development/milestones.md) define the delivery sequence, completion criteria, and evidence status.
+The next target is **M1: Telegram research**. Telegram, web retrieval, durable storage, recurring tasks, memory, and Docker deployment remain planned. The [runnable milestones](docs/development/milestones.md) distinguish delivery scope and evidence.
 
 ## Goals
 
@@ -31,7 +31,7 @@ A news briefing is the first acceptance scenario for reusable information tools.
 
 | Area | Selected direction |
 | --- | --- |
-| Application | Python, LangChain Agent, underlying LangGraph persistence and execution control |
+| Application | Python 3.14, LangChain Agent, underlying LangGraph persistence and execution control |
 | Model provider | DeepSeek official API |
 | Interaction | Telegram private chat, long polling, configured user-ID allowlist |
 | Web information | Tavily Search and Extract behind Kestri-owned tools |

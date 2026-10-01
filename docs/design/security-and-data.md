@@ -2,7 +2,7 @@
 
 [简体中文](security-and-data.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: design draft; policy direction accepted. The controls below have not been implemented or tested.
+Updated: 2026-10-01. Status: design draft; policy direction accepted. The full controls below remain first-version requirements. [M0 evidence](../development/m0-validation.md) covers only the limited arithmetic-tool runtime, configuration, and execution bounds; it does not establish deployment isolation.
 
 ## Objectives and trust boundaries
 

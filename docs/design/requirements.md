@@ -2,7 +2,7 @@
 
 [简体中文](requirements.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: draft specification based on agreed product behavior. **All acceptance cases are unverified.**
+Updated: 2026-10-01. Status: draft specification based on agreed product behavior. **All full acceptance cases remain unverified.** [M0 evidence](../development/m0-validation.md) covers only initial model/tool foundations and part of AC-12.
 
 ## Interpretation
 
@@ -62,6 +62,6 @@ These cases define outcomes to demonstrate later. They do not prescribe a test f
 - Bounded concurrency values and the handling of cancelled results after restart.
 - Cost estimation, search credit accounting, and the treatment of in-flight charges.
 - Archive deletion, backup/restore interfaces, and deletion-marker retention.
-- A validated initial model configuration and provider integration.
+- Product-level provider integration beyond the validated M0 arithmetic-tool workflow.
 
 Resolve these through focused design review before the affected behavior is called complete. Link later implementation and evidence to the IDs above; keep every acceptance case unverified until supported by actual results.
