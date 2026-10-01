@@ -191,6 +191,7 @@ async def run_telegram(settings: ResearchSettings) -> None:
                 await store.bind_identity(identity["id"], settings.telegram_owner_id)
                 saver = AsyncPostgresSaver(store.pool)
                 await saver.setup()
+                await telegram.configure_menu(settings.telegram_owner_id)
                 researcher = ResearchAgent(
                     settings,
                     store,

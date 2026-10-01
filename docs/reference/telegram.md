@@ -39,6 +39,8 @@ The shared variable names override both M0 and M1. M0's smaller defaults remain 
 
 ## Commands and associations
 
+The owner’s private chat uses Telegram’s native collapsible command menu. It lists every supported slash command: `/start`, `/status`, `/runs`, `/usage`, `/stop`, `/new`, and `/help`, with English descriptions and a Chinese translation for Chinese-language clients. Startup registers the menu only for the configured owner; each response removes the old reply keyboard. Selecting a command uses the same authentication, archiving, and handling as typing it. Commands do not call the model. Menu appearance depends on the Telegram client. `/new` preserves history and is refused while work is queued or running.
+
 | Interface | Behavior |
 | --- | --- |
 | Ordinary text | Archive, queue, acknowledge, and run; continue latest completed context |
