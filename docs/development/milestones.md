@@ -2,7 +2,7 @@
 
 [简体中文](milestones.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: accepted delivery sequence; M0 verified; M1 verified within the research scope; M2 recurring briefings verified.
+Updated: 2026-10-01. Status: accepted delivery sequence; M0 verified; M1 verified within the research scope; M2 recurring briefings verified; M3 memory/context verified.
 
 ## Purpose and current position
 
@@ -10,14 +10,14 @@ Deliver Kestri through small, runnable increments. Each milestone defines an obs
 
 [Product](../design/product.md) defines scope, [requirements](../design/requirements.md) defines acceptance, and [architecture](../design/architecture.md) and [security and data](../design/security-and-data.md) define intended mechanisms and defaults. This document orders delivery without replacing those sources.
 
-**Current next target: M3.** M0 is verified as a developer CLI and M1 is verified as the first Telegram research workflow; see [M0 evidence](m0-validation.md) and [M1 evidence](m1-validation.md). M2 recurring briefings and task control are verified; see [M2 evidence](m2-validation.md). M3 adds personal memory and context management. Later milestones build on earlier ones and preserve their accepted behavior.
+**Current next target: M4.** M0 is verified as a developer CLI and M1 is verified as the first Telegram research workflow; see [M0 evidence](m0-validation.md) and [M1 evidence](m1-validation.md). M2 recurring briefings and task control are verified; see [M2 evidence](m2-validation.md). M3 personal memory and context management are verified; see [M3 evidence](m3-validation.md). M4 closes data-lifecycle and personal-use acceptance. Later milestones build on earlier ones and preserve their accepted behavior.
 
 | Milestone | Runnable outcome | Status | Evidence |
 | --- | --- | --- | --- |
 | M0 | Local agent with a real DeepSeek model/tool interaction | Verified | [M0 record](m0-validation.md) |
 | M1 | Telegram research with sources and follow-up | Verified | [M1 record](m1-validation.md) |
 | M2 | Recurring briefing and task management | Verified | [M2 record](m2-validation.md) |
-| M3 | Personal memory and managed conversation context | Not started | None |
+| M3 | Personal memory and managed conversation context | Verified | [M3 record](m3-validation.md) |
 | M4 | Deployable first version accepted for personal use | Not started | None |
 
 ## Rules for completion

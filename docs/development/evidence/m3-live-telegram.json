@@ -1,0 +1,179 @@
+{
+  "memories": [
+    {
+      "id": "0e425be0-d9d4-4255-aa79-22563cb1af07",
+      "status": "superseded",
+      "scope": "global",
+      "supersedes": null,
+      "created_at": "2026-10-01T14:33:58.875545+00:00",
+      "updated_at": "2026-10-01T14:37:52.271883+00:00"
+    },
+    {
+      "id": "3dd4e984-46cd-4e9f-800e-63dd5c595ce1",
+      "status": "forgotten",
+      "scope": "global",
+      "supersedes": "0e425be0-d9d4-4255-aa79-22563cb1af07",
+      "created_at": "2026-10-01T14:37:52.271883+00:00",
+      "updated_at": "2026-10-01T14:41:25.865829+00:00"
+    }
+  ],
+  "runs": [
+    {
+      "id": "eb824422-f71a-45e6-a506-e16fcaa51706",
+      "kind": "memory_control",
+      "status": "completed",
+      "memory_epoch": 0,
+      "created_at": "2026-10-01T14:33:58.848639+00:00",
+      "finished_at": "2026-10-01T14:33:58.88335+00:00",
+      "estimated_micro_usd": 0,
+      "delivery": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "0533fcc7-6faa-4abe-a2cf-9df4b504d843",
+      "kind": "foreground",
+      "status": "completed",
+      "memory_epoch": 1,
+      "created_at": "2026-10-01T14:34:55.568142+00:00",
+      "finished_at": "2026-10-01T14:34:56.952851+00:00",
+      "estimated_micro_usd": 280,
+      "delivery": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "8437a29b-8a59-4842-b1c5-8d7834750f3c",
+      "kind": "memory_control",
+      "status": "completed",
+      "memory_epoch": 1,
+      "created_at": "2026-10-01T14:37:52.249606+00:00",
+      "finished_at": "2026-10-01T14:37:52.2779+00:00",
+      "estimated_micro_usd": 0,
+      "delivery": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "7b554642-fefb-4802-84eb-f128c85083a7",
+      "kind": "foreground",
+      "status": "completed",
+      "memory_epoch": 2,
+      "created_at": "2026-10-01T14:40:01.995855+00:00",
+      "finished_at": "2026-10-01T14:40:02.888954+00:00",
+      "estimated_micro_usd": 272,
+      "delivery": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "0344aa6b-fe30-49e5-87bc-459b8c7a42f9",
+      "kind": "memory_control",
+      "status": "completed",
+      "memory_epoch": 2,
+      "created_at": "2026-10-01T14:41:25.845776+00:00",
+      "finished_at": "2026-10-01T14:41:25.870709+00:00",
+      "estimated_micro_usd": 0,
+      "delivery": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "0f91f071-1e9f-4b34-9d0a-eea96e64eca9",
+      "kind": "foreground",
+      "status": "completed",
+      "memory_epoch": 3,
+      "created_at": "2026-10-01T14:47:06.975847+00:00",
+      "finished_at": "2026-10-01T14:47:08.029244+00:00",
+      "estimated_micro_usd": 261,
+      "delivery": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    }
+  ],
+  "active_memories": 0,
+  "active_tasks": 0,
+  "queued_or_running": 0,
+  "observations": [
+    "Explicit blue demo memory saved and answered through Telegram",
+    "Corrected to green; app restarted; green answer observed",
+    "Forgot corrected entry; app restarted; no available memory answer observed",
+    "Telegram /memory empty; zero active tasks or runs"
+  ],
+  "registered_commands": [
+    "start",
+    "status",
+    "runs",
+    "usage",
+    "stop",
+    "new",
+    "help",
+    "tasks",
+    "memory",
+    "remember",
+    "correct",
+    "forget",
+    "history",
+    "task"
+  ],
+  "menu_languages_verified": [
+    "default",
+    "zh"
+  ],
+  "final_deployment": {
+    "image": "sha256:e9e2d2d00ed3032b8b7459ccce443a41fa040357ffe89c1c320d926a0850b822",
+    "status": "running",
+    "user": "10001:10001",
+    "read_only_root": true,
+    "migrations": [
+      1,
+      2,
+      3
+    ],
+    "active_memories": 0,
+    "active_tasks": 0,
+    "active_runs": 0
+  }
+}

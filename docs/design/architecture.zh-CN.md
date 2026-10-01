@@ -2,7 +2,7 @@
 
 [English](architecture.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：设计草案；主要技术和边界决策已确认。M1 已实现前台研究、受控信息工具、原始记录、checkpoint、发送及 Compose。M2 已实现持久化任务约定与独立后台调度；下方记忆和压缩仍待实现。准确实现行为见 [M1 参考](../reference/telegram.zh-CN.md)和[验证记录](../development/m1-validation.zh-CN.md)。
+更新日期：2026-10-01。状态：设计草案；主要技术和边界决策已确认。M1 已实现前台研究、受控信息工具、原始记录、checkpoint、发送及 Compose。M2 已实现持久化任务约定与独立后台调度；M3 已实现显式个人记忆与预算内上下文压缩，见[记忆/上下文参考](../reference/memory-and-context.zh-CN.md)。准确实现行为见 [M1 参考](../reference/telegram.zh-CN.md)和[验证记录](../development/m1-validation.zh-CN.md)。
 
 ## 系统边界
 
@@ -41,7 +41,7 @@ flowchart LR
 | 持久化 | 检查点、原始消息归档、记忆、任务、执行、发送状态与证据元数据 |
 | 工作区服务 | 任务范围内的证据和成果文件，不允许任意本机路径访问 |
 
-以上是逻辑边界，初始应用无需拆成一组微服务。包采用 `src/kestri`。M1 分离 `telegram.py`、`application.py`、`research.py`、`web.py`、`url_policy.py`、`workspace.py`、`budget.py` 和 `store.py`，表结构位于 `sql/001_initial.sql`。M2 增加 `task_intent.py`、`task_agent.py`、`tasks.py`、`schedule.py` 与 `sql/002_tasks.sql`。调度采用本地异步循环及 PostgreSQL 权威状态，见 [ADR-0004](../decisions/0004-recurring-task-execution.zh-CN.md)和[任务参考](../reference/tasks.zh-CN.md)。记忆表结构仍待确定。
+以上是逻辑边界，初始应用无需拆成一组微服务。包采用 `src/kestri`。M1 分离 `telegram.py`、`application.py`、`research.py`、`web.py`、`url_policy.py`、`workspace.py`、`budget.py` 和 `store.py`，表结构位于 `sql/001_initial.sql`。M2 增加 `task_intent.py`、`task_agent.py`、`tasks.py`、`schedule.py` 与 `sql/002_tasks.sql`。调度采用本地异步循环及 PostgreSQL 权威状态，见 [ADR-0004](../decisions/0004-recurring-task-execution.zh-CN.md)和[任务参考](../reference/tasks.zh-CN.md)。M3 增加 `memory.py`、`context.py` 与 `sql/003_memory_context.sql`；[ADR-0005](../decisions/0005-explicit-memory-and-revocable-context.zh-CN.md)说明上下文失效和摘要扩展。
 
 LangChain 提供基于 LangGraph 的 agent harness，后者提供持久化与执行控制基础能力。Kestri 仍须实现应用权限、任务生命周期与发送行为。见[官方框架概览](https://docs.langchain.com/oss/python/langchain/overview)和 [ADR-0001](../decisions/0001-agent-stack.zh-CN.md)。
 
@@ -51,7 +51,7 @@ LangChain 提供基于 LangGraph 的 agent harness，后者提供持久化与执
 
 1. 对 Telegram 更新授权，依据稳定身份持久接受后，再确认已消费。
 2. 将回复关联到已知消息或执行，为已接受的前台工作排序。
-3. 从最近完成的 checkpoint 初始化新执行线程，在预算内包含所引用的结果和证据。滚动摘要与个人记忆后续加入。
+3. 从最近完成的 checkpoint 初始化新执行线程，在预算内包含所引用的结果和证据。将当前有效记忆注入模型请求，在共享预算内压缩较早状态。
 4. 运行 agent；每次工具操作都必须先检查并限制范围。
 5. 保存结果和证据引用，协调发送，保留消息与执行关联。
 
@@ -61,7 +61,7 @@ LangChain 提供基于 LangGraph 的 agent harness，后者提供持久化与执
 
 1. 持久化用户约定、明确时区、内容要求、补跑规则与启用或暂停状态。
 2. 在到期或符合条件的恢复事件中，通过持久化任务和执行状态认领一次允许的执行。
-3. 用当前任务约定启动独立 agent 上下文，不使用全部 Telegram 历史；相关记忆在 M3 加入。
+3. 用当前任务约定启动独立 agent 上下文，不使用全部 Telegram 历史；M3 提供有效全局/任务记忆，不改变保存的约定。
 4. 生成并持久化结果，发送流程消费这个保存的结果。
 5. 记录发送成功、失败或不确定。传输重试无需重复研究。
 
@@ -96,7 +96,7 @@ LangGraph 区分线程级检查点与跨线程 store。两者都不能代替独�
 
 ## 可调初始默认值
 
-以下数值来自设计讨论，是起点，不是性能测试结果或不可变需求。已实现的 M0 设置见[配置参考](../reference/configuration.zh-CN.md)；M1 实现输入准入与本地费用预算，准确行为见 [M1 参考](../reference/telegram.zh-CN.md)。M2 实现六小时合并补跑；压缩仍是计划。
+以下数值来自设计讨论，是起点，不是性能测试结果或不可变需求。已实现的 M0 设置见[配置参考](../reference/configuration.zh-CN.md)；M1 实现输入准入与本地费用预算，准确行为见 [M1 参考](../reference/telegram.zh-CN.md)。M2 实现六小时合并补跑；M3 已实现有界摘要与范围记忆。
 
 | 配置 | 初始值 | 含义 |
 | --- | --- | --- |
@@ -106,6 +106,6 @@ LangGraph 区分线程级检查点与跨线程 store。两者都不能代替独�
 | 实验预算 | 每月 20 美元 | 模型和搜索的本地估算费用范围，不是账单预测或服务侧硬限制 |
 | 简报补跑窗口 | 6 小时 | 任务级默认值；合并错过执行，窗口外跳过 |
 
-计划使用 LangChain 的[摘要中间件](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization)执行压缩。模型可见 token 估算、保留历史、摘要质量、输出空间与超限恢复，都需要结合选定 DeepSeek 接入验证。
+M3 扩展 LangChain 的[摘要中间件](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization)，加入预算内模型调用与历史数据标记。[M3 证据](../development/m3-validation.zh-CN.md)覆盖强制压缩、纠正保留、原始归档与真实 DeepSeek 行为。请求估算仍是保守值，摘要质量仍依赖模型。
 
 任务时区没有隐含默认值：使用用户明确配置的时区，否则先澄清。M0 在配置参考中定义模型、工具、输出和时间上限及锁定依赖。前台并发、费用预留与发送不确定性在 M1 已实现。M2 实现一项前台和一项后台并行执行，调度每五秒检查一次持久化约定。保留期执行及备份实现仍待确定。第一版不选择自动模型路由或托管 agent server。

@@ -74,6 +74,12 @@ class ResearchSettings(Settings):
     input_usd_per_million: Decimal = Field(default=Decimal("0.30"), gt=0, le=100)
     output_usd_per_million: Decimal = Field(default=Decimal("1.20"), gt=0, le=100)
     search_credit_usd: Decimal = Field(default=Decimal("0.008"), gt=0, le=1)
+    memory_limit: int = Field(default=64, ge=1, le=64)
+    memory_context_limit: int = Field(default=8, ge=1, le=16)
+    context_trigger_ratio: float = Field(default=0.70, ge=0.1, le=0.9)
+    context_keep_messages: int = Field(default=12, ge=4, le=40)
+    max_summary_calls: int = Field(default=2, ge=1, le=4)
+    summary_max_chars: int = Field(default=4000, ge=500, le=8000)
     owner_timezone: str | None = None
     task_limit: int = Field(default=16, ge=1, le=64)
     background_queue_limit: int = Field(default=8, ge=1, le=32)

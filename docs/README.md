@@ -2,9 +2,13 @@
 
 [简体中文](README.zh-CN.md) · [Project home](../README.md)
 
-Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemented and verified; M2 recurring briefings implemented; later first-version capabilities remain the target.
+Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemented and verified; M2 recurring briefings verified; M3 memory/context verified; M4 remains the target.
 
 ## Start using the implemented increment
+
+- [Personal memory](tutorials/personal-memory.md): save, correct, forget, and inspect originals.
+- [Memory and context reference](reference/memory-and-context.md): retrieval, invalidation, compression, and limits.
+- [M3 validation record](development/m3-validation.md): controlled checks, real DeepSeek compression, and Telegram restart/forget observations.
 
 - [Recurring briefing](tutorials/recurring-briefing.md): create, manage, and receive a daily/weekly briefing.
 - [Task reference](reference/tasks.md): agreements, scheduling, background execution, and recovery rules.
@@ -26,12 +30,13 @@ Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemente
 | [Requirements](design/requirements.md) | Identified requirements and acceptance criteria | Draft specification based on agreed behavior |
 | [Architecture](design/architecture.md) | Responsibilities, boundaries, and execution flows | Design draft; major choices accepted |
 | [Security and data](design/security-and-data.md) | Permissions, isolation, memory, context, and data lifecycle | Design draft; policy direction accepted |
-| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0 verified; M1 verified; M2 verified |
+| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0 verified; M1 verified; M2 verified; M3 verified |
 | [ADR-0001](decisions/0001-agent-stack.md) | Python, LangChain Agent, and DeepSeek official API | Accepted |
 | [ADR-0002](decisions/0002-local-deployment-and-tool-boundaries.md) | Local deployment and controlled tools | Accepted |
 | [ADR-0003](decisions/0003-persistence-and-state-separation.md) | PostgreSQL and separation of state categories | Accepted |
 
 | [ADR-0004](decisions/0004-recurring-task-execution.md) | Durable agreements, local scheduling, and independent execution | Accepted |
+| [ADR-0005](decisions/0005-explicit-memory-and-revocable-context.md) | Explicit memory, epoch invalidation, and budgeted summaries | Accepted |
 
 “Accepted” records a design decision. It does not establish that its implementation works. The requirements document is the source of acceptance criteria; [M0 evidence](development/m0-validation.md) covers initial model/tool integration; [M1 evidence](development/m1-validation.md) separately tracks the product workflow.
 
@@ -41,12 +46,12 @@ Kestri uses [Diátaxis](https://diataxis.fr/) to distinguish learning tutorials,
 
 | Category | Reader need | Availability |
 | --- | --- | --- |
-| Tutorials | Learn by completing a guided experience | First agent run, Telegram research, and recurring briefing available |
+| Tutorials | Learn by completing a guided experience | First agent run, Telegram research, recurring briefing, and personal memory available |
 | How-to guides | Complete a specific task | Offline development checks available |
-| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration, M1 Telegram, and M2 task reference available |
+| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration, M1 Telegram, M2 tasks, and M3 memory/context available |
 | Explanation | Understand concepts, mechanisms, and tradeoffs | Current design documents provide design-stage explanations |
 | Design | Review intended product behavior and system boundaries | Available above |
-| Development | Follow runnable delivery increments and verification progress | Milestones, M0, M1, and M2 evidence available |
+| Development | Follow runnable delivery increments and verification progress | Milestones, M0, M1, M2, and M3 evidence available |
 | Decisions | Understand why a major choice was made | Available above |
 
 Do not present a proposal as reference documentation for an implemented feature. Tutorials and reference describe only verified implementation; future capabilities remain in the design.

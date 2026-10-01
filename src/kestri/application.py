@@ -9,6 +9,7 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 from kestri.budget import RunControl
 from kestri.errors import PolicyDenied, ProviderFailure
+from kestri.memory import MemoryService, memory_instruction
 from kestri.redaction import Redactor
 from kestri.research import ResearchAgent
 from kestri.runtime import build_model
@@ -50,7 +51,14 @@ class Application:
         )
         if message.get("forward_origin") or message.get("external_reply"):
             intent = None
-        kind = "task_control" if intent is not None else "foreground"
+        memory = memory_instruction(message["text"])
+        if message.get("forward_origin") or message.get("external_reply"):
+            memory = None
+        kind = (
+            "memory_control" if memory else "task_control" if intent is not None else "foreground"
+        )
+        if memory:
+            command = None
         if intent is not None:
             command = None
         accepted, run_id = await self.store.accept(
@@ -93,6 +101,7 @@ class Application:
                 await self.store.advance_offset(update["update_id"])
 
     async def work_once(self, background: bool = False) -> bool:
+        await MemoryService(self.store, self.settings).expire(self.settings.telegram_owner_id)
         row = await self.store.claim_run(background)
         if row is None:
             return False

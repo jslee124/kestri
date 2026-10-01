@@ -2,7 +2,7 @@
 
 [简体中文](run-checks.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Scope: M0, M1, and M2 development checks.
+Updated: 2026-10-01. Scope: M0, M1, M2, and M3 development checks.
 
 ## Check a change
 

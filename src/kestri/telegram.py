@@ -53,6 +53,11 @@ class TelegramClient:
             ("new", "Start fresh context; keep history", "新建对话上下文，保留历史"),
             ("help", "Show help", "查看使用帮助"),
             ("tasks", "List recurring tasks", "查看持续任务"),
+            ("memory", "Inspect personal memory", "查看个人记忆"),
+            ("remember", "Explicitly save memory", "显式保存记忆"),
+            ("correct", "Correct a memory by ID", "按 ID 纠正记忆"),
+            ("forget", "Forget a memory by ID", "按 ID 忘记记忆"),
+            ("history", "Inspect original chat archive", "查看原始聊天记录"),
             ("task", "Manage a recurring task", "管理持续任务"),
         ]
         for language, description_index in (("", 1), ("zh", 2)):
@@ -131,7 +136,23 @@ def command_for(text: str) -> str | None:
         name = text.split(maxsplit=1)[0][1:].split("@", 1)[0].lower()
         return (
             name
-            if name in {"start", "help", "stop", "status", "runs", "usage", "new", "tasks", "task"}
+            if name
+            in {
+                "start",
+                "help",
+                "stop",
+                "status",
+                "runs",
+                "usage",
+                "new",
+                "tasks",
+                "task",
+                "memory",
+                "remember",
+                "correct",
+                "forget",
+                "history",
+            }
             else "unknown"
         )
     return None

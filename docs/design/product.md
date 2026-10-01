@@ -2,7 +2,7 @@
 
 [简体中文](product.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: accepted product direction; implementation pending.
+Updated: 2026-10-01. Status: accepted product direction; M0 through M3 verified; full first-version acceptance remains M4. See [milestones](../development/milestones.md).
 
 ## Positioning
 

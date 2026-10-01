@@ -1,4 +1,4 @@
-# M1 Telegram research reference
+# Telegram research reference
 
 [简体中文](telegram.zh-CN.md) · [Documentation](../README.md)
 
@@ -39,7 +39,7 @@ The shared variable names override both M0 and M1. M0's smaller defaults remain 
 
 ## Commands and associations
 
-The owner’s private chat uses Telegram’s native collapsible command menu. It lists every supported slash command: `/start`, `/status`, `/runs`, `/usage`, `/stop`, `/new`, `/help`, `/tasks`, and `/task`, with English descriptions and a Chinese translation for Chinese-language clients. Startup registers the menu only for the configured owner; each response removes the old reply keyboard. Selecting a command uses the same authentication, archiving, and handling as typing it. Status/list/help commands do not call the model; `/task` interpretation does. Menu appearance depends on the Telegram client. `/new` preserves history and is refused while foreground work is queued or running.
+The owner’s private chat uses Telegram’s native collapsible command menu. It lists every supported slash command: `/start`, `/status`, `/runs`, `/usage`, `/stop`, `/new`, `/help`, `/tasks`, `/task`, `/memory`, `/remember`, `/correct`, `/forget`, and `/history`, with English descriptions and a Chinese translation for Chinese-language clients. Startup registers the menu only for the configured owner; each response removes the old reply keyboard. Selecting a command uses the same authentication, archiving, and handling as typing it. Status/list/help commands do not call the model; `/task` interpretation does. Menu appearance depends on the Telegram client. `/new` preserves history and is refused while foreground work is queued or running.
 
 | Interface | Behavior |
 | --- | --- |
@@ -50,6 +50,7 @@ The owner’s private chat uses Telegram’s native collapsible command menu. It
 | `/status`, `/runs` | Latest five runs, status, evidence/usage counts, delivery problems, safe error type |
 | `/usage` | UTC-month recorded estimates plus outstanding/unknown reservations; not a provider bill |
 | `/new` | Clear committed context only when no queued/running work; preserve records |
+| `/memory`, `/remember`, `/correct`, `/forget`, `/history` | Deterministic memory controls and read-only archive access; see [M3 reference](memory-and-context.md) |
 | Other slash commands | Unsupported-command notice; no model call |
 
 Polling continues while one research worker runs. Authentication requires the configured owner, a matching private chat, and a non-bot sender before personal persistence or model work. Unauthorized messages are ignored; the service cursor can advance past them without archiving their content. A database is bound to one bot/owner pair and refuses a changed pair; there is no identity-migration command in M1.
@@ -68,7 +69,7 @@ Provider responses are bounded to 2 MB. Oversized tool serialization fails safel
 
 ## Durable execution and delivery
 
-Runs move from `queued` to `running`, then `completed`, `failed`, `cancelled`, or `interrupted`. Only a completed run advances the committed conversation pointer. Each run uses a fresh graph thread seeded from the last committed checkpoint; original inbound/outbound messages are archived separately. No automatic trimming or compression is implemented.
+Runs move from `queued` to `running`, then `completed`, `failed`, `cancelled`, or `interrupted`. Only a completed run advances the committed conversation pointer. Each run uses a fresh graph thread seeded from the last committed checkpoint; original inbound/outbound messages are archived separately. M3 adds automatic budgeted compression and memory-epoch checks; only completed foreground research from the current epoch advances the head. See the [memory/context reference](memory-and-context.md).
 
 Acceptance and update deduplication are transactional. Cursor advancement follows durable handling. Results and outgoing chunks are saved before sending. Restart retains queued requests and saved results, marks unfinished runs interrupted, and converts in-flight sends to `uncertain`. Interrupted research is not automatically rerun.
 
@@ -86,6 +87,6 @@ Default model rates are conservative peak, uncached estimates checked against [D
 
 Base Compose runs a non-root application with read-only root, writable named workspace volume, bounded `/tmp`, dropped capabilities, no added privileges, CPU/memory/PID limits, and no Docker socket or host-home mounts. PostgreSQL uses a separate named volume and an internal network with no published port. `compose.dev.yaml` intentionally publishes a loopback port for local development. Containers do not sandbox controlled tools independently of application privileges.
 
-Canonical records live in the `kestri` schema; LangGraph owns separate checkpoint tables. Workspace text is organized by generated run/evidence UUIDs with no-follow relative file operations. Cleanup, retention enforcement, export, backup, restore, and memory are deferred. Design retention values are proposals, not automatic deletion. `docker compose stop` preserves volumes; `down -v` deletes durable data and should not be used as a routine stop command.
+Canonical records live in the `kestri` schema; LangGraph owns separate checkpoint tables. Workspace text is organized by generated run/evidence UUIDs with no-follow relative file operations. Cleanup, archive-retention enforcement, export, backup, and restore are deferred. M3 implements personal-memory expiry and removal from active use. Design retention values are proposals, not automatic deletion. `docker compose stop` preserves volumes; `down -v` deletes durable data and should not be used as a routine stop command.
 
 M2 adds `/tasks` and `/task` alongside every existing command in the native collapsible menu; see the [task reference](tasks.md) for task control and scheduling rules.

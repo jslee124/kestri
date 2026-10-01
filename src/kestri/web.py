@@ -198,8 +198,14 @@ class WebTools:
         except ValueError as error:
             raise PolicyDenied("InvalidEvidenceReference") from error
         record = await self.store.one(
-            "SELECT e.* FROM kestri.evidence e JOIN kestri.runs r ON r.id=e.run_id "
-            "WHERE e.id=%s AND r.chat_id=%s AND (r.id=%s OR r.status='completed')",
+            (
+                "SELECT e.* FROM kestri.evidence e JOIN "
+                "kestri.runs r ON r.id=e.run_id WHERE e.id=%s AND "
+                "r.chat_id=%s AND (r.id=%s OR "
+                "(r.status='completed' AND r.memory_epoch=(SELECT "
+                "memory_epoch FROM kestri.conversations WHERE "
+                "chat_id=r.chat_id)))"
+            ),
             (safe_id, self.chat_id, self.run_id),
         )
         if record is None or record["status"] != "retrieved":

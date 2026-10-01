@@ -195,6 +195,11 @@ async def test_native_menu_exposes_all_commands_to_owner_in_both_languages() -> 
             "help",
             "tasks",
             "task",
+            "memory",
+            "remember",
+            "correct",
+            "forget",
+            "history",
         }
         for item in commands:
             text = "/" + item["command"]
