@@ -6,7 +6,7 @@
 
 ## 版本与环境
 
-工作分支：`codex/m3-memory-context`，基于 `bf16a00`。本地环境为 macOS、Python 3.14.7、uv 0.12.3、OrbStack Docker/Linux arm64 与 PostgreSQL 17。依赖不变，锁文件包含 LangChain 1.4.3 与 LangGraph 1.2.12。真实 Telegram 记忆/重启检查使用应用镜像 `sha256:b837d266c6c915939da546715635d940bf53537933e97d53929d2ae23ed2fc38`。最终源码还在拒绝无效摘要前结算已观测摘要用量，验证见下文。最终部署成功启动镜像 `sha256:e9e2d2d00ed3032b8b7459ccce443a41fa040357ffe89c1c320d926a0850b822`，保留迁移 1–3，没有有效验证记忆、任务或执行。Telegram API 回读确认默认/中文菜单全部 14 条命令。远端 CI 与发布证据在可用后单独记录。
+工作分支：`codex/m3-memory-context`，基于 `bf16a00`。本地环境为 macOS、Python 3.14.7、uv 0.12.3、OrbStack Docker/Linux arm64 与 PostgreSQL 17。依赖不变，锁文件包含 LangChain 1.4.3 与 LangGraph 1.2.12。真实 Telegram 记忆/重启检查使用应用镜像 `sha256:b837d266c6c915939da546715635d940bf53537933e97d53929d2ae23ed2fc38`。最终源码还在拒绝无效摘要前结算已观测摘要用量，验证见下文。最终部署成功启动镜像 `sha256:e9e2d2d00ed3032b8b7459ccce443a41fa040357ffe89c1c320d926a0850b822`，保留迁移 1–3，没有有效验证记忆、任务或执行。Telegram API 回读确认默认/中文菜单全部 14 条命令。实现版本：[`458848b`](https://github.com/jslee124/kestri/commit/458848bc25ddf431c2732749c1d5f959c11cb0cc)。远端 push [CI run 36881552622](https://github.com/jslee124/kestri/actions/runs/36881552622)及 PR [CI run 36881603299](https://github.com/jslee124/kestri/actions/runs/36881603299)均已在该准确版本通过，使用 Linux/Python 3.14、一次性 PostgreSQL，不使用真实服务凭据。已发布为 [draft PR 4](https://github.com/jslee124/kestri/pull/4)供审查，未合并 main。
 
 ## 受控检查
 
