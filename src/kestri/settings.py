@@ -74,6 +74,19 @@ class ResearchSettings(Settings):
     input_usd_per_million: Decimal = Field(default=Decimal("0.30"), gt=0, le=100)
     output_usd_per_million: Decimal = Field(default=Decimal("1.20"), gt=0, le=100)
     search_credit_usd: Decimal = Field(default=Decimal("0.008"), gt=0, le=1)
+    owner_timezone: str | None = None
+    task_limit: int = Field(default=16, ge=1, le=64)
+    background_queue_limit: int = Field(default=8, ge=1, le=32)
+    scheduler_interval_seconds: float = Field(default=5, ge=1, le=60)
+
+    @field_validator("owner_timezone")
+    @classmethod
+    def validate_timezone(cls, value: str | None) -> str | None:
+        from zoneinfo import ZoneInfo
+
+        if value is not None:
+            ZoneInfo(value)
+        return value
 
     @field_validator("telegram_bot_token")
     @classmethod

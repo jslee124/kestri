@@ -14,6 +14,8 @@ from kestri.research import ResearchAgent
 from kestri.runtime import build_model
 from kestri.settings import ResearchSettings, TelegramCredentials
 from kestri.store import Store
+from kestri.task_intent import task_intent
+from kestri.tasks import TaskService
 from kestri.telegram import DeliveryProblem, TelegramClient, authorized_message, command_for
 from kestri.url_policy import CloudflareResolver, PublicURLPolicy
 from kestri.workspace import Workspace
@@ -30,6 +32,8 @@ class Application:
         self.settings, self.store = settings, store
         self.telegram, self.researcher = telegram, researcher
         self.active: tuple[RunControl, asyncio.Task[None]] | None = None
+        self.background_active: tuple[RunControl, asyncio.Task[None]] | None = None
+        self.tasks = TaskService(store, settings)
         self.wake_run = asyncio.Event()
         self.wake_delivery = asyncio.Event()
 
@@ -39,6 +43,16 @@ class Application:
             return False
         reply = message.get("reply_to_message") or {}
         command = command_for(message["text"])
+        intent = (
+            task_intent(message["text"], task_reference=reply.get("message_id") is not None)
+            if command in {None, "task"}
+            else None
+        )
+        if message.get("forward_origin") or message.get("external_reply"):
+            intent = None
+        kind = "task_control" if intent is not None else "foreground"
+        if intent is not None:
+            command = None
         accepted, run_id = await self.store.accept(
             update["update_id"],
             message["chat"]["id"],
@@ -47,11 +61,14 @@ class Application:
             reply.get("message_id"),
             command,
             self.settings.queue_limit,
+            kind,
         )
         if accepted:
-            if command == "stop" and self.active and self.active[0].run_id == run_id:
-                self.active[0].cancel.set()
-                self.active[1].cancel()
+            if command == "stop":
+                for active in (self.active, self.background_active):
+                    if active and active[0].run_id == run_id:
+                        active[0].cancel.set()
+                        active[1].cancel()
             self.wake_run.set()
             self.wake_delivery.set()
         return accepted
@@ -75,13 +92,16 @@ class Application:
                 # A poll confirms only offsets whose updates have already been handled durably.
                 await self.store.advance_offset(update["update_id"])
 
-    async def work_once(self) -> bool:
-        row = await self.store.claim_run()
+    async def work_once(self, background: bool = False) -> bool:
+        row = await self.store.claim_run(background)
         if row is None:
             return False
         control = RunControl(self.store, row["id"])
         task = asyncio.create_task(self.researcher.run(row, control))
-        self.active = control, task
+        if background:
+            self.background_active = control, task
+        else:
+            self.active = control, task
         try:
             await task
             current = asyncio.current_task()
@@ -97,18 +117,27 @@ class Application:
                 row["id"], "failed", "执行失败，未自动重跑。", type(error).__name__
             )
         finally:
-            self.active = None
+            if background:
+                self.background_active = None
+            else:
+                self.active = None
             self.wake_delivery.set()
         return True
 
-    async def working(self) -> None:
+    async def working(self, background: bool = False) -> None:
         while True:
             self.wake_run.clear()
-            if not await self.work_once():
+            if not await self.work_once(background):
                 try:
                     await asyncio.wait_for(self.wake_run.wait(), timeout=1)
                 except TimeoutError:
                     pass
+
+    async def scheduling(self) -> None:
+        while True:
+            if await self.tasks.tick():
+                self.wake_run.set()
+            await asyncio.sleep(self.settings.scheduler_interval_seconds)
 
     async def deliver_once(self) -> bool:
         row = await self.store.claim_delivery()
@@ -144,6 +173,8 @@ class Application:
         async with asyncio.TaskGroup() as group:
             group.create_task(self.polling())
             group.create_task(self.working())
+            group.create_task(self.working(background=True))
+            group.create_task(self.scheduling())
             group.create_task(self.delivering())
 
 

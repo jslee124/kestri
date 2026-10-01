@@ -58,10 +58,11 @@ These cases define outcomes to demonstrate later. They do not prescribe a test f
 
 ## Specification work still open
 
-- Background task controls, scheduling/concurrency, and catch-up behavior.
 - Memory, compression, archive deletion, backup/restore interfaces, and deletion-marker retention.
-- Full-case acceptance beyond the M1 research increment.
+- Full-case acceptance beyond the M2 recurring-task increment.
 
 M1 foreground controls, queue values, restart handling, reservations, credit estimates, and delivery uncertainty are specified in the [implemented reference](../reference/telegram.md). Evidence status is in the [M1 record](../development/m1-validation.md).
 
 Resolve these through focused design review before the affected behavior is called complete. Link later implementation and evidence to the IDs above; keep every acceptance case unverified until supported by actual results.
+
+M2 agreements, controls, concurrency, and catch-up are specified in the [task reference](../reference/tasks.md); acceptance scope is tracked in the [M2 record](../development/m2-validation.md).

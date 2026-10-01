@@ -1,5 +1,6 @@
 """Durable inbox, runs, canonical archive, evidence, outbox, and usage ledger."""
 
+import re
 from datetime import UTC, datetime
 from importlib.resources import files
 from typing import Any
@@ -45,6 +46,9 @@ class Store:
             async with conn.transaction():
                 await conn.execute("SELECT pg_advisory_xact_lock(hashtext('kestri-migrations'))")
                 await conn.execute(sql, prepare=False)
+                await conn.execute(
+                    files("kestri").joinpath("sql/002_tasks.sql").read_text(), prepare=False
+                )
 
     async def close(self) -> None:
         await self.pool.close()
@@ -83,8 +87,8 @@ class Store:
 
     async def advance_offset(self, update_id: int) -> None:
         await self.execute(
-            "INSERT INTO kestri.meta VALUES ('offset',%s) ON CONFLICT (key) DO UPDATE "
-            "SET value=to_jsonb(GREATEST((kestri.meta.value)::text::bigint,%s))",
+            "INSERT INTO kestri.meta VALUES ('offset',%s) ON CONFLICT (key) DO UPDATE SET "
+            "value=to_jsonb(GREATEST((kestri.meta.value)::text::bigint,%s))",
             (Jsonb(update_id + 1), update_id + 1),
         )
 
@@ -97,6 +101,7 @@ class Store:
         reply_to: int | None,
         command: str | None,
         queue_limit: int,
+        kind: str = "foreground",
     ) -> tuple[bool, str | None]:
         """Called only after authorization. Deduplication and state changes are atomic."""
         text = self.redactor.text(text)
@@ -105,8 +110,8 @@ class Store:
             async with conn.transaction():
                 inserted = await (
                     await conn.execute(
-                        "INSERT INTO kestri.inbox(update_id,chat_id,message_id) VALUES (%s,%s,%s) "
-                        "ON CONFLICT DO NOTHING RETURNING update_id",
+                        "INSERT INTO kestri.inbox(update_id,chat_id,message_id) VALUES (%s,%s,%s)"
+                        " ON CONFLICT DO NOTHING RETURNING update_id",
                         (update_id, chat_id, message_id),
                     )
                 ).fetchone()
@@ -123,8 +128,8 @@ class Store:
                 if command is None:
                     row = await (
                         await conn.execute(
-                            "SELECT count(*) AS n FROM kestri.runs "
-                            "WHERE chat_id=%s AND status IN ('queued','running')",
+                            "SELECT count(*) AS n FROM kestri.runs WHERE chat_id=%s AND "
+                            "kind!='background' AND status IN ('queued','running')",
                             (chat_id,),
                         )
                     ).fetchone()
@@ -133,46 +138,65 @@ class Store:
                     else:
                         run_id = str(uuid4())
                         await conn.execute(
-                            "INSERT INTO kestri.runs(id,chat_id,message_id"
-                            ",request,reply_to,status) "
-                            "VALUES (%s,%s,%s,%s,%s,'queued')",
-                            (run_id, chat_id, message_id, text, reply_to),
+                            "INSERT INTO "
+                            "kestri.runs(id,chat_id,message_id,request,reply_to,status,kind) "
+                            "VALUES (%s,%s,%s,%s,%s,'queued',%s)",
+                            (run_id, chat_id, message_id, text, reply_to, kind),
                         )
                         await conn.execute(
                             "UPDATE kestri.inbox SET run_id=%s WHERE update_id=%s",
                             (run_id, update_id),
                         )
                 await conn.execute(
-                    "INSERT INTO kestri.messages(chat_id,telegram_"
-                    "id,direction,content,reply_to,run_id)"
-                    " VALUES (%s,%s,'in',%s,%s,%s) ON CONFLICT DO NOTHING",
+                    "INSERT INTO "
+                    "kestri.messages(chat_id,telegram_id,direction,content,reply_to,run_id) "
+                    "VALUES (%s,%s,'in',%s,%s,%s) ON CONFLICT DO NOTHING",
                     (chat_id, message_id, text, reply_to, run_id),
                 )
                 if command == "stop":
-                    if reply_to is not None:
+                    stop_args = text.split(maxsplit=1)
+                    if len(stop_args) == 2 and stop_args[0].split("@")[0].lower() == "/stop":
+                        matches = await (
+                            await conn.execute(
+                                (
+                                    "SELECT id,status FROM kestri.runs WHERE chat_id=%s AND "
+                                    "status IN ('queued','running') AND id::text LIKE %s"
+                                ),
+                                (
+                                    chat_id,
+                                    stop_args[1].strip().replace("%", "").replace("_", "") + "%",
+                                ),
+                            )
+                        ).fetchall()
+                        target = (
+                            matches[0]
+                            if len(matches) == 1
+                            and re.fullmatch(r"[0-9a-f-]{8,36}", stop_args[1].strip())
+                            else None
+                        )
+                    elif reply_to is not None:
                         target = await (
                             await conn.execute(
                                 "SELECT r.id,r.status FROM kestri.messages m JOIN kestri.runs r "
-                                "ON r.id=m.run_id WHERE m.chat_id=%s AND m.telegram_id=%s "
-                                "ORDER BY m.id DESC LIMIT 1",
+                                "ON r.id=m.run_id WHERE m.chat_id=%s AND m.telegram_id=%s ORDER "
+                                "BY m.id DESC LIMIT 1",
                                 (chat_id, reply_to),
                             )
                         ).fetchone()
                     else:
                         target = await (
                             await conn.execute(
-                                "SELECT id,status FROM kestri.runs WHERE "
-                                "chat_id=%s AND status='running'"
-                                " ORDER BY started_at LIMIT 1",
+                                "SELECT id,status FROM kestri.runs WHERE chat_id=%s AND "
+                                "kind!='background' AND status='running' ORDER BY started_at "
+                                "LIMIT 1",
                                 (chat_id,),
                             )
                         ).fetchone()
                     if target and target["status"] in {"queued", "running"}:
                         run_id = str(target["id"])
                         await conn.execute(
-                            "UPDATE kestri.runs SET cancel_requested=true, "
-                            "status=CASE WHEN status='queued' THEN 'cancelled' ELSE status END "
-                            "WHERE id=%s",
+                            "UPDATE kestri.runs SET cancel_requested=true, status=CASE WHEN "
+                            "status='queued' THEN 'cancelled' ELSE status END WHERE id=%s",
                             (run_id,),
                         )
                         notice = (
@@ -188,28 +212,35 @@ class Store:
                 else:
                     notice = "已收到，正在处理。你可以用 /stop 停止当前执行。"
                 await conn.execute(
-                    "INSERT INTO kestri.outbox(id,chat_id,reply_to"
-                    ",run_id,content) VALUES (%s,%s,%s,%s,%s)",
+                    "INSERT INTO kestri.outbox(id,chat_id,reply_to,run_id,content) VALUES "
+                    "(%s,%s,%s,%s,%s)",
                     (uuid4(), chat_id, message_id, run_id, notice),
                 )
         return True, run_id
 
     async def _command_notice(self, conn: Any, command: str, chat_id: int) -> str:
+        if command == "tasks":
+            from kestri.tasks import list_tasks
+
+            return await list_tasks(conn, chat_id)
+        if command == "task":
+            return "请用 /task 加完整任务指令，例如：每天 08:00 Asia/Shanghai 给我 AI 新闻简报。"
         if command in {"start", "help"}:
             return (
                 "我是 Kestri。可以直接提问或让我查询公开网页，也可以回复之前的结果追问。\n"
                 "/stop 停止当前执行；/status 查看状态；/runs 查看最近执行；/usage"
                 " 查看本月估算用量。\n"
                 "/new 新建对话上下文，保留原始记录。\n"
-                "目前不支持持续任务或个人记忆。消息会通过 Telegram，研究内容会发送到 "
+                "可直接创建每日或每周简报，使用 /tasks 查看；/task 输入任务指令。\n"
+                "暂停、恢复、修改或删除可回复任务消息；/stop 执行ID 停止指定执行。\n"
+                "目前不支持个人记忆。消息会通过 Telegram，研究内容会发送到 "
                 "DeepSeek/Tavily。"
             )
         if command == "new":
             active = await (
                 await conn.execute(
-                    "SELECT id FROM kestri.runs WHERE chat_id=%s "
-                    "AND status IN ('running','queued') "
-                    "LIMIT 1",
+                    "SELECT id FROM kestri.runs WHERE chat_id=%s AND kind!='background' AND "
+                    "status IN ('running','queued') LIMIT 1",
                     (chat_id,),
                 )
             ).fetchone()
@@ -222,18 +253,18 @@ class Store:
         if command in {"runs", "status"}:
             rows = await (
                 await conn.execute(
-                    "SELECT r.id,r.status,r.error_type, "
-                    "(SELECT count(*) FROM kestri.evidence e WHERE e.run_id=r.id) AS evidence, "
-                    "(SELECT count(*) FROM kestri.usage u WHERE u.run_id=r.id) AS calls, "
-                    "(SELECT count(*) FROM kestri.outbox o WHERE o.run_id=r.id "
-                    "AND o.status IN ('uncertain','failed')) AS delivery_problems "
-                    "FROM kestri.runs r WHERE chat_id=%s ORDER BY created_at DESC LIMIT 5",
+                    "SELECT r.id,r.status,r.error_type,r.kind,r.task_id, (SELECT count(*) FROM "
+                    "kestri.evidence e WHERE e.run_id=r.id) AS evidence, (SELECT count(*) FROM "
+                    "kestri.usage u WHERE u.run_id=r.id) AS calls, (SELECT count(*) FROM "
+                    "kestri.outbox o WHERE o.run_id=r.id AND o.status IN ('uncertain','failed')) "
+                    "AS delivery_problems FROM kestri.runs r WHERE chat_id=%s ORDER BY created_at"
+                    " DESC LIMIT 5",
                     (chat_id,),
                 )
             ).fetchall()
             return "最近执行：\n" + (
                 "\n".join(
-                    f"{str(row['id'])[:8]} · {row['status']}"
+                    f"{str(row['id'])[:8]} · {row['kind']} · {row['status']}"
                     f" · 来源 {row['evidence']} · 操作 {row['calls']}"
                     f" · 发送待核对 {row['delivery_problems']}"
                     + (f" · {row['error_type']}" if row["error_type"] else "")
@@ -244,11 +275,9 @@ class Store:
         if command == "usage":
             row = await (
                 await conn.execute(
-                    "SELECT COALESCE(sum(amount_micro_usd),0) AS amount,count(*) AS calls "
-                    "FROM kestri.usage WHERE "
-                    "created_at>=date_trunc('month',now() AT TIME "
-                    "ZONE 'UTC')"
-                    " AT TIME ZONE 'UTC'"
+                    "SELECT COALESCE(sum(amount_micro_usd),0) AS amount,count(*) AS calls FROM "
+                    "kestri.usage WHERE created_at>=date_trunc('month',now() AT TIME ZONE 'UTC') "
+                    "AT TIME ZONE 'UTC'"
                 )
             ).fetchone()
             return (
@@ -261,13 +290,27 @@ class Store:
             )
         return "暂不支持该命令。使用 /help 查看当前能力。"
 
-    async def claim_run(self) -> Row | None:
+    async def claim_run(self, background: bool = False) -> Row | None:
         async with self.pool.connection() as conn:
             async with conn.transaction():
+                if background:
+                    await conn.execute(
+                        "SELECT chat_id FROM kestri.conversations ORDER BY chat_id FOR UPDATE"
+                    )
+                    await conn.execute(
+                        "UPDATE kestri.runs r SET "
+                        "status='cancelled',cancel_requested=true,finished_at=now(),error_type='CatchUpExpiredOrChanged'"
+                        " FROM kestri.tasks t WHERE r.task_id=t.id AND r.status='queued' AND "
+                        "r.kind='background' AND (t.status!='active' OR "
+                        "t.revision!=r.task_revision OR "
+                        "r.scheduled_for+make_interval(secs=>t.catch_up_seconds)<now())"
+                    )
                 row = await (
                     await conn.execute(
-                        "SELECT * FROM kestri.runs WHERE status='queued' AND NOT cancel_requested "
-                        "ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED"
+                        "SELECT * FROM kestri.runs WHERE status='queued' AND NOT cancel_requested"
+                        " AND available_at<=now() AND (kind='background')=%s ORDER BY created_at "
+                        "LIMIT 1 FOR UPDATE SKIP LOCKED",
+                        (background,),
                     )
                 ).fetchone()
                 if row is None:
@@ -278,7 +321,11 @@ class Store:
                         (row["chat_id"],),
                     )
                 ).fetchone()
-                row["source_thread"] = conversation["thread_id"] if conversation else None
+                row["source_thread"] = (
+                    conversation["thread_id"]
+                    if conversation and row["kind"] == "foreground"
+                    else None
+                )
                 row["id"] = str(row["id"])
                 await conn.execute(
                     "UPDATE kestri.runs SET status='running',started_at=now(),source_thread=%s "
@@ -322,6 +369,61 @@ class Store:
                     return
                 if row["cancel_requested"]:
                     status, answer, error_type = "cancelled", "执行已停止。", "Cancelled"
+                if row["kind"] == "task_control":
+                    change = await (
+                        await conn.execute(
+                            "SELECT result FROM kestri.task_changes WHERE run_id=%s", (run_id,)
+                        )
+                    ).fetchone()
+                    if change:
+                        status, answer, error_type = "completed", change["result"], None
+                if (
+                    row["kind"] == "background"
+                    and status == "failed"
+                    and error_type
+                    in {
+                        "APIConnectionError",
+                        "APITimeoutError",
+                        "RateLimitError",
+                        "InternalServerError",
+                        "ConnectError",
+                        "ConnectTimeout",
+                        "PoolTimeout",
+                    }
+                    and row["attempt"] < 2
+                ):
+                    task = await (
+                        await conn.execute(
+                            "SELECT status,revision FROM kestri.tasks WHERE id=%s",
+                            (row["task_id"],),
+                        )
+                    ).fetchone()
+                    if (
+                        task
+                        and task["status"] == "active"
+                        and task["revision"] == row["task_revision"]
+                    ):
+                        await conn.execute(
+                            (
+                                "UPDATE kestri.runs SET "
+                                "status='queued',attempt=attempt+1,available_at=now()+interval "
+                                "'30 seconds',error_type=%s WHERE id=%s"
+                            ),
+                            (error_type, run_id),
+                        )
+                        await conn.execute(
+                            (
+                                "UPDATE kestri.usage SET state='unknown' WHERE run_id=%s AND "
+                                "state='reserved'"
+                            ),
+                            (run_id,),
+                        )
+                        return
+                if row["kind"] == "background":
+                    answer = (
+                        f"持续任务 {str(row['task_id'])[:8]} · 执行 {run_id[:8]} · {status}\n"
+                        + answer
+                    )
                 answer = self.redactor.text(answer)
                 await conn.execute(
                     "UPDATE kestri.runs SET status=%s,result=%s,error_type=%s,finished_at=now() "
@@ -332,23 +434,35 @@ class Store:
                     "UPDATE kestri.usage SET state='unknown' WHERE run_id=%s AND state='reserved'",
                     (run_id,),
                 )
-                if status == "completed":
+                if status == "completed" and row["kind"] == "foreground":
                     await conn.execute(
-                        "UPDATE kestri.conversations SET "
-                        "thread_id=%s,updated_at=now() WHERE "
+                        "UPDATE kestri.conversations SET thread_id=%s,updated_at=now() WHERE "
                         "chat_id=%s",
                         (run_id, row["chat_id"]),
                     )
                 for part in chunks(answer):
                     await conn.execute(
-                        "INSERT INTO kestri.outbox(id,chat_id,reply_to,run_id,content) "
-                        "VALUES (%s,%s,%s,%s,%s)",
-                        (uuid4(), row["chat_id"], row["message_id"], run_id, part),
+                        "INSERT INTO kestri.outbox(id,chat_id,reply_to,run_id,content,task_id) "
+                        "VALUES (%s,%s,%s,%s,%s,%s)",
+                        (
+                            uuid4(),
+                            row["chat_id"],
+                            None if row["kind"] == "background" else row["message_id"],
+                            run_id,
+                            part,
+                            row["task_id"],
+                        ),
                     )
 
     async def recover(self) -> None:
         rows = await self.all("SELECT id FROM kestri.runs WHERE status='running'")
         for row in rows:
+            change = await self.one(
+                "SELECT result FROM kestri.task_changes WHERE run_id=%s", (row["id"],)
+            )
+            if change:
+                await self.finish(str(row["id"]), "completed", change["result"])
+                continue
             await self.finish(
                 str(row["id"]),
                 "interrupted",
@@ -363,11 +477,9 @@ class Store:
 
     async def reply_context(self, chat_id: int, telegram_id: int) -> Row | None:
         return await self.one(
-            "SELECT r.id,r.result,r.status FROM "
-            "kestri.messages m JOIN kestri.runs r ON "
-            "r.id=m.run_id "
-            "WHERE m.chat_id=%s AND m.telegram_id=%s AND r.status='completed' "
-            "ORDER BY m.id DESC LIMIT 1",
+            "SELECT r.id,r.result,r.status FROM kestri.messages m JOIN kestri.runs r ON "
+            "r.id=m.run_id WHERE m.chat_id=%s AND m.telegram_id=%s AND r.status='completed'"
+            " ORDER BY m.id DESC LIMIT 1",
             (chat_id, telegram_id),
         )
 
@@ -384,8 +496,9 @@ class Store:
     ) -> str:
         evidence_id = evidence_id or str(uuid4())
         await self.execute(
-            "INSERT INTO kestri.evidence(id,run_id,kind,url,title,status,truncated,metadata) "
-            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+            "INSERT INTO "
+            "kestri.evidence(id,run_id,kind,url,title,status,truncated,metadata) VALUES "
+            "(%s,%s,%s,%s,%s,%s,%s,%s)",
             (
                 evidence_id,
                 run_id,
@@ -427,8 +540,8 @@ class Store:
                 ).fetchone()
                 local = await (
                     await conn.execute(
-                        "SELECT COALESCE(sum(amount_micro_usd),0) AS "
-                        "amount FROM kestri.usage WHERE run_id=%s",
+                        "SELECT COALESCE(sum(amount_micro_usd),0) AS amount FROM kestri.usage "
+                        "WHERE run_id=%s",
                         (run_id,),
                     )
                 ).fetchone()
@@ -440,9 +553,8 @@ class Store:
                 ):
                     raise BudgetExceeded("EstimatedBudgetExceeded")
                 await conn.execute(
-                    "INSERT INTO "
-                    "kestri.usage(id,run_id,kind,amount_micro_usd)"
-                    " VALUES (%s,%s,%s,%s)",
+                    "INSERT INTO kestri.usage(id,run_id,kind,amount_micro_usd) VALUES "
+                    "(%s,%s,%s,%s)",
                     (reservation, run_id, kind, amount),
                 )
         return reservation
@@ -460,8 +572,7 @@ class Store:
                 row = await (
                     await conn.execute(
                         "SELECT *,next_attempt<=now() AS ready FROM kestri.outbox WHERE "
-                        "status='pending' "
-                        "ORDER BY sequence LIMIT 1 FOR UPDATE SKIP LOCKED"
+                        "status='pending' ORDER BY sequence LIMIT 1 FOR UPDATE SKIP LOCKED"
                     )
                 ).fetchone()
                 if row and row["ready"]:
@@ -481,10 +592,17 @@ class Store:
                     (telegram_id, row["id"]),
                 )
                 await conn.execute(
-                    "INSERT INTO kestri.messages(chat_id,telegram_"
-                    "id,direction,content,reply_to,run_id)"
-                    " VALUES (%s,%s,'out',%s,%s,%s) ON CONFLICT DO NOTHING",
-                    (row["chat_id"], telegram_id, row["content"], row["reply_to"], row["run_id"]),
+                    "INSERT INTO "
+                    "kestri.messages(chat_id,telegram_id,direction,content,reply_to,run_id,task_id)"
+                    " VALUES (%s,%s,'out',%s,%s,%s,%s) ON CONFLICT DO NOTHING",
+                    (
+                        row["chat_id"],
+                        telegram_id,
+                        row["content"],
+                        row["reply_to"],
+                        row["run_id"],
+                        row["task_id"],
+                    ),
                 )
 
     async def delivery_failed(
@@ -492,9 +610,7 @@ class Store:
     ) -> None:
         status = "uncertain" if uncertain else ("pending" if row["attempts"] < 3 else "failed")
         await self.execute(
-            "UPDATE kestri.outbox SET status=%s,error_type"
-            "=%s,next_attempt=now()+make_interval(secs=>%s"
-            ")"
-            " WHERE id=%s",
+            "UPDATE kestri.outbox SET "
+            "status=%s,error_type=%s,next_attempt=now()+make_interval(secs=>%s) WHERE id=%s",
             (status, error_type, max(1, min(delay, 120)), row["id"]),
         )

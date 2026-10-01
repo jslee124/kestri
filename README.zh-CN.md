@@ -10,7 +10,9 @@ Kestri 是一个在本地运行、通过 Telegram 机器人交互的个人 AI ag
 
 **M0 已验证。** Python 3.14 CLI 可运行有边界的两轮 LangChain agent，通过 DeepSeek 调用受控算术工具。非思考与思考模式均有真实调用证据，并有离线失败和限制检查。可以从[首次运行教程](docs/tutorials/first-agent-run.zh-CN.md)与[验证记录](docs/development/m0-validation.zh-CN.md)开始。
 
-**M1：Telegram 研究已实现并验证。** 已提供仅限主人私聊、受控 Tavily 工具、PostgreSQL checkpoint 和归档、取消、用量预留及 Docker Compose。从 [Telegram 教程](docs/tutorials/telegram-research.zh-CN.md)、[M1 参考](docs/reference/telegram.zh-CN.md)和 [M1 证据](docs/development/m1-validation.zh-CN.md)开始。持续任务、记忆、压缩与完整数据生命周期验收仍待实现。[可运行里程碑](docs/development/milestones.zh-CN.md)区分交付范围和验证证据。
+**M1：Telegram 研究已实现并验证。** 已提供仅限主人私聊、受控 Tavily 工具、PostgreSQL checkpoint 和归档、取消、用量预留及 Docker Compose。从 [Telegram 教程](docs/tutorials/telegram-research.zh-CN.md)、[M1 参考](docs/reference/telegram.zh-CN.md)和 [M1 证据](docs/development/m1-validation.zh-CN.md)开始。记忆、压缩与完整数据生命周期验收仍待实现。[可运行里程碑](docs/development/milestones.zh-CN.md)区分交付范围和验证证据。
+
+**M2：持续简报已实现。** 支持自然语言每日/每周约定、查看与修改、暂停/恢复/删除、独立后台执行及停机补跑。从[持续简报教程](docs/tutorials/recurring-briefing.zh-CN.md)、[任务参考](docs/reference/tasks.zh-CN.md)和 [M2 验证记录](docs/development/m2-validation.zh-CN.md)开始。
 
 ## 目标
 

@@ -2,9 +2,13 @@
 
 [简体中文](README.zh-CN.md) · [Project home](../README.md)
 
-Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemented and verified; later first-version capabilities remain the target.
+Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemented and verified; M2 recurring briefings implemented; later first-version capabilities remain the target.
 
 ## Start using the implemented increment
+
+- [Recurring briefing](tutorials/recurring-briefing.md): create, manage, and receive a daily/weekly briefing.
+- [Task reference](reference/tasks.md): agreements, scheduling, background execution, and recovery rules.
+- [M2 validation record](development/m2-validation.md): controlled checks and live scheduling/delivery evidence.
 
 - [Telegram research](tutorials/telegram-research.md): owner setup and the first product workflow.
 - [M1 reference](reference/telegram.md): controls, persistence, deployment, and bounds.
@@ -22,10 +26,12 @@ Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemente
 | [Requirements](design/requirements.md) | Identified requirements and acceptance criteria | Draft specification based on agreed behavior |
 | [Architecture](design/architecture.md) | Responsibilities, boundaries, and execution flows | Design draft; major choices accepted |
 | [Security and data](design/security-and-data.md) | Permissions, isolation, memory, context, and data lifecycle | Design draft; policy direction accepted |
-| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0 verified; M1 verified |
+| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0 verified; M1 verified; M2 verified |
 | [ADR-0001](decisions/0001-agent-stack.md) | Python, LangChain Agent, and DeepSeek official API | Accepted |
 | [ADR-0002](decisions/0002-local-deployment-and-tool-boundaries.md) | Local deployment and controlled tools | Accepted |
 | [ADR-0003](decisions/0003-persistence-and-state-separation.md) | PostgreSQL and separation of state categories | Accepted |
+
+| [ADR-0004](decisions/0004-recurring-task-execution.md) | Durable agreements, local scheduling, and independent execution | Accepted |
 
 “Accepted” records a design decision. It does not establish that its implementation works. The requirements document is the source of acceptance criteria; [M0 evidence](development/m0-validation.md) covers initial model/tool integration; [M1 evidence](development/m1-validation.md) separately tracks the product workflow.
 
@@ -35,12 +41,12 @@ Kestri uses [Diátaxis](https://diataxis.fr/) to distinguish learning tutorials,
 
 | Category | Reader need | Availability |
 | --- | --- | --- |
-| Tutorials | Learn by completing a guided experience | First agent run and Telegram research available |
+| Tutorials | Learn by completing a guided experience | First agent run, Telegram research, and recurring briefing available |
 | How-to guides | Complete a specific task | Offline development checks available |
-| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration and M1 Telegram reference available |
+| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration, M1 Telegram, and M2 task reference available |
 | Explanation | Understand concepts, mechanisms, and tradeoffs | Current design documents provide design-stage explanations |
 | Design | Review intended product behavior and system boundaries | Available above |
-| Development | Follow runnable delivery increments and verification progress | Milestones, M0 evidence, and M1 progress available |
+| Development | Follow runnable delivery increments and verification progress | Milestones, M0, M1, and M2 evidence available |
 | Decisions | Understand why a major choice was made | Available above |
 
 Do not present a proposal as reference documentation for an implemented feature. Tutorials and reference describe only verified implementation; future capabilities remain in the design.

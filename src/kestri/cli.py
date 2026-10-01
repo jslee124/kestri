@@ -15,7 +15,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(prog="kestri")
     subcommands = parser.add_subparsers(dest="command", required=True)
     subcommands.add_parser("smoke", help="Run the bounded two-turn DeepSeek integration check")
-    subcommands.add_parser("telegram", help="Run the M1 owner-only research bot")
+    subcommands.add_parser("telegram", help="Run the owner-only research and recurring-task bot")
     subcommands.add_parser("telegram-id", help="Inspect pending private user IDs without enrolling")
     arguments = parser.parse_args()
     if arguments.command != "smoke":
