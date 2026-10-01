@@ -2,11 +2,11 @@
 
 [English](m1-validation.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：M1 已通过本地和真实服务验证；远程 CI 待完成。本文区分实际观察证据与待完成工作。
+更新日期：2026-10-01。状态：M1 已在研究范围内验证，记录本地、真实服务、容器和远程 CI 证据。本文区分实际观察证据与待完成工作。
 
 ## 版本与环境
 
-工作分支：`codex/m1-telegram-research`，基于 `5517481`。提交后链接实现版本。实现/配置 SHA-256：`08a5a37b27b349c79e551314a3b6b15499ffb132ab824664908a8d0ef374924f`。将路径、NUL、文件内容、NUL 按顺序拼接：先是 `src/kestri` 下递归排序的 Python 与 SQL 文件，然后依次为 `pyproject.toml`、`uv.lock`、`Dockerfile`、`.dockerignore`、`compose.yaml`、`compose.dev.yaml`、`.env.example`、`.github/workflows/checks.yml`。指纹不含测试和文档。本地环境：macOS、Python 3.14.7、uv 0.12.3、OrbStack Docker 的 Linux arm64 容器。锁定核心版本：LangChain 1.4.3、LangGraph 1.2.12、langchain-deepseek 1.1.1、langgraph-checkpoint-postgres 3.1.2、psycopg 3.3.6、httpx 0.28.1。
+工作分支：`codex/m1-telegram-research`，基于 `5517481`。实现版本：[`1e1e082`](https://github.com/jslee124/kestri/commit/1e1e0820f7c4f7677e9c40dad2a88526a415570b)。实现/配置 SHA-256：`08a5a37b27b349c79e551314a3b6b15499ffb132ab824664908a8d0ef374924f`。将路径、NUL、文件内容、NUL 按顺序拼接：先是 `src/kestri` 下递归排序的 Python 与 SQL 文件，然后依次为 `pyproject.toml`、`uv.lock`、`Dockerfile`、`.dockerignore`、`compose.yaml`、`compose.dev.yaml`、`.env.example`、`.github/workflows/checks.yml`。指纹不含测试和文档。本地环境：macOS、Python 3.14.7、uv 0.12.3、OrbStack Docker 的 Linux arm64 容器。锁定核心版本：LangChain 1.4.3、LangGraph 1.2.12、langchain-deepseek 1.1.1、langgraph-checkpoint-postgres 3.1.2、psycopg 3.3.6、httpx 0.28.1。
 
 ## 受控检查
 
@@ -24,7 +24,7 @@
 
 真实 Telegram 研究请求提取了官方 agents 和 persistence 页面，为刻意不存在的页面保留失败提取，引用成功来源，并区分摘要和推论。原始消息、执行记录、用量元数据、checkpoint 与来源正文保存在私有数据库/工作区卷。来源链接起初出现 Telegram 标点问题，最终格式将每个 URL 独立成行。
 
-重建应用容器后，回复关联追问使用先前提交的 checkpoint 并识别失败页面。再次提取验证保存和发送结果包含三个完整 URL 独立行。运行中的研究通过 `/stop` 停止，状态为 `cancelled`，保留未知请求的预留。`/status`、`/usage`、`/help` 实际送达控制回执。[脱敏真实元数据](evidence/m1-live.json)记录四次研究执行，不包含主人/聊天 ID、凭据、原始推理或来源全文。本地部署观察到 18 次操作共 $0.1162 的估算，包含另一次入门测试；不是服务商账单。远程 CI 待完成。
+重建应用容器后，回复关联追问使用先前提交的 checkpoint 并识别失败页面。再次提取验证保存和发送结果包含三个完整 URL 独立行。运行中的研究通过 `/stop` 停止，状态为 `cancelled`，保留未知请求的预留。`/status`、`/usage`、`/help` 实际送达控制回执。[脱敏真实元数据](evidence/m1-live.json)记录四次研究执行，不包含主人/聊天 ID、凭据、原始推理或来源全文。本地部署观察到 18 次操作共 $0.1162 的估算，包含另一次入门测试；不是服务商账单。该实现版本的远程 push CI 已通过：[运行 36847566505](https://github.com/jslee124/kestri/actions/runs/36847566505)；PR CI 也已通过：[运行 36847671866](https://github.com/jslee124/kestri/actions/runs/36847671866)。两者使用 Linux/Python 3.14 和真实 PostgreSQL，不使用真实服务凭据。
 
 ## 容器检查
 
@@ -40,4 +40,4 @@ M1 重点为 AUTH-001、CHAT-001、CHAT-002、WEB-001、WEB-002、SEC-001、SEC-
 
 M1 没有持续任务、个人记忆、压缩、保留期执行、备份恢复、导出或重发核对。`/new` 清空活跃上下文，不删除保留数据。预算按配置估算和预留，不是服务商账单硬上限。取消不能撤销已经提交的外部工作。URL 检查控制传给 Tavily 的准入，不控制其远端重定向和网络行为。
 
-公开证据不得包含 API key、bot token、主人/聊天 ID、数据库密码、原始推理或无必要的私有内容。测试来源材料留在本地。发布后补充远程 CI 和实现版本链接，后续里程碑验收保持明确待完成。最初的综合研究运行早于最终格式和关闭修复；追问和再次提取观察了格式更新。最终受控测试覆盖关闭取消的传播。
+公开证据不得包含 API key、bot token、主人/聊天 ID、数据库密码、原始推理或无必要的私有内容。测试来源材料留在本地。后续里程碑验收保持明确待完成。代码已发布到 [draft PR 1](https://github.com/jslee124/kestri/pull/1)，本记录不宣称合并或发布版本。最初的综合研究运行早于最终格式和关闭修复；追问和再次提取观察了格式更新。最终受控测试覆盖关闭取消的传播。
