@@ -2,7 +2,7 @@
 
 [简体中文](requirements.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: draft specification based on agreed product behavior. **AC-01 and AC-02 are verified for M1; other full cases remain unverified.** See [M1 evidence](../development/m1-validation.md). [M0 evidence](../development/m0-validation.md) covers only initial model/tool foundations and part of AC-12.
+Updated: 2026-10-01. Status: draft specification based on agreed product behavior. **AC-01 through AC-07 are verified across M1/M2; AC-08 and AC-09 are verified across M1/M2/M3. AC-10 through AC-12 retain partial coverage until M4.** See [M1 evidence](../development/m1-validation.md), [M2 evidence](../development/m2-validation.md), and [M3 evidence](../development/m3-validation.md). [M0 evidence](../development/m0-validation.md) covers only initial model/tool foundations and part of AC-12.
 
 ## Interpretation
 
@@ -58,11 +58,13 @@ These cases define outcomes to demonstrate later. They do not prescribe a test f
 
 ## Specification work still open
 
-- Memory, compression, archive deletion, backup/restore interfaces, and deletion-marker retention.
-- Full-case acceptance beyond the M2 recurring-task increment.
+- Archive retention/deletion, backup/restore interfaces, and deletion-marker retention.
+- Full-case acceptance of AC-10 through AC-12 and the integrated M4 personal-use trial.
 
 M1 foreground controls, queue values, restart handling, reservations, credit estimates, and delivery uncertainty are specified in the [implemented reference](../reference/telegram.md). Evidence status is in the [M1 record](../development/m1-validation.md).
 
 Resolve these through focused design review before the affected behavior is called complete. Link later implementation and evidence to the IDs above; keep every acceptance case unverified until supported by actual results.
 
 M2 agreements, controls, concurrency, and catch-up are specified in the [task reference](../reference/tasks.md); acceptance scope is tracked in the [M2 record](../development/m2-validation.md).
+
+M3 explicit memory, original-history inspection, and compression are specified in the [memory/context reference](../reference/memory-and-context.md); see [M3 evidence](../development/m3-validation.md).

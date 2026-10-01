@@ -2,7 +2,7 @@
 
 [English](product.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：产品方向已确认；尚未实现。
+更新日期：2026-10-01。状态：产品方向已确认；M0 至 M3 已验证；完整第一版验收留到 M4。见[里程碑](../development/milestones.zh-CN.md)。
 
 ## 定位
 

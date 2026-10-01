@@ -2,7 +2,7 @@
 
 [简体中文](security-and-data.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: design draft; policy direction accepted. The full controls below remain first-version requirements. [M1 evidence](../development/m1-validation.md) records research boundaries and container checks; future memory, scheduling, retention, and backup controls below are not yet implemented. The [M1 reference](../reference/telegram.md) is authoritative for current behavior.
+Updated: 2026-10-01. Status: design draft; policy direction accepted. The full controls below remain first-version requirements. [M1 evidence](../development/m1-validation.md) records research boundaries and container checks; M2 implements recurring scheduling, and M3 implements explicit memory/context controls. Retention enforcement and backup/restore remain M4 work. Current behavior is specified in the [Telegram](../reference/telegram.md), [task](../reference/tasks.md), and [memory/context](../reference/memory-and-context.md) references.
 
 ## Objectives and trust boundaries
 
@@ -58,6 +58,8 @@ Each entry records content, source message, scope, creation/update time, and act
 Sensitive facts require explicit retention intent. Credentials belong in secret configuration, never personal memory. Memory cannot authorize file access, account actions, or recurring work.
 
 Forgetting removes an entry from active retrieval and suppresses automatic re-extraction from retained source messages. Cached context and summaries carrying that entry need invalidation or regeneration. Historical copies must not silently re-enter automatic context; explicit archive inspection is a separate operation. A future explicit request may establish a new memory. Deletion markers and restore handling must be designed before deletion is claimed to be effective.
+
+M3 implements tombstones, expiry filtering, and context-epoch invalidation: each successful memory change resets the foreground head and prevents automatic access to old replies/evidence. Explicit archive inspection remains available. This removes forgotten facts from active use; historical copies are not physically erased. Restore reconciliation is not implemented; see the [memory/context reference](../reference/memory-and-context.md).
 
 ## Conversation context
 

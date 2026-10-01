@@ -72,4 +72,4 @@ docker compose logs -f app
 
 本地前台进程用 Ctrl+C 停止，容器用 `docker compose stop app`。使用相同命令和卷重新启动。完成的上下文和结果保留；已接受的排队请求仍可执行；正在运行但中断的请求会被告知，不自动重新研究。无法确定是否发送成功的 Telegram 消息会隔离，不盲目重发。
 
-持续任务见 [M2 简报教程](recurring-briefing.zh-CN.md)。尚无个人记忆、自动上下文压缩、清理、备份恢复、shell 或桌面控制。达到上下文上限会提示失败，可用 `/new` 开始新上下文。其他边界见[安全设计](../design/security-and-data.zh-CN.md)和[参考](../reference/telegram.zh-CN.md)。
+持续任务见 [M2 简报教程](recurring-briefing.zh-CN.md)。M3 已提供个人记忆与自动压缩，从[记忆教程](personal-memory.zh-CN.md)开始。清理、备份恢复、shell 与桌面控制尚未实现。无法安全压缩或上下文超限时停止并提示；`/new` 开始新上下文并保留记忆。其他边界见[安全设计](../design/security-and-data.zh-CN.md)和[参考](../reference/telegram.zh-CN.md)。

@@ -1,4 +1,4 @@
-# M1 Telegram 研究参考
+# Telegram 研究参考
 
 [English](telegram.md) · [文档](../README.zh-CN.md)
 
@@ -39,7 +39,7 @@
 
 ## 命令与关联
 
-主人的私聊使用 Telegram 原生可折叠命令菜单，列出全部支持的斜杠命令：`/start`、`/status`、`/runs`、`/usage`、`/stop`、`/new`、`/help`、`/tasks` 和 `/task`。默认使用英文说明，中文客户端使用中文翻译。启动时仅为配置的主人注册菜单，每次回复移除旧聊天键盘。选择命令与输入命令共用鉴权、归档和处理流程，状态、列表与帮助不调用模型；`/task` 的指令解释会调用模型。菜单外观由 Telegram 客户端决定。`/new` 保留历史，存在排队或运行前台工作时拒绝切换。
+主人的私聊使用 Telegram 原生可折叠命令菜单，列出全部支持的斜杠命令：`/start`、`/status`、`/runs`、`/usage`、`/stop`、`/new`、`/help`、`/tasks`、`/task`、`/memory`、`/remember`、`/correct`、`/forget` 和 `/history`。默认使用英文说明，中文客户端使用中文翻译。启动时仅为配置的主人注册菜单，每次回复移除旧聊天键盘。选择命令与输入命令共用鉴权、归档和处理流程，状态、列表与帮助不调用模型；`/task` 的指令解释会调用模型。菜单外观由 Telegram 客户端决定。`/new` 保留历史，存在排队或运行前台工作时拒绝切换。
 
 | 接口 | 行为 |
 | --- | --- |
@@ -50,6 +50,7 @@
 | `/status`、`/runs` | 最近五次执行、状态、证据/用量数量、发送问题与安全错误类型 |
 | `/usage` | UTC 月已记录估算及未完成/未知预留，不是服务商账单 |
 | `/new` | 无排队或运行工作时清空提交上下文，保留记录 |
+| `/memory`、`/remember`、`/correct`、`/forget`、`/history` | 确定性记忆控制与只读归档，见 [M3 参考](memory-and-context.zh-CN.md) |
 | 其他斜杠命令 | 不支持提示，不调用模型 |
 
 单个研究 worker 运行时，轮询仍继续。个人持久化或模型工作前，必须匹配已配置的主人、对应私聊及非机器人发送者。未授权消息被忽略；服务游标可越过它们，不归档其内容。一个数据库绑定一对机器人和主人，修改这对身份会被拒绝；M1 没有身份迁移命令。
@@ -68,7 +69,7 @@
 
 ## 持久执行与发送
 
-执行从 `queued` 到 `running`，再到 `completed`、`failed`、`cancelled` 或 `interrupted`。只有完成执行推进提交对话指针。每次执行使用新 graph thread，由上次提交的 checkpoint 初始化；原始入站、出站消息独立归档。尚未实现自动裁剪或压缩。
+执行从 `queued` 到 `running`，再到 `completed`、`failed`、`cancelled` 或 `interrupted`。只有完成执行推进提交对话指针。每次执行使用新 graph thread，由上次提交的 checkpoint 初始化；原始入站、出站消息独立归档。M3 加入预算内自动压缩与记忆代次检查，只有当前代次已完成的前台研究推进指针。见[记忆/上下文参考](memory-and-context.zh-CN.md)。
 
 接受消息与更新去重在事务中完成，持久处理后推进游标。结果和出站分块先保存后发送。重启保留排队请求和结果，将未完成执行标为中断，将发送中的消息改为 `uncertain`。中断研究不自动重跑。
 
@@ -86,6 +87,6 @@
 
 基础 Compose 以非 root 运行应用，根文件系统只读、命名工作区卷可写，`/tmp` 有界、移除 capabilities、禁止新增权限，限制 CPU/内存/PID，不挂载 Docker socket 或宿主机 home。PostgreSQL 使用独立命名卷与内部网络，不发布端口。`compose.dev.yaml` 特意发布回环端口用于本地开发。容器不单独隔离受控工具与应用权限。
 
-原始记录位于 `kestri` schema，LangGraph 管理独立 checkpoint 表。工作区文本按生成的执行/证据 UUID 组织，使用不跟随链接的相对文件操作。清理、保留期执行、导出、备份、恢复和记忆后续实现。设计保留值是提案，不会自动删除。`docker compose stop` 保留卷；`down -v` 删除持久数据，不作为日常停止命令。
+原始记录位于 `kestri` schema，LangGraph 管理独立 checkpoint 表。工作区文本按生成的执行/证据 UUID 组织，使用不跟随链接的相对文件操作。清理、归档保留期执行、导出、备份与恢复后续实现。M3 已实现个人记忆过期和退出活跃使用。设计保留值是提案，不会自动删除。`docker compose stop` 保留卷；`down -v` 删除持久数据，不作为日常停止命令。
 
 M2 新增 `/tasks`、`/task` 并保留全部原有命令，均在原生可展开菜单中显示；详细任务控制与调度规则见[任务参考](tasks.zh-CN.md)。

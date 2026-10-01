@@ -5,6 +5,7 @@ import json
 from decimal import ROUND_CEILING, Decimal
 from typing import Any
 
+from kestri.errors import PolicyDenied
 from kestri.settings import ResearchSettings
 from kestri.store import Store
 
@@ -22,6 +23,17 @@ class RunControl:
     async def ensure_active(self) -> None:
         if self.cancel.is_set() or await self.store.cancelled(self.run_id):
             raise asyncio.CancelledError
+        row = await self.store.one(
+            "SELECT r.kind,r.memory_epoch,c.memory_epoch AS current_epoch FROM kestri.runs r "
+            "JOIN kestri.conversations c ON c.chat_id=r.chat_id WHERE r.id=%s",
+            (self.run_id,),
+        )
+        if (
+            row
+            and row["kind"] in {"foreground", "background"}
+            and row["memory_epoch"] != row["current_epoch"]
+        ):
+            raise PolicyDenied("MemoryContextChanged")
 
 
 class Budget:
