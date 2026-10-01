@@ -2,7 +2,7 @@
 
 [English](run-checks.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。范围：M0 与 M1 开发检查。
+更新日期：2026-10-01。范围：M0、M1 与 M2 开发检查。
 
 ## 检查一次变更
 
@@ -52,7 +52,7 @@ docker rm kestri-m1-test-db
 uv build
 ```
 
-这会在 `dist/` 生成源码分发包和 wheel。wheel 必须包含 `kestri/sql/001_initial.sql`。不会发布包，也不验证部署行为。
+这会在 `dist/` 生成源码分发包和 wheel。wheel 必须包含 `kestri/sql/001_initial.sql` 与 `kestri/sql/002_tasks.sql`。不会发布包，也不验证部署行为。
 
 ## 单独检查真实服务
 

@@ -49,9 +49,11 @@ class TelegramClient:
             ("status", "View execution status", "查看执行状态"),
             ("runs", "View recent runs", "查看最近执行"),
             ("usage", "View estimated usage", "查看估算用量"),
-            ("stop", "Stop the current task", "停止当前任务"),
+            ("stop", "Stop the current run", "停止当前执行"),
             ("new", "Start fresh context; keep history", "新建对话上下文，保留历史"),
             ("help", "Show help", "查看使用帮助"),
+            ("tasks", "List recurring tasks", "查看持续任务"),
+            ("task", "Manage a recurring task", "管理持续任务"),
         ]
         for language, description_index in (("", 1), ("zh", 2)):
             await self.call(
@@ -129,7 +131,7 @@ def command_for(text: str) -> str | None:
         name = text.split(maxsplit=1)[0][1:].split("@", 1)[0].lower()
         return (
             name
-            if name in {"start", "help", "stop", "status", "runs", "usage", "new"}
+            if name in {"start", "help", "stop", "status", "runs", "usage", "new", "tasks", "task"}
             else "unknown"
         )
     return None

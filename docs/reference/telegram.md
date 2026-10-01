@@ -39,7 +39,7 @@ The shared variable names override both M0 and M1. M0's smaller defaults remain 
 
 ## Commands and associations
 
-The owner’s private chat uses Telegram’s native collapsible command menu. It lists every supported slash command: `/start`, `/status`, `/runs`, `/usage`, `/stop`, `/new`, and `/help`, with English descriptions and a Chinese translation for Chinese-language clients. Startup registers the menu only for the configured owner; each response removes the old reply keyboard. Selecting a command uses the same authentication, archiving, and handling as typing it. Commands do not call the model. Menu appearance depends on the Telegram client. `/new` preserves history and is refused while work is queued or running.
+The owner’s private chat uses Telegram’s native collapsible command menu. It lists every supported slash command: `/start`, `/status`, `/runs`, `/usage`, `/stop`, `/new`, `/help`, `/tasks`, and `/task`, with English descriptions and a Chinese translation for Chinese-language clients. Startup registers the menu only for the configured owner; each response removes the old reply keyboard. Selecting a command uses the same authentication, archiving, and handling as typing it. Status/list/help commands do not call the model; `/task` interpretation does. Menu appearance depends on the Telegram client. `/new` preserves history and is refused while foreground work is queued or running.
 
 | Interface | Behavior |
 | --- | --- |
@@ -86,4 +86,6 @@ Default model rates are conservative peak, uncached estimates checked against [D
 
 Base Compose runs a non-root application with read-only root, writable named workspace volume, bounded `/tmp`, dropped capabilities, no added privileges, CPU/memory/PID limits, and no Docker socket or host-home mounts. PostgreSQL uses a separate named volume and an internal network with no published port. `compose.dev.yaml` intentionally publishes a loopback port for local development. Containers do not sandbox controlled tools independently of application privileges.
 
-Canonical records live in the `kestri` schema; LangGraph owns separate checkpoint tables. Workspace text is organized by generated run/evidence UUIDs with no-follow relative file operations. Cleanup, retention enforcement, export, backup, restore, memory, and scheduling are deferred. Design retention values are proposals, not automatic deletion. `docker compose stop` preserves volumes; `down -v` deletes durable data and should not be used as a routine stop command.
+Canonical records live in the `kestri` schema; LangGraph owns separate checkpoint tables. Workspace text is organized by generated run/evidence UUIDs with no-follow relative file operations. Cleanup, retention enforcement, export, backup, restore, and memory are deferred. Design retention values are proposals, not automatic deletion. `docker compose stop` preserves volumes; `down -v` deletes durable data and should not be used as a routine stop command.
+
+M2 adds `/tasks` and `/task` alongside every existing command in the native collapsible menu; see the [task reference](tasks.md) for task control and scheduling rules.

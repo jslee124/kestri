@@ -10,7 +10,9 @@ The working name comes from **kestrel**, with the possibility of a character or 
 
 **M0 verified.** A Python 3.14 CLI runs a bounded, two-turn LangChain agent against DeepSeek with a controlled arithmetic tool. Both non-thinking and thinking modes have live evidence, alongside offline failure and limit checks. Start with the [first-run tutorial](docs/tutorials/first-agent-run.md) and [validation record](docs/development/m0-validation.md).
 
-**M1: Telegram research is implemented and verified.** Owner-only private chat, controlled Tavily tools, PostgreSQL checkpoints/archives, cancellation, usage reservations, and Docker Compose are available. Start with the [Telegram tutorial](docs/tutorials/telegram-research.md), [M1 reference](docs/reference/telegram.md), and [M1 evidence](docs/development/m1-validation.md). Recurring tasks, memory, compression, and full data-lifecycle acceptance remain planned. The [runnable milestones](docs/development/milestones.md) distinguish delivery scope and evidence.
+**M1: Telegram research is implemented and verified.** Owner-only private chat, controlled Tavily tools, PostgreSQL checkpoints/archives, cancellation, usage reservations, and Docker Compose are available. Start with the [Telegram tutorial](docs/tutorials/telegram-research.md), [M1 reference](docs/reference/telegram.md), and [M1 evidence](docs/development/m1-validation.md). Memory, compression, and full data-lifecycle acceptance remain planned. The [runnable milestones](docs/development/milestones.md) distinguish delivery scope and evidence.
+
+**M2: recurring briefings are implemented.** Natural-language daily/weekly agreements, listing and changes, pause/resume/delete, independent background runs, and catch-up after downtime are available. Start with the [briefing tutorial](docs/tutorials/recurring-briefing.md), [task reference](docs/reference/tasks.md), and [M2 validation record](docs/development/m2-validation.md).
 
 ## Goals
 

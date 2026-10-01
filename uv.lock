@@ -342,6 +342,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "socksio" },
+    { name = "tzdata" },
 ]
 
 [package.dev-dependencies]
@@ -366,6 +367,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.0,<3" },
     { name = "pydantic-settings", specifier = ">=2.0,<3" },
     { name = "socksio", specifier = ">=1,<2" },
+    { name = "tzdata", specifier = ">=2025,<2028" },
 ]
 
 [package.metadata.requires-dev]

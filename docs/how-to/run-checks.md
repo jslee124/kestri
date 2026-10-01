@@ -2,7 +2,7 @@
 
 [简体中文](run-checks.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Scope: M0 and M1 development checks.
+Updated: 2026-10-01. Scope: M0, M1, and M2 development checks.
 
 ## Check a change
 
@@ -52,7 +52,7 @@ Do not remove your Compose volumes as part of this workflow.
 uv build
 ```
 
-This produces a source distribution and wheel in `dist/`. The wheel must include `kestri/sql/001_initial.sql`. It does not publish a package or verify deployment behavior.
+This produces a source distribution and wheel in `dist/`. The wheel must include `kestri/sql/001_initial.sql` and `kestri/sql/002_tasks.sql`. It does not publish a package or verify deployment behavior.
 
 ## Check live services separately
 

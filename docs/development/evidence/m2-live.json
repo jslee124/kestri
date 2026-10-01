@@ -1,0 +1,236 @@
+{
+  "task": {
+    "id": "fc34a63b-e5fe-44d3-a6f9-c13f97029c53",
+    "title": "M2 验证简报",
+    "timezone": "Asia/Shanghai",
+    "local_time": "20:43",
+    "weekdays": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "catch_up_seconds": 21600,
+    "status": "deleted",
+    "revision": 5
+  },
+  "runs": [
+    {
+      "id": "e14acb86-15ab-453e-92e7-68e02cd69b26",
+      "kind": "task_control",
+      "status": "completed",
+      "task_revision": null,
+      "scheduled_for": null,
+      "started_at": "2026-10-01T12:31:20.284893+00:00",
+      "finished_at": "2026-10-01T12:31:21.769451+00:00",
+      "attempt": 1,
+      "error_type": null,
+      "usage_micro_usd": 508,
+      "operations": 1,
+      "evidence_count": 0,
+      "deliveries": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "be62f1c3-ae73-4b70-b0c7-d472ffcc42fe",
+      "kind": "task_control",
+      "status": "completed",
+      "task_revision": null,
+      "scheduled_for": null,
+      "started_at": "2026-10-01T12:33:57.906864+00:00",
+      "finished_at": "2026-10-01T12:33:59.002752+00:00",
+      "attempt": 1,
+      "error_type": null,
+      "usage_micro_usd": 334,
+      "operations": 1,
+      "evidence_count": 0,
+      "deliveries": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "ad1d0b86-461f-4a7d-91f5-1f4f230b6174",
+      "kind": "task_control",
+      "status": "completed",
+      "task_revision": null,
+      "scheduled_for": null,
+      "started_at": "2026-10-01T12:39:11.49749+00:00",
+      "finished_at": "2026-10-01T12:39:12.396296+00:00",
+      "attempt": 1,
+      "error_type": null,
+      "usage_micro_usd": 429,
+      "operations": 1,
+      "evidence_count": 0,
+      "deliveries": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "eeef0d33-af34-43a8-a871-82382b70b26a",
+      "kind": "task_control",
+      "status": "completed",
+      "task_revision": null,
+      "scheduled_for": null,
+      "started_at": "2026-10-01T12:39:41.574654+00:00",
+      "finished_at": "2026-10-01T12:39:42.243735+00:00",
+      "attempt": 1,
+      "error_type": null,
+      "usage_micro_usd": 335,
+      "operations": 1,
+      "evidence_count": 0,
+      "deliveries": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "bb8f1ce7-7121-4981-8a52-922ccb4ce388",
+      "kind": "background",
+      "status": "completed",
+      "task_revision": 4,
+      "scheduled_for": "2026-10-01T12:43:00+00:00",
+      "started_at": "2026-10-01T12:43:33.308956+00:00",
+      "finished_at": "2026-10-01T12:44:02.569641+00:00",
+      "attempt": 1,
+      "error_type": null,
+      "usage_micro_usd": 65916,
+      "operations": 13,
+      "evidence_count": 20,
+      "deliveries": [
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "9648323a-2fd5-4404-9174-d7d81c43186d",
+      "kind": "task_control",
+      "status": "completed",
+      "task_revision": null,
+      "scheduled_for": null,
+      "started_at": "2026-10-01T12:44:31.179628+00:00",
+      "finished_at": "2026-10-01T12:44:32.216899+00:00",
+      "attempt": 1,
+      "error_type": null,
+      "usage_micro_usd": 320,
+      "operations": 1,
+      "evidence_count": 0,
+      "deliveries": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    },
+    {
+      "id": "7893fc7d-9c38-4acd-8001-85e8938b3952",
+      "kind": "foreground",
+      "status": "completed",
+      "task_revision": null,
+      "scheduled_for": null,
+      "started_at": "2026-10-01T12:47:06.247163+00:00",
+      "finished_at": "2026-10-01T12:47:07.949939+00:00",
+      "attempt": 1,
+      "error_type": null,
+      "usage_micro_usd": 4317,
+      "operations": 1,
+      "evidence_count": 0,
+      "deliveries": [
+        {
+          "status": "sent",
+          "attempts": 1
+        },
+        {
+          "status": "sent",
+          "attempts": 1
+        }
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "action": "create",
+      "run_id": "e14acb86-15ab-453e-92e7-68e02cd69b26"
+    },
+    {
+      "action": "pause",
+      "run_id": "be62f1c3-ae73-4b70-b0c7-d472ffcc42fe"
+    },
+    {
+      "action": "update",
+      "run_id": "ad1d0b86-461f-4a7d-91f5-1f4f230b6174"
+    },
+    {
+      "action": "resume",
+      "run_id": "eeef0d33-af34-43a8-a871-82382b70b26a"
+    },
+    {
+      "action": "delete",
+      "run_id": "9648323a-2fd5-4404-9174-d7d81c43186d"
+    }
+  ],
+  "remaining_nondeleted_tasks": 0,
+  "remaining_active_background_runs": 0,
+  "observed_date": "2026-10-01",
+  "provider": "DeepSeek official API",
+  "model": "deepseek-flash",
+  "thinking": "disabled",
+  "retrieval": "Tavily",
+  "application_stopped_at_utc": "2026-10-01T12:40:25Z",
+  "restart_requested_at_utc": "2026-10-01T12:43:21Z",
+  "tested_image": "sha256:3d3b0804af74a3edaebdfff332febc807271fcb6ed36a156fed70a48cd874202",
+  "native_menu_commands": [
+    "start",
+    "status",
+    "runs",
+    "usage",
+    "stop",
+    "new",
+    "help",
+    "tasks",
+    "task"
+  ],
+  "notes": [
+    "One owner-authorized disposable recurring task; exactly one background run; task deleted after delivery.",
+    "Foreground evidence follow-up references the completed background briefing; no new search/extraction usage.",
+    "Observed cost is a local estimate, not a provider invoice.",
+    "No credentials, owner/chat IDs, reasoning, full messages, or source text are included."
+  ],
+  "final_deployed_image": "sha256:f6953e2effe9af754fff3db385df506ca307f30e383b92f97c127a2768b27639"
+}
