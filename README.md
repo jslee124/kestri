@@ -10,7 +10,7 @@ The working name comes from **kestrel**, with the possibility of a character or 
 
 **M0 verified.** A Python 3.14 CLI runs a bounded, two-turn LangChain agent against DeepSeek with a controlled arithmetic tool. Both non-thinking and thinking modes have live evidence, alongside offline failure and limit checks. Start with the [first-run tutorial](docs/tutorials/first-agent-run.md) and [validation record](docs/development/m0-validation.md).
 
-The next target is **M1: Telegram research**. Telegram, web retrieval, durable storage, recurring tasks, memory, and Docker deployment remain planned. The [runnable milestones](docs/development/milestones.md) distinguish delivery scope and evidence.
+**M1: Telegram research is implemented and verified.** Owner-only private chat, controlled Tavily tools, PostgreSQL checkpoints/archives, cancellation, usage reservations, and Docker Compose are available. Start with the [Telegram tutorial](docs/tutorials/telegram-research.md), [M1 reference](docs/reference/telegram.md), and [M1 evidence](docs/development/m1-validation.md). Recurring tasks, memory, compression, and full data-lifecycle acceptance remain planned. The [runnable milestones](docs/development/milestones.md) distinguish delivery scope and evidence.
 
 ## Goals
 

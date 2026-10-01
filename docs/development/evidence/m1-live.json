@@ -1,0 +1,513 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-01T10:04:57.621209+00:00",
+  "provider": "DeepSeek official API",
+  "model": "deepseek-flash",
+  "thinking_mode": "disabled",
+  "web_provider": "Tavily",
+  "telegram_live": true,
+  "runtime": "Docker Compose / Linux arm64 / CPython 3.14.7",
+  "owner_verified_via_exact_ui_message": true,
+  "container_recreated_before_reply_followup": true,
+  "url_dns_mode": "cloudflare",
+  "runs": [
+    {
+      "request": "请搜索并提取 LangChain 官方文档，简要解释 LangChain Agent 与 LangGraph checkpoint 的关系。引用实际读取的两个页面；另尝试提取 https://docs.langchain.com/kestri-m1-nonexistent-page ，明确标注它的获取结果，不要把未读取内容当作事实。",
+      "status": "completed",
+      "error_type": null,
+      "started_at": "2026-10-01T09:53:42.740098+00:00",
+      "finished_at": "2026-10-01T09:54:05.906393+00:00",
+      "reply_associated": false,
+      "prior_checkpoint_loaded": false,
+      "sources": [
+        {
+          "url": "https://reference.langchain.com/python/langgraph/checkpoints",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://reference.langchain.com/python/langgraph.checkpoint",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/python/langgraph/checkpointers",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://medium.com/@vinodkrane/mastering-persistence-in-langgraph-checkpoints-threads-and-beyond-21e412aaed60",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://reference.langchain.com/python/langgraph/checkpoints",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/python/langchain/agents",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://reference.langchain.com/python/langgraph.checkpoint",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/python/langgraph/checkpointers",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/python/langchain/agents",
+          "kind": "page_extract",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+          "kind": "page_extract",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/kestri-m1-nonexistent-page",
+          "kind": "page_extract",
+          "status": "failed",
+          "retained_truncated": false
+        }
+      ],
+      "usage": [
+        {
+          "kind": "model",
+          "state": "recorded",
+          "estimated_micro_usd": 339,
+          "metadata": {
+            "tokens": [
+              {
+                "input_tokens": 752,
+                "total_tokens": 846,
+                "output_tokens": 94,
+                "input_token_details": {
+                  "cache_read": 0
+                },
+                "output_token_details": {}
+              }
+            ]
+          }
+        },
+        {
+          "kind": "search",
+          "state": "recorded",
+          "estimated_micro_usd": 8000,
+          "metadata": {
+            "credits": 1
+          }
+        },
+        {
+          "kind": "search",
+          "state": "recorded",
+          "estimated_micro_usd": 8000,
+          "metadata": {
+            "credits": 1
+          }
+        },
+        {
+          "kind": "model",
+          "state": "recorded",
+          "estimated_micro_usd": 1442,
+          "metadata": {
+            "tokens": [
+              {
+                "input_tokens": 4422,
+                "total_tokens": 4518,
+                "output_tokens": 96,
+                "input_token_details": {
+                  "cache_read": 768
+                },
+                "output_token_details": {}
+              }
+            ]
+          }
+        },
+        {
+          "kind": "extract",
+          "state": "recorded",
+          "estimated_micro_usd": 8000,
+          "metadata": {
+            "credits": 0
+          }
+        },
+        {
+          "kind": "model",
+          "state": "recorded",
+          "estimated_micro_usd": 2646,
+          "metadata": {
+            "tokens": [
+              {
+                "input_tokens": 6122,
+                "total_tokens": 6796,
+                "output_tokens": 674,
+                "input_token_details": {
+                  "cache_read": 4480
+                },
+                "output_token_details": {}
+              }
+            ]
+          }
+        }
+      ],
+      "delivery_status": [
+        "sent",
+        "sent"
+      ],
+      "failed_page_disclosed": true,
+      "complete_source_lines": []
+    },
+    {
+      "request": "我们刚才哪个页面未能读取？请基于已保存的证据复核，并用三句话说明 checkpoint 与原始对话归档为什么应分开；区分来源事实与工程推论，来源 URL 单独一行。",
+      "status": "completed",
+      "error_type": null,
+      "started_at": "2026-10-01T09:59:04.897956+00:00",
+      "finished_at": "2026-10-01T09:59:07.47731+00:00",
+      "reply_associated": true,
+      "prior_checkpoint_loaded": true,
+      "sources": [],
+      "usage": [
+        {
+          "kind": "model",
+          "state": "recorded",
+          "estimated_micro_usd": 2979,
+          "metadata": {
+            "tokens": [
+              {
+                "input_tokens": 8561,
+                "total_tokens": 8903,
+                "output_tokens": 342,
+                "input_token_details": {
+                  "cache_read": 0
+                },
+                "output_token_details": {}
+              }
+            ]
+          }
+        }
+      ],
+      "delivery_status": [
+        "sent",
+        "sent"
+      ],
+      "failed_page_disclosed": true,
+      "complete_source_lines": []
+    },
+    {
+      "request": "请重新提取这三个 URL，简短列出成功、失败和截断情况，来源链接各自单独一行： https://docs.langchain.com/oss/python/langchain/agents https://docs.langchain.com/oss/python/langgraph/persistence https://docs.langchain.com/kestri-m1-nonexistent-page",
+      "status": "completed",
+      "error_type": null,
+      "started_at": "2026-10-01T10:00:20.79179+00:00",
+      "finished_at": "2026-10-01T10:00:28.993631+00:00",
+      "reply_associated": false,
+      "prior_checkpoint_loaded": true,
+      "sources": [
+        {
+          "url": "https://docs.langchain.com/oss/python/langchain/agents",
+          "kind": "page_extract",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+          "kind": "page_extract",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/kestri-m1-nonexistent-page",
+          "kind": "page_extract",
+          "status": "failed",
+          "retained_truncated": false
+        }
+      ],
+      "usage": [
+        {
+          "kind": "model",
+          "state": "recorded",
+          "estimated_micro_usd": 2795,
+          "metadata": {
+            "tokens": [
+              {
+                "input_tokens": 8970,
+                "total_tokens": 9056,
+                "output_tokens": 86,
+                "input_token_details": {
+                  "cache_read": 128
+                },
+                "output_token_details": {}
+              }
+            ]
+          }
+        },
+        {
+          "kind": "extract",
+          "state": "recorded",
+          "estimated_micro_usd": 8000,
+          "metadata": {
+            "credits": 1
+          }
+        },
+        {
+          "kind": "model",
+          "state": "recorded",
+          "estimated_micro_usd": 3572,
+          "metadata": {
+            "tokens": [
+              {
+                "input_tokens": 10654,
+                "total_tokens": 10967,
+                "output_tokens": 313,
+                "input_token_details": {
+                  "cache_read": 8960
+                },
+                "output_token_details": {}
+              }
+            ]
+          }
+        }
+      ],
+      "delivery_status": [
+        "sent",
+        "sent"
+      ],
+      "failed_page_disclosed": true,
+      "complete_source_lines": [
+        "https://docs.langchain.com/oss/python/langchain/agents",
+        "https://docs.langchain.com/oss/python/langgraph/persistence",
+        "https://docs.langchain.com/kestri-m1-nonexistent-page"
+      ]
+    },
+    {
+      "request": "请搜索官方资料，研究 LangChain、LangGraph 和 DeepSeek 的工具调用设计，并逐一提取三个来源作比较。",
+      "status": "cancelled",
+      "error_type": "Cancelled",
+      "started_at": "2026-10-01T10:03:09.624187+00:00",
+      "finished_at": "2026-10-01T10:03:21.872583+00:00",
+      "reply_associated": false,
+      "prior_checkpoint_loaded": true,
+      "sources": [
+        {
+          "url": "https://www.langchain.com/blog/tool-calling-with-langchain",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://github.com/langchain-ai/langgraph/blob/main/libs/prebuilt/langgraph/prebuilt/tool_node.py",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://floatboat.ai/blog/deepseek-agent-function-calling",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://reference.langchain.com/python/langgraph.prebuilt/tool_node/ToolNode",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://api-docs.deepseek.com",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://medium.com/@adarishanmukh15501/tools-in-langgraph-934db04694af",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://medium.com/@anubhavm48/practical-introduction-to-llm-tools-in-lang-chain-bb6b8b42d8b6",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://api-docs.deepseek.com/api/create-chat-completion",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://reference.langchain.com/python/langgraph/agents",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://community.latenode.com/t/adding-bind-tools-method-to-custom-langchain-llm-implementation/34501",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/tool_calls",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://braindrip.blog/courses/langgraph-agents/02-tools-and-models/tool-node",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://docs.langchain.com/oss/javascript/langchain/models",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://reference.langchain.com/python/langchain-anthropic/chat_models/ChatAnthropic/bind_tools",
+          "kind": "search_snippet",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://www.langchain.com/blog/tool-calling-with-langchain",
+          "kind": "page_extract",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://github.com/langchain-ai/langgraph/blob/main/libs/prebuilt/langgraph/prebuilt/tool_node.py",
+          "kind": "page_extract",
+          "status": "retrieved",
+          "retained_truncated": false
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/tool_calls",
+          "kind": "page_extract",
+          "status": "retrieved",
+          "retained_truncated": false
+        }
+      ],
+      "usage": [
+        {
+          "kind": "model",
+          "state": "recorded",
+          "estimated_micro_usd": 3446,
+          "metadata": {
+            "tokens": [
+              {
+                "input_tokens": 11000,
+                "total_tokens": 11121,
+                "output_tokens": 121,
+                "input_token_details": {
+                  "cache_read": 128
+                },
+                "output_token_details": {}
+              }
+            ]
+          }
+        },
+        {
+          "kind": "search",
+          "state": "recorded",
+          "estimated_micro_usd": 8000,
+          "metadata": {
+            "credits": 1
+          }
+        },
+        {
+          "kind": "search",
+          "state": "recorded",
+          "estimated_micro_usd": 8000,
+          "metadata": {
+            "credits": 1
+          }
+        },
+        {
+          "kind": "search",
+          "state": "recorded",
+          "estimated_micro_usd": 8000,
+          "metadata": {
+            "credits": 1
+          }
+        },
+        {
+          "kind": "model",
+          "state": "recorded",
+          "estimated_micro_usd": 5087,
+          "metadata": {
+            "tokens": [
+              {
+                "input_tokens": 16538,
+                "total_tokens": 16642,
+                "output_tokens": 104,
+                "input_token_details": {
+                  "cache_read": 11008
+                },
+                "output_token_details": {}
+              }
+            ]
+          }
+        },
+        {
+          "kind": "extract",
+          "state": "recorded",
+          "estimated_micro_usd": 8000,
+          "metadata": {
+            "credits": 0
+          }
+        },
+        {
+          "kind": "model",
+          "state": "unknown",
+          "estimated_micro_usd": 29566,
+          "metadata": {}
+        }
+      ],
+      "delivery_status": [
+        "sent",
+        "sent",
+        "sent"
+      ],
+      "failed_page_disclosed": false,
+      "complete_source_lines": []
+    }
+  ]
+}

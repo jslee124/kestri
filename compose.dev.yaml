@@ -1,0 +1,5 @@
+# Development override only: local Python connects to this loopback database port.
+services:
+  postgres:
+    ports:
+      - 127.0.0.1:55433:5432

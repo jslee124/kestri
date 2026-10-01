@@ -2,7 +2,7 @@
 
 [English](milestones.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：交付顺序已确认；M0 已验证；M1 尚未开始。
+更新日期：2026-10-01。状态：交付顺序已确认；M0 已验证；M1 已在研究范围内验证。
 
 ## 用途与当前阶段
 
@@ -10,12 +10,12 @@
 
 [产品](../design/product.zh-CN.md)定义范围，[需求](../design/requirements.zh-CN.md)定义验收，[架构](../design/architecture.zh-CN.md)与[安全和数据](../design/security-and-data.zh-CN.md)定义预期机制和默认值。本文组织交付顺序，不替代这些来源。
 
-**当前下一目标：M1。** M0 已以开发者 CLI 实现且验证，见[验证记录](m0-validation.zh-CN.md)。M1 是首个完整 Telegram 产品流程。后续里程碑基于前面的成果，并保留已验收行为。
+**当前下一目标：M2。** M0 已作为开发者 CLI 验证，M1 已作为首个 Telegram 研究流程验证，见 [M0 证据](m0-validation.zh-CN.md)和 [M1 证据](m1-validation.zh-CN.md)。M2 加入持续简报与任务控制。后续里程碑基于前面的成果，并保留已验收行为。
 
 | 里程碑 | 可运行成果 | 状态 | 证据 |
 | --- | --- | --- | --- |
 | M0 | 本地 agent 与真实 DeepSeek 模型和工具交互 | 已验证 | [M0 记录](m0-validation.zh-CN.md) |
-| M1 | Telegram 中带来源、支持追问的研究 | 尚未开始 | 无 |
+| M1 | Telegram 中带来源、支持追问的研究 | 已验证 | [M1 记录](m1-validation.zh-CN.md) |
 | M2 | 持续简报与任务管理 | 尚未开始 | 无 |
 | M3 | 个人记忆与对话上下文管理 | 尚未开始 | 无 |
 | M4 | 可部署、通过个人使用验收的第一版 | 尚未开始 | 无 |

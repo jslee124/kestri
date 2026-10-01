@@ -2,7 +2,7 @@
 
 [简体中文](architecture.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: design draft; major technology and boundary decisions accepted. The full architecture below remains planned; the [M0 CLI](../development/m0-validation.md) implements only model/tool integration with ephemeral state.
+Updated: 2026-10-01. Status: design draft; major technology and boundary decisions accepted. M1 implements foreground research, controlled information tools, canonical records, checkpoints, delivery, and Compose. Memory, scheduling, and compression below remain planned. Exact implemented behavior is in the [M1 reference](../reference/telegram.md) and [validation record](../development/m1-validation.md).
 
 ## System boundary
 
@@ -41,7 +41,7 @@ The diagram shows responsibilities, not separate processes or a permission grant
 | Persistence | Checkpoints, canonical message archive, memory, tasks, runs, delivery state, and evidence metadata |
 | Workspace service | Task-scoped evidence and result files; no arbitrary host path access |
 
-These are logical boundaries. The initial application need not become a collection of microservices. The M0 package uses `src/kestri`; the scheduler library and database schema remain open.
+These are logical boundaries. The initial application need not become a collection of microservices. The package uses `src/kestri`. M1 separates `telegram.py`, `application.py`, `research.py`, `web.py`, `url_policy.py`, `workspace.py`, `budget.py`, and `store.py`; its schema is in `sql/001_initial.sql`. The scheduler library and future task/memory schemas remain open.
 
 LangChain provides an agent harness built on LangGraph, which supplies persistence and execution-control primitives. Kestri must still implement its application permissions, task lifecycle, and delivery behavior. See the [official framework overview](https://docs.langchain.com/oss/python/langchain/overview) and [ADR-0001](../decisions/0001-agent-stack.md).
 
@@ -51,11 +51,11 @@ LangChain provides an agent harness built on LangGraph, which supplies persisten
 
 1. Authorize and durably accept the Telegram update using its stable identity before acknowledging it as consumed.
 2. Associate any reply with a known message/run and order accepted foreground work.
-3. Assemble recent context, a rolling summary, relevant memory, and current evidence within the request budget.
+3. Seed a fresh run thread from the last completed checkpoint and include referenced result/evidence within the request budget. Rolling summaries and personal memory are deferred.
 4. Run the agent. Each requested tool operation is checked and bounded before execution.
 5. Save results and evidence references, coordinate delivery, and retain the message-to-run association.
 
-Plain conversation can answer without web tools. A substantial query receives concise status; the user can request cancellation. The exact queue and stop-control interface are still design work.
+Plain conversation can answer without web tools. A substantial query receives concise status; the user can request cancellation. M1 uses one research worker, an eight-request queue bound, and independent polling/delivery loops. `/stop` and reply controls are defined in the M1 reference.
 
 ### Recurring briefing
 
@@ -96,7 +96,7 @@ DeepSeek official API is selected. The current suggested model identifier is `de
 
 ## Adjustable initial defaults
 
-These values are starting points from the design discussion, not benchmark results or immutable requirements. Implemented M0 settings are defined in [configuration reference](../reference/configuration.md); the remaining values below are planned.
+These values are starting points from the design discussion, not benchmark results or immutable requirements. Implemented M0 settings are defined in [configuration reference](../reference/configuration.md); M1 implements the input admission and local spending envelope, as specified in the [M1 reference](../reference/telegram.md). Compression and catch-up remain planned.
 
 | Setting | Initial value | Interpretation |
 | --- | --- | --- |
@@ -108,4 +108,4 @@ These values are starting points from the design discussion, not benchmark resul
 
 LangChain's [summarization middleware](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization) is the intended compression component. Model-visible token estimation, preserved history, summary quality, output reservation, and overflow recovery require verification with the selected DeepSeek integration.
 
-The task timezone has no implicit default: use an explicitly configured owner timezone or clarify it. M0 defines model/tool/output/time limits and locked dependencies in its configuration reference. Product-level concurrency, spending limits, scheduler selection, delivery uncertainty policy, and backup implementation remain open. No automatic model routing or managed agent server is selected for the first version.
+The task timezone has no implicit default: use an explicitly configured owner timezone or clarify it. M0 defines model/tool/output/time limits and locked dependencies in its configuration reference. Foreground concurrency, spending reservations, and delivery uncertainty are implemented in M1. Background concurrency, scheduler selection, retention, and backup implementation remain open. No automatic model routing or managed agent server is selected for the first version.

@@ -6,7 +6,8 @@ import sys
 
 from pydantic import ValidationError
 
-from kestri.settings import Settings
+from kestri.application import run_telegram, show_telegram_ids
+from kestri.settings import ResearchSettings, Settings, TelegramCredentials
 from kestri.smoke import run_smoke, save_evidence
 
 
@@ -14,7 +15,31 @@ def main() -> int:
     parser = argparse.ArgumentParser(prog="kestri")
     subcommands = parser.add_subparsers(dest="command", required=True)
     subcommands.add_parser("smoke", help="Run the bounded two-turn DeepSeek integration check")
-    parser.parse_args()
+    subcommands.add_parser("telegram", help="Run the M1 owner-only research bot")
+    subcommands.add_parser("telegram-id", help="Inspect pending private user IDs without enrolling")
+    arguments = parser.parse_args()
+    if arguments.command != "smoke":
+        try:
+            if arguments.command == "telegram-id":
+                asyncio.run(show_telegram_ids(TelegramCredentials()))
+            else:
+                asyncio.run(run_telegram(ResearchSettings()))
+        except ValidationError:
+            print(
+                "Configuration invalid. Check the Telegram configuration reference.",
+                file=sys.stderr,
+            )
+            return 2
+        except KeyboardInterrupt, asyncio.CancelledError:
+            print("Stopped. Accepted messages and saved results remain in PostgreSQL.")
+            return 130
+        except Exception as error:
+            print(
+                f"Startup or execution failed ({type(error).__name__}); details suppressed.",
+                file=sys.stderr,
+            )
+            return 1
+        return 0
     try:
         settings = Settings()
     except ValidationError:

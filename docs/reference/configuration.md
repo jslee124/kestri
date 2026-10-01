@@ -28,7 +28,7 @@ The evidence directory is operator configuration, not a model-controlled filesys
 - SDK automatic retries: zero. Limits apply per turn, so the two-turn smoke may attempt up to twice the model-call allowance overall.
 - LangChain model/tool limit middleware stops the run when a new call would exceed its allowance. A failed or cancelled session cannot accept another turn.
 - Application tracing through LangSmith is disabled for this run, including when enabled in the parent environment.
-- Agent state uses a process-local LangGraph `InMemorySaver`. There is no cross-process recovery or canonical message archive yet.
+- Agent state uses a process-local LangGraph `InMemorySaver`. This smoke has no cross-process recovery or canonical message archive; M1 separately implements both.
 - `checked_add` accepts two strict integers within ±1,000,000. Unknown fields are rejected; the sum must also lie in that range. The tool does not access files, networks, or a shell.
 
 The provider adapter preserves `reasoning_content` on earlier assistant messages and normalizes empty assistant tool-call content. This compensates for the locked integration's outbound serialization and is covered by payload-level regression tests. DeepSeek documents reasoning replay for requests carrying tools in its [thinking-mode guide](https://api-docs.deepseek.com/guides/thinking_mode/) (checked 2026-10-01).
@@ -43,4 +43,4 @@ Evidence schema version 1 includes the UTC timestamp, Python/package versions, p
 
 ## Planned settings
 
-The proposed 128,000-token input budget, compression threshold, monthly spending envelope, Telegram, Tavily, PostgreSQL, and scheduling values in the design are not M0 configuration. They are not enforced by this CLI. See [architecture](../design/architecture.md) and [milestones](../development/milestones.md).
+The proposed 128,000-token input budget, compression threshold, monthly spending envelope, Telegram, Tavily, PostgreSQL, and scheduling values in the design are not M0 configuration. They are not enforced by this smoke CLI. M1 now implements input admission, spending reservations, Telegram, Tavily, and PostgreSQL; see the [M1 reference](telegram.md). See [architecture](../design/architecture.md) and [milestones](../development/milestones.md).

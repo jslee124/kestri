@@ -2,7 +2,7 @@
 
 [English](architecture.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：设计草案；主要技术和边界决策已确认。下方完整架构仍待实现；[M0 CLI](../development/m0-validation.zh-CN.md)仅实现模型和工具接入，状态临时保存。
+更新日期：2026-10-01。状态：设计草案；主要技术和边界决策已确认。M1 已实现前台研究、受控信息工具、原始记录、checkpoint、发送及 Compose。下方记忆、调度和压缩仍待实现。准确实现行为见 [M1 参考](../reference/telegram.zh-CN.md)和[验证记录](../development/m1-validation.zh-CN.md)。
 
 ## 系统边界
 
@@ -41,7 +41,7 @@ flowchart LR
 | 持久化 | 检查点、原始消息归档、记忆、任务、执行、发送状态与证据元数据 |
 | 工作区服务 | 任务范围内的证据和成果文件，不允许任意本机路径访问 |
 
-以上是逻辑边界，初始应用无需拆成一组微服务。M0 包采用 `src/kestri`；调度库与数据库表结构尚未确定。
+以上是逻辑边界，初始应用无需拆成一组微服务。包采用 `src/kestri`。M1 分离 `telegram.py`、`application.py`、`research.py`、`web.py`、`url_policy.py`、`workspace.py`、`budget.py` 和 `store.py`，表结构位于 `sql/001_initial.sql`。调度库及未来任务、记忆表结构仍待确定。
 
 LangChain 提供基于 LangGraph 的 agent harness，后者提供持久化与执行控制基础能力。Kestri 仍须实现应用权限、任务生命周期与发送行为。见[官方框架概览](https://docs.langchain.com/oss/python/langchain/overview)和 [ADR-0001](../decisions/0001-agent-stack.zh-CN.md)。
 
@@ -51,11 +51,11 @@ LangChain 提供基于 LangGraph 的 agent harness，后者提供持久化与执
 
 1. 对 Telegram 更新授权，依据稳定身份持久接受后，再确认已消费。
 2. 将回复关联到已知消息或执行，为已接受的前台工作排序。
-3. 在请求预算内组装近期上下文、滚动摘要、相关记忆与当前证据。
+3. 从最近完成的 checkpoint 初始化新执行线程，在预算内包含所引用的结果和证据。滚动摘要与个人记忆后续加入。
 4. 运行 agent；每次工具操作都必须先检查并限制范围。
 5. 保存结果和证据引用，协调发送，保留消息与执行关联。
 
-普通对话可以不调用网页工具。耗时查询提供简短状态，用户可以请求取消。准确的排队和停止控制接口仍需设计。
+普通对话可以不调用网页工具。耗时查询提供简短状态，用户可以请求取消。M1 使用一个研究 worker、八个请求的队列上限及独立轮询/发送循环。`/stop` 与回复控制见 M1 参考。
 
 ### 持续简报
 
@@ -96,7 +96,7 @@ LangGraph 区分线程级检查点与跨线程 store。两者都不能代替独�
 
 ## 可调初始默认值
 
-以下数值来自设计讨论，是起点，不是性能测试结果或不可变需求。已实现的 M0 设置见[配置参考](../reference/configuration.zh-CN.md)；下方其他数值仍是计划。
+以下数值来自设计讨论，是起点，不是性能测试结果或不可变需求。已实现的 M0 设置见[配置参考](../reference/configuration.zh-CN.md)；M1 实现输入准入与本地费用预算，准确行为见 [M1 参考](../reference/telegram.zh-CN.md)。压缩与补跑仍是计划。
 
 | 配置 | 初始值 | 含义 |
 | --- | --- | --- |
@@ -108,4 +108,4 @@ LangGraph 区分线程级检查点与跨线程 store。两者都不能代替独�
 
 计划使用 LangChain 的[摘要中间件](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization)执行压缩。模型可见 token 估算、保留历史、摘要质量、输出空间与超限恢复，都需要结合选定 DeepSeek 接入验证。
 
-任务时区没有隐含默认值：使用用户明确配置的时区，否则先澄清。M0 在配置参考中定义模型、工具、输出和时间上限及锁定依赖。产品级并发、费用限制、调度器、发送不确定性策略与备份实现尚未确定。第一版不选择自动模型路由或托管 agent server。
+任务时区没有隐含默认值：使用用户明确配置的时区，否则先澄清。M0 在配置参考中定义模型、工具、输出和时间上限及锁定依赖。前台并发、费用预留与发送不确定性在 M1 已实现。后台并发、调度器、保留期执行及备份实现仍待确定。第一版不选择自动模型路由或托管 agent server。
