@@ -11,9 +11,11 @@ from pydantic import ValidationError
 
 from kestri.application import run_telegram, show_telegram_ids
 from kestri.data import DataService
+from kestri.embedding import run_embedding_smoke, save_embedding_evidence
 from kestri.redaction import Redactor
 from kestri.settings import (
     DataSettings,
+    EmbeddingSettings,
     ResearchSettings,
     Settings,
     TelegramCredentials,
@@ -24,9 +26,12 @@ from kestri.workspace import Workspace
 
 
 async def run_data(settings: DataSettings, arguments: argparse.Namespace) -> None:
+    secrets = [settings.database_url.get_secret_value()]
+    if settings.dashscope_api_key is not None:
+        secrets.append(settings.dashscope_api_key.get_secret_value())
     store = Store(
         settings.database_url.get_secret_value(),
-        Redactor([settings.database_url.get_secret_value()]),
+        Redactor(secrets),
     )
     try:
         if arguments.action == "status":
@@ -61,6 +66,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(prog="kestri")
     subcommands = parser.add_subparsers(dest="command", required=True)
     subcommands.add_parser("smoke", help="Run the bounded two-turn DeepSeek integration check")
+    subcommands.add_parser(
+        "embedding-smoke", help="Check Beijing embeddings using three fixed non-private texts"
+    )
     subcommands.add_parser("telegram", help="Run the owner-only research and recurring-task bot")
     subcommands.add_parser("telegram-id", help="Inspect pending private user IDs without enrolling")
     data = subcommands.add_parser("data", help="Local-only archive, backup, restore, and retention")
@@ -88,7 +96,14 @@ def main() -> int:
     arguments = parser.parse_args()
     if arguments.command != "smoke":
         try:
-            if arguments.command == "data":
+            if arguments.command == "embedding-smoke":
+                embedding_settings = EmbeddingSettings()
+                result = asyncio.run(run_embedding_smoke(embedding_settings))
+                path = save_embedding_evidence(embedding_settings, result)
+                print(f"Evidence: {path}")
+                print(json.dumps(result, ensure_ascii=False))
+                return 0 if result["passed"] else 1
+            elif arguments.command == "data":
                 asyncio.run(run_data(DataSettings(), arguments))
             elif arguments.command == "telegram-id":
                 asyncio.run(show_telegram_ids(TelegramCredentials()))
@@ -96,7 +111,7 @@ def main() -> int:
                 asyncio.run(run_telegram(ResearchSettings()))
         except ValidationError:
             print(
-                "Configuration invalid. Check the Telegram configuration reference.",
+                "Configuration invalid. Check the command's configuration reference.",
                 file=sys.stderr,
             )
             return 2

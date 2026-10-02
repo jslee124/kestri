@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-10-02T05:47:30.429883+00:00",
+  "provider": "dashscope",
+  "region": "cn-beijing",
+  "model": "text-embedding-v4",
+  "dimensions": 1024,
+  "requests": 1,
+  "vectors": 3,
+  "input_tokens": 39,
+  "total_tokens": 39,
+  "related_similarity": 0.646563,
+  "unrelated_similarity": 0.201611,
+  "passed": true,
+  "scope": "connection, vector validation, and one fixed semantic comparison only"
+}

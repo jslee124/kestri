@@ -28,6 +28,7 @@ def isolate_owner_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     for name in tuple(os.environ):
         if name.startswith("KESTRI_") or name in {
             "DEEPSEEK_API_KEY",
+            "DASHSCOPE_API_KEY",
             "DEEPSEEK_API_BASE",
             "HTTP_PROXY",
             "HTTPS_PROXY",

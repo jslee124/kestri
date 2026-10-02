@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 25 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：全部 26 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -97,6 +97,12 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 | `DataService.cleanup` | 预览/推迟/撤销内容，先提交元数据再清文件。 |
 | `DataService.prune_backups` | 只删除识别出的旧管理备份。 |
 | `DataService.maintaining` | 周期清理，保留安全最近结果/错误。 |
+
+## embedding.py
+
+[源码](../../src/kestri/embedding.py) · [接口与配置](../reference/embedding.zh-CN.md)
+
+`EmbeddingBatch` 保存校验后的不可变向量/用量；`EmbeddingClient.__init__` 捕获配置/HTTP client，`embed` 执行有界请求及校验；`cosine_similarity` 用于固定比较；`run_embedding_smoke` 只发送非个人测试文本；`save_embedding_evidence` 写脱敏 JSON。`EmbeddingSettings` 校验 key、数字维度和北京接口。产品自动记忆见 [Memory v2](../design/memory-v2.zh-CN.md)，尚未实现。
 
 ## errors.py
 

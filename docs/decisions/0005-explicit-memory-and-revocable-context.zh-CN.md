@@ -4,6 +4,8 @@
 
 日期：2026-10-01。状态：M3 已接受。
 
+后续方向见 [ADR-0007](0007-automatic-semantic-memory.zh-CN.md) 与 [Memory v2](../design/memory-v2.zh-CN.md)。当前运行产品仍遵循本 ADR；独立 embedding 接入不启用自动记忆。
+
 ## 背景
 
 个人记忆需跨重启持久化，又不能成为授权通道。忘记需要消除图状态和摘要中的缓存影响，同时原始记录可独立查看。Kestri 已分离主人控制、PostgreSQL 业务记录、研究工具和 LangGraph checkpoint。

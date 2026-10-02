@@ -15,8 +15,11 @@ async def post_json(
     *,
     max_bytes: int = 2_000_000,
     allow_error_json: bool = False,
+    headers: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    async with client.stream("POST", url, json=payload) as response:
+    async with client.stream(
+        "POST", url, json=payload, headers=headers, follow_redirects=False
+    ) as response:
         if response.status_code != 200 and not (
             allow_error_json and response.status_code in {400, 401, 403, 409, 429, 500, 502, 503}
         ):

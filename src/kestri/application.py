@@ -257,6 +257,8 @@ async def run_telegram(settings: ResearchSettings) -> None:
             settings.database_url,
         )
     ]
+    if settings.dashscope_api_key is not None:
+        secrets.append(settings.dashscope_api_key.get_secret_value())
     store = Store(settings.database_url.get_secret_value(), Redactor(secrets))
     model = build_model(settings)
     try:

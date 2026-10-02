@@ -1,8 +1,10 @@
 """Validated local settings. Credentials never belong in agent messages."""
 
+import re
 from decimal import Decimal
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlsplit
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -55,6 +57,9 @@ class DataSettings(BaseSettings):
     """Local operator commands need database access, not provider credentials."""
 
     model_config = Settings.model_config
+    dashscope_api_key: SecretStr | None = Field(
+        default=None, validation_alias="DASHSCOPE_API_KEY", repr=False
+    )
     database_url: SecretStr = Field(validation_alias="DATABASE_URL", repr=False)
     telegram_owner_id: int = Field(gt=0)
     workspace_dir: Path = Path(".kestri/workspace")
@@ -63,6 +68,51 @@ class DataSettings(BaseSettings):
     log_retention_days: int = Field(default=30, ge=1, le=3650)
     backup_retention_days: int = Field(default=30, ge=1, le=3650)
     maintenance_interval_seconds: int = Field(default=3600, ge=60, le=86400)
+
+
+class EmbeddingSettings(BaseSettings):
+    """Independent Beijing embedding connection; no database/chat credentials needed."""
+
+    model_config = Settings.model_config
+    dashscope_api_key: SecretStr = Field(validation_alias="DASHSCOPE_API_KEY", repr=False)
+    embedding_base_url: str
+    embedding_model: Literal["text-embedding-v4"] = "text-embedding-v4"
+    embedding_dimensions: Literal[64, 128, 256, 512, 768, 1024, 1536, 2048] = 1024
+    embedding_timeout_seconds: float = Field(default=20, gt=0, le=60)
+    embedding_evidence_dir: Path = Path(".kestri/evidence")
+
+    @field_validator("embedding_dimensions", mode="before")
+    @classmethod
+    def parse_embedding_dimensions(cls, value: object) -> object:
+        if isinstance(value, str) and value.isascii() and value.isdigit():
+            return int(value)
+        return value
+
+    @field_validator("dashscope_api_key")
+    @classmethod
+    def validate_embedding_key(cls, value: SecretStr) -> SecretStr:
+        if not value.get_secret_value().strip():
+            raise ValueError("Configure DASHSCOPE_API_KEY locally")
+        return value
+
+    @field_validator("embedding_base_url")
+    @classmethod
+    def validate_embedding_url(cls, value: str) -> str:
+        parsed = urlsplit(value)
+        if (
+            parsed.scheme != "https"
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.port not in {None, 443}
+            or not re.fullmatch(
+                r"[a-z0-9-]+\.cn-beijing\.maas\.aliyuncs\.com", parsed.hostname or ""
+            )
+            or parsed.path.rstrip("/") != "/compatible-mode/v1"
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ValueError("Use the official Beijing workspace embedding base URL")
+        return value.rstrip("/")
 
 
 class ResearchSettings(Settings, DataSettings):

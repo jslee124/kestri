@@ -4,6 +4,13 @@
 
 Updated: 2026-10-02. Status: M0, M1, M2, M3, and M4 complete first-version delivery acceptance; long-term use is recorded separately.
 
+## Embedding and next memory increment
+
+- [Beijing embedding connection](reference/embedding.md): implemented settings, adapter, and independent smoke.
+- [Connection validation](development/embedding-validation.md): live evidence and limits.
+- [Memory v2 specification](design/memory-v2.md): automatic facts, semantic recall, history tools, and lifecycle; unimplemented.
+- [ADR-0007](decisions/0007-automatic-semantic-memory.md): automatic and semantic memory direction.
+
 ## First-version use and operations
 
 - [First-version acceptance](development/first-version-acceptance.md): all requirements, cases, and evidence boundaries.

@@ -4,6 +4,8 @@
 
 Date: 2026-10-01. Status: accepted for M3.
 
+See [ADR-0007](0007-automatic-semantic-memory.md) and [Memory v2](../design/memory-v2.md) for the next direction. This ADR still governs the running product; the standalone embedding connection does not enable automatic memory.
+
 ## Context
 
 Personal memory must survive restart without becoming an authorization channel. Forgetting must also remove cached influence from graph state and summaries, while originals remain independently inspectable. Kestri already separates owner controls, PostgreSQL business records, research tools, and LangGraph checkpoints.

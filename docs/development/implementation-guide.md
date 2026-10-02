@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 25 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: all 26 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -97,6 +97,12 @@ Operator data lifecycle · [Detailed mechanism](../design/data-maintenance.md)
 | `DataService.cleanup` | Preview/defer/revoke content; commit metadata before physical cleanup. |
 | `DataService.prune_backups` | Remove only recognized old managed backup bundles. |
 | `DataService.maintaining` | Periodically clean and retain safe latest outcomes/errors. |
+
+## embedding.py
+
+[Source](../../src/kestri/embedding.py) · [Interface/configuration](../reference/embedding.md)
+
+`EmbeddingBatch` holds validated immutable vectors/usage; `EmbeddingClient.__init__` captures settings/HTTP client, and `embed` performs bounded requests and validation; `cosine_similarity` supports the fixed comparison; `run_embedding_smoke` sends only non-private test texts; `save_embedding_evidence` writes sanitized JSON. `EmbeddingSettings` validates key, numeric dimensions and Beijing endpoint. Product automatic memory is specified in [Memory v2](../design/memory-v2.md), not implemented.
 
 ## errors.py
 
@@ -216,7 +222,7 @@ Validated configuration models · [Detailed mechanism](../reference/cli.md)
 | `Settings.require_nonempty_key` | Reject a blank model key without returning it in validation output. |
 | `TelegramCredentials` | Onboarding-only bot-token settings. |
 | `TelegramCredentials.validate_token` | Validate full Bot API token pattern. |
-| `DataSettings` | Operator DSN/owner/workspace/retention, no provider keys. |
+| `DataSettings` | Operator DSN/owner/workspace/retention; optional DashScope key for redaction. |
 | `ResearchSettings` | Combined runtime/data/product fields, complete catalog in CLI reference. |
 | `ResearchSettings.validate_timezone` | Validate optional IANA owner timezone with ZoneInfo. |
 | `ResearchSettings.require_token` | Reuse Telegram token validator for product settings. |

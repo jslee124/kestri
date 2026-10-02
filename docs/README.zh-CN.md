@@ -12,6 +12,13 @@
 - [数据生命周期参考](reference/data-lifecycle.zh-CN.md)：接口、保留期与隔离规则。
 - [ADR-0006](decisions/0006-conservative-data-recovery.zh-CN.md)：保守恢复的取舍。
 
+## Embedding 与下一阶段记忆
+
+- [北京 Embedding 接入](reference/embedding.zh-CN.md)：已实现的配置、适配器和独立 smoke。
+- [接入验证](development/embedding-validation.zh-CN.md)：真实服务证据与边界。
+- [Memory v2 规格](design/memory-v2.zh-CN.md)：自动记忆、语义召回、历史检索及生命周期，尚未实现。
+- [ADR-0007](decisions/0007-automatic-semantic-memory.zh-CN.md)：自动与语义记忆方向。
+
 ## 使用已实现的增量
 
 - [个人记忆](tutorials/personal-memory.zh-CN.md)：保存、纠正、忘记与查看原始消息。

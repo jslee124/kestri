@@ -11,6 +11,7 @@
 | 命令 | 配置类 | 行为 / 参数 |
 | --- | --- | --- |
 | `smoke` | `Settings` | 两轮有界真实模型/工具调用，写证据；没有任意 prompt 参数 |
+| `embedding-smoke` | `EmbeddingSettings` | 一次请求，三条固定文本；不访问数据库/聊天；保存脱敏 JSON |
 | `telegram` | `ResearchSettings` | 长期运行的主人 bot；模型、搜索、数据库、调度与保留策略 |
 | `telegram-id` | `TelegramCredentials` | 查看 bot 身份和待处理私聊 sender ID；不登记主人、不调用模型 |
 | `data status` | `DataSettings` | 只开连接池，不执行迁移；报告表数量和维护元数据 |
@@ -103,6 +104,10 @@
 | `KESTRI_LOG_RETENTION_DAYS` | 30 | 整数 1–3650；指事件，不是文件 logger |
 | `KESTRI_BACKUP_RETENTION_DAYS` | 30 | 整数 1–3650；识别出的管理备份文件 |
 | `KESTRI_MAINTENANCE_INTERVAL_SECONDS` | 3600 | 整数 60–86400；忙时延后清理 |
+
+### Embedding 独立配置
+
+`EmbeddingSettings` 只需 `DASHSCOPE_API_KEY` 与 `KESTRI_EMBEDDING_BASE_URL`，其他字段/默认值见 [embedding 参考](embedding.zh-CN.md)。不需要 DeepSeek、Telegram 或数据库凭据。`DataSettings`/`ResearchSettings` 另读取可选 `DASHSCOPE_API_KEY`，只用于配置秘密脱敏，不启用 embedding。命令只验证接口，没有自动记忆或向量表。
 
 ## 固定应用限制
 

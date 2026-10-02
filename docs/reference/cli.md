@@ -11,6 +11,7 @@ The installed entry point is `kestri = kestri.cli:main`. `uv run kestri ...` use
 | Command | Settings class | Behavior / arguments |
 | --- | --- | --- |
 | `smoke` | `Settings` | Two bounded live model/tool turns; writes evidence; no flags for arbitrary prompts |
+| `embedding-smoke` | `EmbeddingSettings` | One request, three fixed texts; no database/archive access; sanitized JSON evidence |
 | `telegram` | `ResearchSettings` | Long-running owner bot; model, search, database, scheduling, and retention |
 | `telegram-id` | `TelegramCredentials` | Read bot identity and pending private sender IDs; does not enroll an owner or start model work |
 | `data status` | `DataSettings` | Open pool without migrations; report table counts and maintenance metadata |
@@ -103,6 +104,10 @@ Rates are application estimates. There is no automatic price refresh, prepaid-cr
 | `KESTRI_LOG_RETENTION_DAYS` | 30 | Integer 1–3650; events, not a file logger |
 | `KESTRI_BACKUP_RETENTION_DAYS` | 30 | Integer 1–3650; recognized managed backup files |
 | `KESTRI_MAINTENANCE_INTERVAL_SECONDS` | 3600 | Integer 60–86400; cleanup defers while busy |
+
+### Independent embedding configuration
+
+`EmbeddingSettings` requires only `DASHSCOPE_API_KEY` and `KESTRI_EMBEDDING_BASE_URL`; every other field/default is cataloged in the [embedding reference](embedding.md). No DeepSeek, Telegram, or database credentials are required. `DataSettings`/`ResearchSettings` also read the optional DashScope key for configured-secret redaction only; this does not activate embeddings. The command validates the connection without automatic memory or vector tables.
 
 ## Fixed application limits
 
