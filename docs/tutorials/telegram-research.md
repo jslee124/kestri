@@ -2,7 +2,7 @@
 
 [简体中文](telegram-research.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Scope: M1 setup and research. The live research workflow is verified within the scope of the [validation record](../development/m1-validation.md).
+Updated: 2026-10-02. Scope: M1 setup and research. The live research workflow is verified within the scope of the [validation record](../development/m1-validation.md).
 
 ## Prepare local configuration
 
@@ -72,4 +72,4 @@ Send `/status`, `/runs`, and `/usage` to inspect outcomes. During a long request
 
 Stop a local foreground process with Ctrl+C, or run `docker compose stop app`. Start it again using the same command/volumes. Completed context/results survive; queued accepted requests remain eligible, while interrupted running requests are reported and not automatically researched again. Uncertain Telegram sends are quarantined rather than blindly resent.
 
-Recurring tasks are covered by the [M2 briefing tutorial](recurring-briefing.md). Personal memory and automatic compression are available in M3; start with the [memory tutorial](personal-memory.md). Cleanup, backup/restore, shell, and desktop control remain unavailable. Unsafe compression/context overflow stops with a notice; `/new` begins fresh context and preserves memory. Read the [security design](../design/security-and-data.md) and [reference](../reference/telegram.md) for the remaining boundaries.
+Recurring tasks are covered by the [M2 briefing tutorial](recurring-briefing.md). Personal memory and automatic compression are available in M3; start with the [memory tutorial](personal-memory.md). M4 supplies [maintenance and backup/restore](../how-to/operate-local-agent.md). Shell and desktop control remain outside this version. Unsafe compression/context overflow stops with a notice; `/new` begins fresh context and preserves memory. Read the [security design](../design/security-and-data.md) and [reference](../reference/telegram.md) for the remaining boundaries.

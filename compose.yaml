@@ -1,6 +1,7 @@
 name: kestri
 services:
   postgres:
+    restart: unless-stopped
     image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
     environment:
       POSTGRES_DB: kestri
@@ -18,6 +19,7 @@ services:
     cpus: 1.0
     pids_limit: 256
   app:
+    restart: unless-stopped
     build: .
     env_file: .env
     environment:
@@ -38,6 +40,12 @@ services:
     mem_limit: 512m
     cpus: 1.0
     pids_limit: 128
+    healthcheck:
+      test: [CMD, /app/.venv/bin/kestri, data, status]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 30s
 volumes:
   database:
   workspace:

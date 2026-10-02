@@ -2,7 +2,15 @@
 
 [简体中文](README.zh-CN.md) · [Project home](../README.md)
 
-Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemented and verified; M2 recurring briefings verified; M3 memory/context verified; M4 remains the target.
+Updated: 2026-10-02. Status: M0, M1, M2, M3, and M4 complete first-version delivery acceptance; long-term use is recorded separately.
+
+## First-version use and operations
+
+- [First-version acceptance](development/first-version-acceptance.md): all requirements, cases, and evidence boundaries.
+- [Operations](how-to/operate-local-agent.md): startup, inspection, restart, and cleanup.
+- [Backup and restore](how-to/backup-and-restore.md): private snapshots and empty-target recovery.
+- [Data lifecycle reference](reference/data-lifecycle.md): interfaces, retention, and quarantine.
+- [ADR-0006](decisions/0006-conservative-data-recovery.md): recovery tradeoffs.
 
 ## Start using the implemented increment
 
@@ -27,10 +35,10 @@ Updated: 2026-10-01. Status: M0 implemented and verified; M1 research implemente
 | Document | Purpose | Status |
 | --- | --- | --- |
 | [Product](design/product.md) | Positioning, user journeys, and first-version scope | Accepted product direction |
-| [Requirements](design/requirements.md) | Identified requirements and acceptance criteria | Draft specification based on agreed behavior |
-| [Architecture](design/architecture.md) | Responsibilities, boundaries, and execution flows | Design draft; major choices accepted |
-| [Security and data](design/security-and-data.md) | Permissions, isolation, memory, context, and data lifecycle | Design draft; policy direction accepted |
-| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0 verified; M1 verified; M2 verified; M3 verified |
+| [Requirements](design/requirements.md) | Identified requirements and acceptance criteria | Accepted first-version specification |
+| [Architecture](design/architecture.md) | Responsibilities, boundaries, and execution flows | First-version architecture |
+| [Security and data](design/security-and-data.md) | Permissions, isolation, memory, context, and data lifecycle | Implemented first-version boundary design |
+| [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0, M1, M2, M3, and M4 verified |
 | [ADR-0001](decisions/0001-agent-stack.md) | Python, LangChain Agent, and DeepSeek official API | Accepted |
 | [ADR-0002](decisions/0002-local-deployment-and-tool-boundaries.md) | Local deployment and controlled tools | Accepted |
 | [ADR-0003](decisions/0003-persistence-and-state-separation.md) | PostgreSQL and separation of state categories | Accepted |
@@ -47,11 +55,11 @@ Kestri uses [Diátaxis](https://diataxis.fr/) to distinguish learning tutorials,
 | Category | Reader need | Availability |
 | --- | --- | --- |
 | Tutorials | Learn by completing a guided experience | First agent run, Telegram research, recurring briefing, and personal memory available |
-| How-to guides | Complete a specific task | Offline development checks available |
-| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration, M1 Telegram, M2 tasks, and M3 memory/context available |
+| How-to guides | Complete a specific task | Development checks, operations, and backup/restore available |
+| Reference | Look up exact interfaces, configuration, and behavior | M0 configuration, M1 Telegram, M2 tasks, and M3 memory/context, and M4 data reference available |
 | Explanation | Understand concepts, mechanisms, and tradeoffs | Current design documents provide design-stage explanations |
 | Design | Review intended product behavior and system boundaries | Available above |
-| Development | Follow runnable delivery increments and verification progress | Milestones, M0, M1, M2, and M3 evidence available |
+| Development | Follow runnable delivery increments and verification progress | Milestones, M0, M1, M2, M3, and M4 evidence available |
 | Decisions | Understand why a major choice was made | Available above |
 
 Do not present a proposal as reference documentation for an implemented feature. Tutorials and reference describe only verified implementation; future capabilities remain in the design.

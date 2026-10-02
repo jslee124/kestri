@@ -27,6 +27,11 @@ def display(memory: Row) -> str:
         f"内容：{memory['content']}\n来源消息：{memory['source_message_id']}\n"
         f"创建：{memory['created_at'].isoformat()}；更新：{memory['updated_at'].isoformat()}\n"
         f"到期：{memory['expires_at'].isoformat() if memory['expires_at'] else '无'}"
+        + (
+            "\n恢复隔离，不参与上下文；重新启用请用完整 /remember 指令保存。"
+            if memory["status"] == "quarantined"
+            else ""
+        )
     )
 
 
@@ -35,8 +40,8 @@ async def listing(conn: Any, chat_id: int) -> str:
         await conn.execute(
             (
                 "SELECT * FROM kestri.memories WHERE chat_id=%s "
-                "AND status='active' AND (expires_at IS NULL OR "
-                "expires_at>now()) ORDER BY created_at LIMIT 64"
+                "AND status IN ('active','quarantined') AND (expires_at IS NULL OR "
+                "expires_at>now()) ORDER BY (status='active') DESC,updated_at DESC LIMIT 64"
             ),
             (chat_id,),
         )

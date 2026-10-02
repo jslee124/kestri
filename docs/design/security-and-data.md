@@ -2,7 +2,7 @@
 
 [简体中文](security-and-data.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: design draft; policy direction accepted. The full controls below remain first-version requirements. [M1 evidence](../development/m1-validation.md) records research boundaries and container checks; M2 implements recurring scheduling, and M3 implements explicit memory/context controls. Retention enforcement and backup/restore remain M4 work. Current behavior is specified in the [Telegram](../reference/telegram.md), [task](../reference/tasks.md), and [memory/context](../reference/memory-and-context.md) references.
+Updated: 2026-10-02. Status: implemented first-version boundary design; M1, M2, M3, and M4 verification is linked in [first-version acceptance](../development/first-version-acceptance.md). Exact data rules are in the [lifecycle reference](../reference/data-lifecycle.md).
 
 ## Objectives and trust boundaries
 
@@ -29,7 +29,7 @@ M1 defaults to a dedicated named workspace volume and a separate database volume
 
 Workspace operations must validate resolved paths, reject traversal and symlink escape, and bind operations to the current task/run scope. They must not overwrite or delete important originals silently. User-provided originals should be copied or accessed read-only through a later explicit import design. Broad home-directory access is outside the first version.
 
-Database data, credentials, and backups stay outside the model-visible workspace. A backup inside the same writable workspace does not provide an independent recovery boundary. M1 volume/path choices are recorded in its reference; the backup mechanism remains open.
+Database and credentials are outside model tool access. M4 managed backups use a controlled workspace directory inaccessible to UUID evidence tools. A same-volume backup is not an independent recovery boundary; manage off-device copies separately.
 
 When arbitrary code is introduced, use a separate short-lived tool container with only task inputs and outputs. Do not provide personal databases, service credentials, host control sockets, or unrelated files. Default file-processing jobs to no network and impose process/time/output/resource quotas. VM isolation may be reconsidered for heavier untrusted execution. The sandbox broker and implementation are not selected in this baseline.
 
@@ -59,7 +59,7 @@ Sensitive facts require explicit retention intent. Credentials belong in secret 
 
 Forgetting removes an entry from active retrieval and suppresses automatic re-extraction from retained source messages. Cached context and summaries carrying that entry need invalidation or regeneration. Historical copies must not silently re-enter automatic context; explicit archive inspection is a separate operation. A future explicit request may establish a new memory. Deletion markers and restore handling must be designed before deletion is claimed to be effective.
 
-M3 implements tombstones, expiry filtering, and context-epoch invalidation: each successful memory change resets the foreground head and prevents automatic access to old replies/evidence. Explicit archive inspection remains available. This removes forgotten facts from active use; historical copies are not physically erased. Restore reconciliation is not implemented; see the [memory/context reference](../reference/memory-and-context.md).
+M3 implements tombstones, expiry filtering, and context-epoch invalidation: each successful memory change resets the foreground head and prevents automatic access to old replies/evidence. Explicit archive inspection remains available. This removes forgotten facts from active use; historical copies are not physically erased. M4 quarantine prevents automatic permission restoration; see the [data reference](../reference/data-lifecycle.md).
 
 ## Conversation context
 
@@ -88,19 +88,7 @@ Provider-side retention and Telegram message deletion are separate from local de
 
 ## Adjustable retention defaults
 
-| Category | Initial policy |
-| --- | --- |
-| Original conversation archive | 90 days |
-| Temporary raw web material | 30 days |
-| Detailed run/tool logs | 30 days |
-| Personal memory and active task agreements | Retain until owner deletion, correction, or configured expiry |
-| Explicitly saved results | Retain until owner deletion |
-| Checkpoints | Exact pruning policy open; retain the usable current state of active threads while removing obsolete history |
-| Backups and deletion markers | Exact lifetime and restore mechanism open |
-
-These are proposed defaults for Kestri's local copies. M1 does not automatically prune or expire records, checkpoints, or artifacts. Research material attached to an explicitly saved result requires a documented promotion/retention rule; saving a result must not silently retain every temporary page forever. Expired source URLs may remain as metadata even when their stored content is gone.
-
-Archive deletion must account for checkpoints, summaries, indexes, artifacts, and caches containing copies. Active-data deletion and backup expiration are different boundaries. A restore procedure must reconcile deleted tasks and forgotten memories before enabling execution or retrieval. Export, backup, restore, and archive deletion interfaces remain unresolved.
+M4 defaults are 90 days for conversation/answer archives and 30 days each for raw evidence, detailed events, and managed backups. Active memory and nondeleted task agreements are retained separately; no pinned-result interface exists. Cleanup invalidates context and removes graph copies. Restore quarantines all imported active memories, pauses nondeleted tasks, and discards pending commands on first startup. Minimal deduplication/revocation/financial records remain. Exact interfaces, boundaries, and limits are in the [data reference](../reference/data-lifecycle.md) and [ADR-0006](../decisions/0006-conservative-data-recovery.md).
 
 ## Limits and validation
 

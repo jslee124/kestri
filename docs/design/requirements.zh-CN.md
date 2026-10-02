@@ -2,7 +2,7 @@
 
 [English](requirements.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：基于已达成共识产品行为的规格草案。**AC-01 至 AC-07 已结合 M1/M2 验证；AC-08 与 AC-09 已结合 M1/M2/M3 验证。AC-10 至 AC-12 保持部分覆盖，待 M4 完成。** 见 [M1 证据](../development/m1-validation.zh-CN.md)、[M2 证据](../development/m2-validation.zh-CN.md)和 [M3 证据](../development/m3-validation.zh-CN.md)。 [M0 证据](../development/m0-validation.zh-CN.md)仅覆盖初始模型和工具基础及 AC-12 的一部分。
+更新：2026-10-02。状态：第一版已接受的规范；全部 22 项要求与 AC-01 至 AC-12 的证据见[第一版验收](../development/first-version-acceptance.zh-CN.md)。M0、M1、M2、M3、M4 的证据类型分别记录，长期试用独立。
 
 ## 解释规则
 
@@ -56,15 +56,6 @@
 | AC-11 | MEM-003, DATA-002 | 使临时材料过期、忘记记忆并删除任务。确认活跃检索与调度不再使用移除的数据。恢复流程处理删除记录，并说明备份过期边界。 | 保留、删除检查与恢复证据 |
 | AC-12 | WEB-002, OPS-001, OPS-002 | 达到调用、时间、输出或预算限制，并模拟服务最终失败。工作终止，提供有用状态、可查看用量和简短通知，不泄露凭据。 | 边界检查、运行记录与消息观察 |
 
-## 尚需明确的规格
+## 实现参考与后续验证
 
-- 历史保留/删除、备份恢复接口与删除标记保留策略。
-- AC-10 至 AC-12 完整案例验收与 M4 整体个人使用试验。
-
-M1 前台控制、队列数值、重启处理、预留、credit 估算与发送不确定性已在[实现参考](../reference/telegram.zh-CN.md)定义。证据状态见 [M1 记录](../development/m1-validation.zh-CN.md)。
-
-在受影响的行为被认定完成前，先通过针对性的设计审查解决这些问题。后续实现与证据关联到上方 ID；未有实际结果支持前，所有验收案例保持未验证。
-
-M2 任务约定、控制、并发和补跑的准确行为见[任务参考](../reference/tasks.zh-CN.md)，验收范围见 [M2 记录](../development/m2-validation.zh-CN.md)。
-
-M3 显式记忆、原始历史查看和压缩见[记忆/上下文参考](../reference/memory-and-context.zh-CN.md)；证据见 [M3 记录](../development/m3-validation.zh-CN.md)。
+接口与边界见 [Telegram](../reference/telegram.zh-CN.md)、[任务](../reference/tasks.zh-CN.md)、[记忆/上下文](../reference/memory-and-context.zh-CN.md)和[数据生命周期](../reference/data-lifecycle.zh-CN.md)。本次验收关闭第一版范围，长期可靠性、多平台和更广的模型行为需持续使用另行验证；受控故障检查不宣称所有崩溃点或真实网络中断均已验证。

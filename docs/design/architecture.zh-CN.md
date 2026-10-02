@@ -2,7 +2,7 @@
 
 [English](architecture.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：设计草案；主要技术和边界决策已确认。M1 已实现前台研究、受控信息工具、原始记录、checkpoint、发送及 Compose。M2 已实现持久化任务约定与独立后台调度；M3 已实现显式个人记忆与预算内上下文压缩，见[记忆/上下文参考](../reference/memory-and-context.zh-CN.md)。准确实现行为见 [M1 参考](../reference/telegram.zh-CN.md)和[验证记录](../development/m1-validation.zh-CN.md)。
+更新日期：2026-10-02。状态：设计草案；主要技术和边界决策已确认。M1 已实现前台研究、受控信息工具、原始记录、checkpoint、发送及 Compose。M2 已实现持久化任务约定与独立后台调度；M3 已实现显式个人记忆与预算内上下文压缩，见[记忆/上下文参考](../reference/memory-and-context.zh-CN.md)。准确实现行为见 [M1 参考](../reference/telegram.zh-CN.md)和[验证记录](../development/m1-validation.zh-CN.md)。
 
 ## 系统边界
 
@@ -108,4 +108,4 @@ LangGraph 区分线程级检查点与跨线程 store。两者都不能代替独�
 
 M3 扩展 LangChain 的[摘要中间件](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization)，加入预算内模型调用与历史数据标记。[M3 证据](../development/m3-validation.zh-CN.md)覆盖强制压缩、纠正保留、原始归档与真实 DeepSeek 行为。请求估算仍是保守值，摘要质量仍依赖模型。
 
-任务时区没有隐含默认值：使用用户明确配置的时区，否则先澄清。M0 在配置参考中定义模型、工具、输出和时间上限及锁定依赖。前台并发、费用预留与发送不确定性在 M1 已实现。M2 实现一项前台和一项后台并行执行，调度每五秒检查一次持久化约定。保留期执行及备份实现仍待确定。第一版不选择自动模型路由或托管 agent server。
+任务时区没有隐含默认值：使用用户明确配置的时区，否则先澄清。M0 在配置参考中定义模型、工具、输出和时间上限及锁定依赖。前台并发、费用预留与发送不确定性在 M1 已实现。M2 实现一项前台和一项后台并行执行，调度每五秒检查一次持久化约定。M4 实现保留清理与保守备份恢复，见[数据参考](../reference/data-lifecycle.zh-CN.md)。第一版不选择自动模型路由或托管 agent server。

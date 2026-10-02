@@ -56,6 +56,11 @@ def agreement(task: Row) -> str:
         f"错过执行：{task['catch_up_seconds'] / 3600:g} 小时内合并补跑一次，超出则跳过。\n"
         f"下次计划（UTC）：{task['next_due'].isoformat()}\n"
         "暂停/删除阻止后续启动，已开始的执行继续；停止执行需用 /stop 执行ID。"
+        + (
+            "\n备份恢复的任务已暂停；核对约定后明确恢复才会重新授权。"
+            if task.get("restored")
+            else ""
+        )
     )
 
 
@@ -252,6 +257,7 @@ class TaskService:
                                 (
                                     "UPDATE kestri.tasks SET "
                                     "title=%s,instructions=%s,timezone=%s,local_time=%s,weekdays=%s,catch_up_seconds=%s,status=%s,next_due=%s,revision=%s,updated_at=%s"
+                                    ",restored=CASE WHEN %s THEN false ELSE restored END"
                                     " WHERE id=%s RETURNING *"
                                 ),
                                 (
@@ -265,6 +271,7 @@ class TaskService:
                                     task["next_due"],
                                     task["revision"],
                                     now,
+                                    intent == "resume",
                                     task["id"],
                                 ),
                             )

@@ -3,11 +3,14 @@
 import asyncio
 import signal
 from typing import Any
+from uuid import uuid4
 
 import httpx
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from psycopg.types.json import Jsonb
 
 from kestri.budget import RunControl
+from kestri.data import DataService
 from kestri.errors import PolicyDenied, ProviderFailure
 from kestri.memory import MemoryService, memory_instruction
 from kestri.redaction import Redactor
@@ -177,7 +180,40 @@ class Application:
                 # Telegram private-chat rate limits apply across status and result messages.
                 await asyncio.sleep(1.1)
 
+    async def prepare_restore(self) -> None:
+        marker = await self.store.one(
+            "SELECT value FROM kestri.meta WHERE key='restore_quarantine'"
+        )
+        if not marker or not marker["value"].get("pending_updates"):
+            return
+        # A stale archive must not replay pending owner commands accepted after its snapshot.
+        pending = await self.telegram.poll(offset=-1, wait_seconds=0)
+        last = max((update["update_id"] for update in pending), default=None)
+        async with self.store.pool.connection() as conn:
+            async with conn.transaction():
+                if last is not None:
+                    await conn.execute(
+                        "INSERT INTO kestri.meta(key,value) VALUES ('offset',%s) "
+                        "ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value",
+                        (Jsonb(last + 1),),
+                    )
+                await conn.execute(
+                    "UPDATE kestri.meta SET value=%s WHERE key='restore_quarantine'",
+                    (Jsonb({"pending_updates": False}),),
+                )
+                await conn.execute(
+                    "INSERT INTO kestri.outbox(id,chat_id,content) VALUES (%s,%s,%s)",
+                    (
+                        uuid4(),
+                        self.settings.telegram_owner_id,
+                        "备份恢复完成。导入记忆已隔离、持续任务已暂停、旧执行/发送未重放。"
+                        "恢复启动前的 Telegram 待处理消息已跳过；请重新发送需要继续的请求。"
+                        "用 /memory、/tasks 核对内容，再明确保存记忆或恢复任务。",
+                    ),
+                )
+
     async def serve(self) -> None:
+        await self.prepare_restore()
         await self.store.recover()
         async with asyncio.TaskGroup() as group:
             group.create_task(self.polling())
@@ -185,6 +221,9 @@ class Application:
             group.create_task(self.working(background=True))
             group.create_task(self.scheduling())
             group.create_task(self.delivering())
+            group.create_task(
+                DataService(self.store, self.researcher.workspace, self.settings).maintaining()
+            )
 
 
 async def run_telegram(settings: ResearchSettings) -> None:

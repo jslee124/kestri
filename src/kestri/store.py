@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from psycopg import AsyncConnection
 from psycopg.rows import dict_row
+from psycopg.sql import SQL, Composed
 from psycopg.types.json import Jsonb
 from psycopg_pool import AsyncConnectionPool
 
@@ -53,19 +54,23 @@ class Store:
                     files("kestri").joinpath("sql/003_memory_context.sql").read_text(),
                     prepare=False,
                 )
+                await conn.execute(
+                    files("kestri").joinpath("sql/004_data_lifecycle.sql").read_text(),
+                    prepare=False,
+                )
 
     async def close(self) -> None:
         await self.pool.close()
 
-    async def one(self, sql: str, params: tuple[Any, ...] = ()) -> Row | None:
+    async def one(self, sql: str | SQL | Composed, params: tuple[Any, ...] = ()) -> Row | None:
         async with self.pool.connection() as conn:
             return await (await conn.execute(sql, params)).fetchone()
 
-    async def all(self, sql: str, params: tuple[Any, ...] = ()) -> list[Row]:
+    async def all(self, sql: str | SQL | Composed, params: tuple[Any, ...] = ()) -> list[Row]:
         async with self.pool.connection() as conn:
             return await (await conn.execute(sql, params)).fetchall()
 
-    async def execute(self, sql: str, params: tuple[Any, ...] = ()) -> None:
+    async def execute(self, sql: str | SQL | Composed, params: tuple[Any, ...] = ()) -> None:
         async with self.pool.connection() as conn:
             await conn.execute(sql, params)
 
@@ -614,7 +619,7 @@ class Store:
                 "r.id=m.run_id JOIN kestri.conversations c ON "
                 "c.chat_id=r.chat_id WHERE m.chat_id=%s AND "
                 "m.telegram_id=%s AND r.status='completed' AND "
-                "r.kind IN ('foreground','background') AND "
+                "r.kind IN ('foreground','background') AND NOT r.history_expired AND "
                 "r.memory_epoch=c.memory_epoch ORDER BY m.id DESC "
                 "LIMIT 1"
             ),

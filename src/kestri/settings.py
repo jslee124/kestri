@@ -51,7 +51,21 @@ class TelegramCredentials(BaseSettings):
         return value
 
 
-class ResearchSettings(Settings):
+class DataSettings(BaseSettings):
+    """Local operator commands need database access, not provider credentials."""
+
+    model_config = Settings.model_config
+    database_url: SecretStr = Field(validation_alias="DATABASE_URL", repr=False)
+    telegram_owner_id: int = Field(gt=0)
+    workspace_dir: Path = Path(".kestri/workspace")
+    archive_retention_days: int = Field(default=90, ge=1, le=3650)
+    evidence_retention_days: int = Field(default=30, ge=1, le=3650)
+    log_retention_days: int = Field(default=30, ge=1, le=3650)
+    backup_retention_days: int = Field(default=30, ge=1, le=3650)
+    maintenance_interval_seconds: int = Field(default=3600, ge=60, le=86400)
+
+
+class ResearchSettings(Settings, DataSettings):
     """M1 configuration: explicit owner, durable local state, bounded providers."""
 
     telegram_bot_token: SecretStr = Field(validation_alias="TELEGRAM_BOT_TOKEN", repr=False)

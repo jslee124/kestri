@@ -8,18 +8,15 @@ Kestri 是一个在本地运行、通过 Telegram 机器人交互的个人 AI ag
 
 ## 项目状态
 
-**M0 已验证。** Python 3.14 CLI 可运行有边界的两轮 LangChain agent，通过 DeepSeek 调用受控算术工具。非思考与思考模式均有真实调用证据，并有离线失败和限制检查。可以从[首次运行教程](docs/tutorials/first-agent-run.zh-CN.md)与[验证记录](docs/development/m0-validation.zh-CN.md)开始。
+**第一版（M0–M4）已实现。** 公开研究与追问、每日/每周简报、显式个人记忆、自动上下文压缩，以及本地保留期清理、导出、备份和保守恢复均已提供。模型工具限制、取消、持久恢复和费用估算贯穿这些流程。
 
-**M1：Telegram 研究已实现并验证。** 已提供仅限主人私聊、受控 Tavily 工具、PostgreSQL checkpoint 和归档、取消、用量预留及 Docker Compose。从 [Telegram 教程](docs/tutorials/telegram-research.zh-CN.md)、[M1 参考](docs/reference/telegram.zh-CN.md)和 [M1 证据](docs/development/m1-validation.zh-CN.md)开始。完整数据生命周期验收仍待实现。[可运行里程碑](docs/development/milestones.zh-CN.md)区分交付范围和验证证据。
-
-**M2：持续简报已实现。** 支持自然语言每日/每周约定、查看与修改、暂停/恢复/删除、独立后台执行及停机补跑。从[持续简报教程](docs/tutorials/recurring-briefing.zh-CN.md)、[任务参考](docs/reference/tasks.zh-CN.md)和 [M2 验证记录](docs/development/m2-validation.zh-CN.md)开始。
-
-**M3：个人记忆与上下文管理已实现并验证。** 支持显式保存/查看/纠正/忘记、范围检索、可撤销上下文、原始历史查看与预算内自动压缩。见[记忆教程](docs/tutorials/personal-memory.zh-CN.md)、[参考](docs/reference/memory-and-context.zh-CN.md)和 [M3 证据](docs/development/m3-validation.zh-CN.md)。M4 完成保留期、备份恢复及整体个人使用验收。
+从 [Telegram 设置教程](docs/tutorials/telegram-research.zh-CN.md)开始，再阅读[持续简报](docs/tutorials/recurring-briefing.zh-CN.md)和[个人记忆](docs/tutorials/personal-memory.zh-CN.md)。日常维护见[运行指南](docs/how-to/operate-local-agent.zh-CN.md)和[备份恢复](docs/how-to/backup-and-restore.zh-CN.md)。[第一版验收记录](docs/development/first-version-acceptance.zh-CN.md)区分受控测试、真实 API/Telegram、实际部署和本次流程试用；长期日常使用另行记录。[里程碑](docs/development/milestones.zh-CN.md)保留交付依据。
 
 ## 目标
 
 - 通过一个可用的产品学习 agent 应用开发和工程实践。
 - 做出项目作者愿意持续使用的个人助理。
+- 成为求职和技术面试中可以演示、深入讨论的工程项目。
 
 ## 第一版方向
 

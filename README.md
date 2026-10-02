@@ -8,18 +8,15 @@ The working name comes from **kestrel**, with the possibility of a character or 
 
 ## Project status
 
-**M0 verified.** A Python 3.14 CLI runs a bounded, two-turn LangChain agent against DeepSeek with a controlled arithmetic tool. Both non-thinking and thinking modes have live evidence, alongside offline failure and limit checks. Start with the [first-run tutorial](docs/tutorials/first-agent-run.md) and [validation record](docs/development/m0-validation.md).
+**The first version (M0–M4) is implemented.** Public research and follow-up, daily/weekly briefings, explicit personal memory, automatic context compression, and local retention, export, backup, and conservative restore are available. Tool limits, cancellation, durable recovery, and usage estimates accompany these workflows.
 
-**M1: Telegram research is implemented and verified.** Owner-only private chat, controlled Tavily tools, PostgreSQL checkpoints/archives, cancellation, usage reservations, and Docker Compose are available. Start with the [Telegram tutorial](docs/tutorials/telegram-research.md), [M1 reference](docs/reference/telegram.md), and [M1 evidence](docs/development/m1-validation.md). Full data-lifecycle acceptance remains planned. The [runnable milestones](docs/development/milestones.md) distinguish delivery scope and evidence.
-
-**M2: recurring briefings are implemented.** Natural-language daily/weekly agreements, listing and changes, pause/resume/delete, independent background runs, and catch-up after downtime are available. Start with the [briefing tutorial](docs/tutorials/recurring-briefing.md), [task reference](docs/reference/tasks.md), and [M2 validation record](docs/development/m2-validation.md).
-
-**M3: personal memory and context management are implemented and verified.** Explicit save/inspect/correct/forget controls, scoped retrieval, revocable context, original-history inspection, and budgeted automatic compression are available. See the [memory tutorial](docs/tutorials/personal-memory.md), [reference](docs/reference/memory-and-context.md), and [M3 evidence](docs/development/m3-validation.md). M4 covers retention, backup/restore, and integrated personal-use acceptance.
+Start with [Telegram setup](docs/tutorials/telegram-research.md), then [recurring briefings](docs/tutorials/recurring-briefing.md) and [personal memory](docs/tutorials/personal-memory.md). Use the [operations guide](docs/how-to/operate-local-agent.md) and [backup/restore guide](docs/how-to/backup-and-restore.md). The [first-version acceptance record](docs/development/first-version-acceptance.md) separates controlled tests, live APIs/Telegram, deployed containers, and the session trial; long-term daily use is recorded separately. [Milestones](docs/development/milestones.md) preserve delivery criteria.
 
 ## Goals
 
 - Learn agent application development and engineering practices through a usable product.
 - Build an assistant the project owner wants to use regularly.
+- Provide a demonstrable engineering project for job applications and technical interviews.
 
 ## First-version direction
 

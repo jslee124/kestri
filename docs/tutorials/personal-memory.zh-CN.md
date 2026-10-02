@@ -2,7 +2,7 @@
 
 [English](personal-memory.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。范围：M3，需先完成 [Telegram 配置教程](telegram-research.zh-CN.md)。
+更新日期：2026-10-02。范围：M3，需先完成 [Telegram 配置教程](telegram-research.zh-CN.md)。
 
 ## 保存和使用偏好
 
@@ -22,4 +22,4 @@
 
 继续普通对话。在约 70% 的配置输入准入预算处，Kestri 总结旧历史并保留近期完整工具交互。原始消息留在归档。`/runs` 和 `/usage` 保留执行结果和摘要费用。摘要失败/超限时安全停止，`/new` 新建上下文，不忘记个人记忆。
 
-可选到期设置见[记忆/上下文参考](../reference/memory-and-context.zh-CN.md)。不要保存 API key 或密码。忘记表示移出活跃检索，不表示删除 Telegram 消息、历史副本或备份。完整数据生命周期仍属 M4。
+可选到期设置见[记忆/上下文参考](../reference/memory-and-context.zh-CN.md)。不要保存 API key 或密码。忘记表示移出活跃检索，不表示删除 Telegram 消息、历史副本或备份。M4 提供独立的[数据生命周期控制](../reference/data-lifecycle.zh-CN.md)。
