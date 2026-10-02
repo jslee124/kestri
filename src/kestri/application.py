@@ -17,6 +17,7 @@ from kestri.errors import PolicyDenied, ProviderFailure
 from kestri.integrations.telegram import (
     DeliveryProblem,
     TelegramClient,
+    authorized_callback,
     authorized_message,
     command_for,
 )
@@ -52,6 +53,15 @@ class Application:
     async def accept_update(self, update: dict[str, Any]) -> bool:
         message = authorized_message(update, self.settings.telegram_owner_id)
         if message is None:
+            message = authorized_callback(update, self.settings.telegram_owner_id)
+            if message is not None:
+                try:
+                    await self.telegram.call(
+                        "answerCallbackQuery", {"callback_query_id": update["callback_query"]["id"]}
+                    )
+                except DeliveryProblem, httpx.HTTPError, ProviderFailure:
+                    pass
+        if message is None:
             return False
         reply = message.get("reply_to_message") or {}
         command = command_for(message["text"])
@@ -65,7 +75,14 @@ class Application:
         memory = memory_instruction(message["text"])
         if message.get("forward_origin") or message.get("external_reply"):
             memory = None
-        if memory:
+        from kestri.memory.management import management_intent
+
+        management = (
+            not message.get("forward_origin")
+            and not message.get("external_reply")
+            and management_intent(message["text"])
+        )
+        if memory or management:
             kind = "memory_control"
         elif intent is not None:
             kind = "task_control"
@@ -214,7 +231,19 @@ class Application:
         if not await self.store.delivery_current(row):
             return True
         try:
-            identity = await self.telegram.send(row["chat_id"], row["content"], row["reply_to"])
+            if row.get("presentation"):
+                identity = await self.telegram.send(
+                    row["chat_id"],
+                    row["content"],
+                    row["reply_to"] if row["reply_to"] and row["reply_to"] > 0 else None,
+                    presentation=row["presentation"],
+                )
+            else:
+                identity = await self.telegram.send(
+                    row["chat_id"],
+                    row["content"],
+                    row["reply_to"] if row["reply_to"] and row["reply_to"] > 0 else None,
+                )
         except DeliveryProblem as error:
             await self.store.delivery_failed(
                 row,

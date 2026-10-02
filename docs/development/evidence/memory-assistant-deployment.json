@@ -1,0 +1,60 @@
+{
+  "scope": "local existing Telegram service; isolated synthetic live controls",
+  "before_migration": 9,
+  "after_migration": 10,
+  "logical_backup_schema": 8,
+  "production_preserved_before_start": {
+    "runs": 27,
+    "messages": 133
+  },
+  "checkpoint_counts_production_and_restored": [
+    10,
+    161,
+    111,
+    251
+  ],
+  "owner_switches": {
+    "auto": true,
+    "use": true,
+    "semantic": true
+  },
+  "app_image": "sha256:ba3e720474da50ef4d1a377f85541454766f611be785484e1d1d8e8edcf16304",
+  "pgvector_image": "sha256:e30f754ee1942a7a5f1ef8e22aad313b3890ee406bd50a3cbdc03fe8b4aa8d0f",
+  "rollback_image": "kestri-app:rollback-before-memory-assistant",
+  "source_files_verified": 56,
+  "source_manifest_sha256": "0ce43a1b55097640fc722cba628b91909f3d3f566b4765b42412422871431bed",
+  "local_checks": {
+    "pgvector_passed": 280,
+    "postgres_passed": 252,
+    "postgres_vector_skipped": 28,
+    "mypy_modules": 57,
+    "sql_migrations": 10,
+    "documents": 110
+  },
+  "isolated_live_checks": [
+    "natural_batch_settings",
+    "natural_save",
+    "ambiguous_no_mutation",
+    "choice_button_after_restart",
+    "hybrid_answer",
+    "actual_injection_button",
+    "natural_use_off",
+    "old_diagnostic_redaction",
+    "settings_button"
+  ],
+  "checks": {
+    "raw_dump_restore": true,
+    "workspace_archive_read": true,
+    "checkpoint_counts_preserved": true,
+    "deployed_source_hashes_match": true,
+    "production_restart": true,
+    "production_telegram_home": true,
+    "settings_preserved": true
+  },
+  "container_health": "healthy",
+  "limits": [
+    "synthetic acceptance only",
+    "no independent longitudinal quality",
+    "no main merge"
+  ]
+}

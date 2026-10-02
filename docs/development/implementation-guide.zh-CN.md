@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 42 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -473,3 +473,15 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 [意图模块](../../src/kestri/memory/intent.py)：`NaturalMemoryControl` 保存主人目标，`natural_control` 识别完整控制，`normalize_target` 规范化字面目标。`MemoryService._resolve_target` 检查完整有界主人快照，候选不授权修改。`Store._delivery_current` 和 `delivery_current` 在发送前阻止已撤销的自动提示。[控制参考](../reference/memory-controls.zh-CN.md)定义策略。
 
 [质量 CLI](../../scripts/evaluate_memory_quality.py)分发 [scripts/memory_evaluation](../../scripts/memory_evaluation/__init__.py) 下四个采集器。`common.py` 负责有界内存记账/评分，`extraction.py`、`selection.py`、`history.py`、`history_answer.py` 分离采集职责。输出是合成证据，不是生产账本记录。
+
+[当前对话式记忆增量](../reference/memory-assistant.zh-CN.md)：迁移 10、逻辑备份 schema 8、自然语言设置、短期目标选择与回答诊断。旧版本章节保留原有范围。
+
+## 对话式记忆模块
+
+| Module | Responsibility |
+| --- | --- |
+| [memory/management.py](../../src/kestri/memory/management.py) | 当前请求识别、有界提案、授权验证与控制提交 |
+| [memory/views.py](../../src/kestri/memory/views.py) | 有界只读首页、分页、候选和设置 |
+| [memory/presentation.py](../../src/kestri/memory/presentation.py) | 转义 HTML、时区格式与按钮元数据 |
+| [memory/diagnostics.py](../../src/kestri/memory/diagnostics.py) | 实际注入与历史诊断的撤销检查 |
+| [storage/sql/010_memory_assistant.sql](../../src/kestri/storage/sql/010_memory_assistant.sql) | 新增选择与展示元数据列 |

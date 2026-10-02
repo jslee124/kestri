@@ -4,6 +4,8 @@
 
 更新：2026-10-02。状态：M0、M1、M2、M3、M4 已完成第一版交付验收；长期使用另行记录。
 
+- [对话式记忆管理](reference/memory-assistant.zh-CN.md)：自然语言设置、按钮和真实回答依据。
+
 ## 第一版使用和维护
 
 - [第一版验收记录](development/first-version-acceptance.zh-CN.md)：全部要求、案例和证据边界。

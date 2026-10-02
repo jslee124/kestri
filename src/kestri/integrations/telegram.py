@@ -88,7 +88,7 @@ class TelegramClient:
         payload: dict[str, Any] = {
             "timeout": wait_seconds,
             "limit": 20,
-            "allowed_updates": ["message"],
+            "allowed_updates": ["message", "callback_query"],
         }
         if offset is not None:
             payload["offset"] = offset
@@ -97,13 +97,28 @@ class TelegramClient:
             raise ProviderFailure("InvalidUpdates")
         return result
 
-    async def send(self, chat_id: int, text: str, reply_to: int | None = None) -> int:
+    async def send(
+        self,
+        chat_id: int,
+        text: str,
+        reply_to: int | None = None,
+        *,
+        presentation: dict[str, Any] | None = None,
+    ) -> int:
         payload: dict[str, Any] = {
             "chat_id": chat_id,
             "text": text,
             "link_preview_options": {"is_disabled": True},
             "reply_markup": {"remove_keyboard": True},
         }
+        if presentation:
+            if presentation.get("parse_mode") == "HTML":
+                from kestri.memory.presentation import html_text
+
+                payload["text"] = html_text(text)
+            for key in ("parse_mode", "reply_markup"):
+                if key in presentation:
+                    payload[key] = presentation[key]
         if reply_to is not None:
             payload["reply_parameters"] = {
                 "message_id": reply_to,
@@ -164,3 +179,40 @@ def command_for(text: str) -> str | None:
             else "unknown"
         )
     return None
+
+
+def authorized_callback(update: dict[str, Any], owner_id: int) -> dict[str, Any] | None:
+    """Accept only our bounded management payloads from the owner in their private bot chat."""
+    import re
+
+    callback = update.get("callback_query")
+    if not isinstance(callback, dict):
+        return None
+    message = callback.get("message") or {}
+    sender = callback.get("from") or {}
+    chat = message.get("chat") or {}
+    data = callback.get("data")
+    if (
+        sender.get("id") != owner_id
+        or sender.get("is_bot")
+        or chat.get("id") != owner_id
+        or chat.get("type") != "private"
+        or not message.get("from", {}).get("is_bot")
+        or not isinstance(data, str)
+    ):
+        return None
+    command = None
+    if re.fullmatch(r"mem:(?:changes|settings)", data):
+        command = "/memory " + data.split(":")[1]
+    elif re.fullmatch(r"mem:(?:list|pending):[0-9]{1,4}", data):
+        _, action, page = data.split(":")
+        command = f"/memory {action} {page}"
+    elif re.fullmatch(r"mem:(?:why|inspect):[a-f0-9]{8}", data):
+        _, action, target = data.split(":")
+        command = f"/memory {action} {target}"
+    elif re.fullmatch(r"mc:[a-f0-9]{16}:[1-5]", data):
+        _, token, choice = data.split(":")
+        command = f"选择记忆 {token} {choice}"
+    if command is None or not isinstance(update.get("update_id"), int):
+        return None
+    return {"from": sender, "chat": chat, "message_id": -update["update_id"], "text": command}

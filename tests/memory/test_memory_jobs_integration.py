@@ -332,7 +332,7 @@ async def test_candidate_confirmation_and_forgetting(store: Any) -> None:
     ] == "explicit_command"
     await store.accept(6, 111, 6, "/memory changes", None, "memory", 8)
     assert (
-        "最近变更"
+        "最近的记忆变化"
         in (await store.one("SELECT content FROM kestri.outbox WHERE reply_to=6"))["content"]
     )
 
@@ -390,7 +390,9 @@ async def test_legacy_schema4_restore_explicit_defaults(store: Any, tmp_path: Pa
             "memory_semantic_enabled",
             "memory_retrieval_generation",
             "memory_embedding_space",
+            "memory_choice",
         ),
+        "outbox": ("presentation",),
         "messages": ("provenance",),
         "memories": (
             "category",
@@ -487,7 +489,7 @@ async def test_monthly_cap_and_reclaimed_unknown_reservations(store: Any) -> Non
     assert len(await store.all("SELECT * FROM kestri.usage")) == 1
 
 
-async def test_large_candidate_inspection_uses_delivery_chunks(store: Any) -> None:
+async def test_large_candidate_inspection_is_bounded_and_paginated(store: Any) -> None:
     await enable(store)
     await enqueue(store)
     repo = MemoryRepository(store, research_settings())
@@ -503,8 +505,13 @@ async def test_large_candidate_inspection_uses_delivery_chunks(store: Any) -> No
     await repo.publish(job, validate_proposal(snap, operations, store.redactor))
     await store.accept(3, 111, 3, "/memory pending", None, "memory", 8)
     chunks = await store.all("SELECT content FROM kestri.outbox WHERE reply_to=3 ORDER BY sequence")
-    assert len(chunks) > 1 and all(len(r["content"]) <= 3500 for r in chunks)
-    assert sum(r["content"].count("来源类型：auto_inferred") for r in chunks) == 6
+    assert len(chunks) == 1 and len(chunks[0]["content"]) <= 3500
+    assert "下一页：/memory pending 1" in chunks[0]["content"]
+    await store.accept(4, 111, 4, "/memory pending 1", None, "memory", 8)
+    next_page = await store.one("SELECT content FROM kestri.outbox WHERE reply_to=4")
+    assert "第 2 页" in next_page["content"] and "下一页" not in next_page["content"]
+    assert chunks[0]["content"].count("编号：") == 5
+    assert next_page["content"].count("编号：") == 1
 
 
 async def test_crashed_final_attempt_cancels_and_preserves_unknown_cost(store: Any) -> None:

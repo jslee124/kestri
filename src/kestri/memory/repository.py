@@ -17,10 +17,13 @@ from kestri.storage.store import Row, Store
 
 
 async def memory_command(
-    conn: Any, chat_id: int, text: str, *, embedding_space: str | None = None
+    conn: Any,
+    chat_id: int,
+    text: str,
+    *,
+    embedding_space: str | None = None,
+    timezone: str | None = None,
 ) -> str:
-    from kestri.memory.service import display, listing
-
     args = text.strip().split()[1:]
     if len(args) == 2 and args[0] in {"use", "semantic"} and args[1] in {"on", "off"}:
         enabled = args[1] == "on"
@@ -47,7 +50,8 @@ async def memory_command(
             "UPDATE kestri.conversations SET " + column + "=%s,"
             "memory_embedding_space=CASE WHEN %s THEN %s ELSE memory_embedding_space END,"
             "memory_retrieval_generation=memory_retrieval_generation+1,"
-            "memory_revision=memory_revision+1,memory_epoch=memory_epoch+1,thread_id=NULL "
+            "memory_revision=memory_revision+1,memory_epoch=memory_epoch+1,"
+            "thread_id=NULL,memory_choice=NULL "
             "WHERE chat_id=%s",
             (enabled, semantic and enabled, embedding_space, chat_id),
         )
@@ -76,94 +80,17 @@ async def memory_command(
                 (chat_id,),
             )
         return (
-            "已开启语义召回：有效记忆、合格历史片段与查询将发送到北京 DashScope，"
+            "已开启语义召回。\n\n有效记忆、合格历史片段与查询将发送到北京 DashScope，"
             "事实候选筛选使用 DeepSeek。"
-            "只重建有效事实索引，不扫描旧聊天；/memory semantic off 可关闭。"
+            "\n不会自动提取旧聊天的新记忆。可以告诉我关闭语义检索。"
             if semantic and enabled
-            else "已关闭语义召回，保留本地索引并回到词项召回。"
+            else "已关闭语义召回。\n\n保留本地索引，回答时使用关键词检索。"
             if semantic
             else "已开启记忆使用。"
             if enabled
-            else "已关闭记忆使用，停止记忆注入和索引调用；"
-            "自动提取开关独立，/memory auto off 可关闭学习。"
-        ) + "前台上下文已重置。"
-    if args == ["changes"]:
-        events = await (
-            await conn.execute(
-                "SELECT memory_id,operation,created_at FROM kestri.memory_events "
-                "WHERE chat_id=%s ORDER BY id DESC LIMIT 20",
-                (chat_id,),
-            )
-        ).fetchall()
-        jobs = await (
-            await conn.execute(
-                "SELECT status,count(*) AS n FROM kestri.memory_jobs WHERE chat_id=%s "
-                "GROUP BY status ORDER BY status",
-                (chat_id,),
-            )
-        ).fetchall()
-        errors = await (
-            await conn.execute(
-                "SELECT source_message_id,error_type FROM kestri.memory_jobs "
-                "WHERE chat_id=%s AND status='failed' ORDER BY updated_at DESC LIMIT 3",
-                (chat_id,),
-            )
-        ).fetchall()
-        indexing = await (
-            await conn.execute(
-                "SELECT status,count(*) AS n FROM kestri.memory_index_jobs WHERE chat_id=%s "
-                "GROUP BY status ORDER BY status",
-                (chat_id,),
-            )
-        ).fetchall()
-        index_errors = await (
-            await conn.execute(
-                "SELECT error_type FROM kestri.memory_index_jobs WHERE chat_id=%s "
-                "AND status='failed' "
-                "ORDER BY updated_at DESC LIMIT 3",
-                (chat_id,),
-            )
-        ).fetchall()
-        history_jobs = await (
-            await conn.execute(
-                "SELECT status,count(*) AS n FROM kestri.history_index_jobs WHERE chat_id=%s "
-                "GROUP BY status ORDER BY status",
-                (chat_id,),
-            )
-        ).fetchall()
-        return (
-            "历史索引作业："
-            + ("；".join(f"{r['status']} {r['n']}" for r in history_jobs) or "无")
-            + "\n向量作业："
-            + ("；".join(f"{r['status']} {r['n']}" for r in indexing) or "无")
-            + "\n向量失败："
-            + ("；".join(r["error_type"] for r in index_errors) or "无")
-            + "\n"
-            + "后台作业："
-            + ("；".join(f"{r['status']} {r['n']}" for r in jobs) or "无")
-            + "\n最近变更：\n"
-            + (
-                "\n".join(
-                    f"{str(r['memory_id'])[:8]} · {r['operation']} · {r['created_at'].isoformat()}"
-                    for r in events
-                )
-                or "无"
-            )
-            + "\n失败类别：\n"
-            + (
-                "\n".join(f"来源记录 {r['source_message_id']} · {r['error_type']}" for r in errors)
-                or "无"
-            )
-        )
-    if args == ["pending"]:
-        rows = await (
-            await conn.execute(
-                "SELECT * FROM kestri.memories WHERE chat_id=%s AND status='candidate' "
-                "ORDER BY updated_at DESC LIMIT 100",
-                (chat_id,),
-            )
-        ).fetchall()
-        return "\n\n".join(display(row) for row in rows) or "暂无候选推断；候选不会进入回答。"
+            else "已关闭记忆使用。\n\n停止在回答中使用记忆，也停止索引调用。\n"
+            "自动记录是独立设置，需要时可以告诉我关闭自动记忆。"
+        ) + "\n新的回答将使用更新后的设置。"
     if len(args) == 2 and args[0] == "auto" and args[1] in {"on", "off"}:
         enabled = args[1] == "on"
         current = await (
@@ -177,7 +104,7 @@ async def memory_command(
         await conn.execute(
             "UPDATE kestri.conversations SET auto_memory_enabled=%s,"
             "memory_settings_generation=memory_settings_generation+1,"
-            "memory_epoch=memory_epoch+1,thread_id=NULL,"
+            "memory_epoch=memory_epoch+1,thread_id=NULL,memory_choice=NULL,"
             "memory_activation_watermark=CASE WHEN %s THEN "
             "(SELECT COALESCE(max(id),0) FROM kestri.messages WHERE chat_id=%s) "
             "ELSE memory_activation_watermark END WHERE chat_id=%s",
@@ -201,33 +128,29 @@ async def memory_command(
             (chat_id,),
         )
         return (
-            "已开启自动记忆：只处理之后的直接聊天，发送到 DeepSeek 整理；"
-            "旧历史不会扫描，前台上下文已重置。"
-            "开启后聊天也可按需发送到 DeepSeek，用于回答历史问题。"
-            "用 /memory 查看、/memory pending 查看候选、/memory changes 查看后台作业、"
-            "/memory auto off 关闭。"
+            "已开启自动记忆。\n\n只处理之后的直接聊天，发送到 DeepSeek 整理；"
+            "旧历史不会自动提取。\n开启后的聊天也可按需用于回答历史问题。"
+            "\n可以随时告诉我关闭自动记忆。"
             if enabled
-            else "已关闭自动记忆，在途提案不能提交，历史工具暂停，"
-            "前台上下文已重置；已有记忆仍可使用。"
+            else "已关闭自动记忆。\n\n之后的聊天不再自动生成新记忆，历史检索已暂停。"
+            "已有记忆仍可用于回答，当前对话上下文已重置。"
         )
-    if args:
-        return "格式：/memory；/memory pending；/memory changes；/memory auto|use|semantic on|off。"
-    state = await (
-        await conn.execute(
-            "SELECT * FROM kestri.conversations WHERE chat_id=%s",
-            (chat_id,),
+    if sum(part.startswith("/memory") for part in text.split()) > 1:
+        return (
+            "这条消息包含多条命令，需要分别发送。\n本次没有修改设置。\n\n"
+            "先发送：\n/memory auto on\n\n再单独发送：\n/memory semantic on"
         )
-    ).fetchone()
-    return (
-        "自动记忆："
-        + ("开启" if state and state["auto_memory_enabled"] else "关闭")
-        + "；使用："
-        + ("开启" if state and state["memory_use_enabled"] else "关闭")
-        + "；语义召回："
-        + ("开启" if state and state["memory_semantic_enabled"] else "关闭")
-        + "\n\n"
-        + await listing(conn, chat_id)
-    )
+    if args and args[0] == "why":
+        from kestri.memory.diagnostics import explain
+
+        return (
+            await explain(conn, chat_id, args[1] if len(args) == 2 else None)
+            if len(args) <= 2
+            else "请只提供一个回答编号。"
+        )
+    from kestri.memory.views import view
+
+    return await view(conn, chat_id, args, timezone)
 
 
 class MemoryRepository:

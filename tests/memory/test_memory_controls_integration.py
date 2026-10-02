@@ -4,23 +4,14 @@ import pytest
 
 from kestri.memory.extractor import validate_proposal
 from kestri.memory.repository import MemoryRepository
-from kestri.memory.service import MemoryService
 from tests.helpers import (
     TEST_DSN,
-    accept_memory_control_run,
     research_settings,
     save_memory,
 )
-from tests.memory.helpers import enable, enqueue, proposal
+from tests.memory.helpers import apply_control, enable, enqueue, proposal
 
 pytestmark = pytest.mark.skipif(not TEST_DSN, reason="Set a dedicated KESTRI_TEST_DATABASE_URL")
-
-
-async def apply_control(store: Any, text: str, identity: int) -> str:
-    run = await accept_memory_control_run(store, text, identity)
-    result = await MemoryService(store, research_settings()).apply(run)
-    await store.finish(run["id"], "completed", result)
-    return result
 
 
 async def test_unique_literal_correction_and_forget(store: Any) -> None:

@@ -152,6 +152,7 @@ class ResearchAgent:
         if config is not None:
             store.embedding_space = embedding_space(config)
         self.store = store
+        store.owner_timezone = settings.owner_timezone
         self.workspace = workspace
         self.saver = saver
         self.model = model
@@ -160,6 +161,13 @@ class ResearchAgent:
 
     async def run(self, row: Row, control: RunControl) -> None:
         if row.get("kind") == "memory_control":
+            from kestri.memory.service import memory_instruction
+
+            if memory_instruction(row["request"]) is None:
+                from kestri.memory.management import MemoryManager
+
+                await MemoryManager(self.settings, self.store, self.model).run(row, control)
+                return
             try:
                 answer = await MemoryService(self.store, self.settings).apply(row)
                 await self.store.finish(row["id"], "completed", answer)

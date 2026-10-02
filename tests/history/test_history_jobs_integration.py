@@ -189,7 +189,7 @@ async def test_source_delete_and_floor_cancel_jobs_before_rebilling(configured: 
         )
 
 
-async def test_foreground_cache_reuse_and_backup7_legacy6_restore(
+async def test_foreground_cache_reuse_and_backup8_legacy6_restore(
     configured: Any, tmp_path: Path
 ) -> None:
     store = configured
@@ -209,7 +209,7 @@ async def test_foreground_cache_reuse_and_backup7_legacy6_restore(
     service = DataService(store, Workspace(tmp_path / "source"), settings())
     path = await service.backup(tmp_path / "backup.json")
     bundle = read_private(path)
-    assert bundle["schema"] == 7 and bundle["tables"]["history_index_jobs"]
+    assert bundle["schema"] == 8 and bundle["tables"]["history_index_jobs"]
     assert "history_embeddings" not in bundle["tables"]
     await store.execute("TRUNCATE " + ",".join("kestri." + name for name in TABLES) + " CASCADE")
     for table in ("checkpoint_writes", "checkpoint_blobs", "checkpoints"):
@@ -222,6 +222,10 @@ async def test_foreground_cache_reuse_and_backup7_legacy6_restore(
     )
     await store.execute("TRUNCATE " + ",".join("kestri." + name for name in TABLES) + " CASCADE")
     bundle["schema"] = 6
+    for row in bundle["tables"]["conversations"]:
+        del row["memory_choice"]
+    for row in bundle["tables"]["outbox"]:
+        del row["presentation"]
     del bundle["tables"]["history_index_jobs"]
     legacy = tmp_path / "legacy.json"
     write_private(

@@ -1,18 +1,26 @@
 """Explicit owner memory commands; no model, inference, or archive extraction writes."""
 
 import re
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import uuid4
 
+from psycopg.types.json import Jsonb
+
 from kestri.errors import PolicyDenied
-from kestri.memory.intent import natural_control, normalize_target
+from kestri.memory.intent import NaturalMemoryControl, natural_control, normalize_target
 from kestri.memory.retriever import lexical_rank
 from kestri.settings import ResearchSettings
 from kestri.storage.store import Row, Store
 
 
 def memory_instruction(text: str) -> tuple[str, str] | None:
+    if re.fullmatch(
+        r"(?:选择记忆 [a-f0-9]{16} [1-5]|(?:就)?(?:选|选择)?第?[一二三四五1-5]条"
+        r"(?:记忆)?)[。！!]?(?:就好)?",
+        text.strip(),
+    ):
+        return "choose", text.strip()
     match = re.match(r"^/(remember|correct|forget)(?:@[\w]+)?(?:\s+(.*))?$", text.strip(), re.S)
     if match:
         return match[1], (match[2] or "").strip()
@@ -30,27 +38,9 @@ def memory_instruction(text: str) -> tuple[str, str] | None:
 
 
 def display(memory: Row) -> str:
-    scope = "global" if memory["task_id"] is None else "task " + str(memory["task_id"])[:8]
-    return (
-        f"记忆 {str(memory['id'])[:8]} · {scope} · {memory['status']}\n"
-        f"内容：{memory['content']}\n来源消息：{memory['source_message_id']}\n"
-        f"创建：{memory['created_at'].isoformat()}；更新：{memory['updated_at'].isoformat()}\n"
-        f"来源类型：{memory.get('origin', 'explicit_command')}；"
-        f"类别：{memory.get('category', 'background')}\n"
-        + (
-            f"来源归档：/history {memory['last_source_message_id']}\n"
-            if memory.get("last_source_message_id")
-            else ""
-        )
-        + (f"生效：{memory['valid_from'].isoformat()}\n" if memory.get("valid_from") else "")
-        + (f"复核：{memory['review_after'].isoformat()}\n" if memory.get("review_after") else "")
-        + f"到期：{memory['expires_at'].isoformat() if memory['expires_at'] else '无'}"
-        + (
-            "\n恢复隔离，不参与上下文；重新启用请用完整 /remember 指令保存。"
-            if memory["status"] == "quarantined"
-            else ""
-        )
-    )
+    from kestri.memory.presentation import detail
+
+    return detail(memory)
 
 
 async def listing(conn: Any, chat_id: int) -> str:
@@ -75,12 +65,18 @@ class MemoryService:
         self.store = store
         self.settings = settings
 
-    async def apply(self, run: Row) -> str:
-        instruction = memory_instruction(run["request"])
+    async def apply(
+        self,
+        run: Row,
+        *,
+        instruction: tuple[str, str] | None = None,
+        natural_override: NaturalMemoryControl | None = None,
+    ) -> str:
+        instruction = instruction or memory_instruction(run["request"])
         if run["kind"] != "memory_control" or instruction is None:
             raise PolicyDenied("MemoryAuthorizationUnavailable")
         action, body = instruction
-        natural = natural_control(run["request"])
+        natural = natural_override or natural_control(run["request"])
         async with self.store.pool.connection() as conn:
             async with conn.transaction():
                 await conn.execute(
@@ -109,6 +105,61 @@ class MemoryService:
                 ).fetchone()
                 if prior:
                     return str(prior["result"])
+                if action == "choose":
+                    state = await (
+                        await conn.execute(
+                            "SELECT memory_choice,memory_epoch FROM kestri.conversations "
+                            "WHERE chat_id = %s",
+                            (run["chat_id"],),
+                        )
+                    ).fetchone()
+                    choice = state["memory_choice"] if state else None
+                    if (
+                        not state
+                        or not choice
+                        or datetime.fromisoformat(choice["expires"]) <= datetime.now(UTC)
+                        or choice["epoch"] != state["memory_epoch"]
+                    ):
+                        return "这个选择已经失效。请重新说明要纠正或忘记哪条记忆。"
+                    if body.startswith("选择记忆 "):
+                        _, token, number = body.split()
+                        if token != choice["token"]:
+                            return "这个选择已经失效，请重新发起记忆修改。"
+                        index = int(number) - 1
+                    else:
+                        marker = re.search(r"[一二三四五1-5]", body)
+                        assert marker is not None
+                        index = (
+                            "一二三四五".index(marker[0])
+                            if marker[0] in "一二三四五"
+                            else int(marker[0]) - 1
+                        )
+                    if index >= len(choice["targets"]):
+                        return "没有这个选项，请从上次列出的目标中选择。"
+                    selected = choice["targets"][index]
+                    current_memory = await (
+                        await conn.execute(
+                            """
+                            SELECT m.id FROM kestri.memories AS m
+                            LEFT JOIN kestri.tasks AS t ON t.id = m.task_id
+                            WHERE m.chat_id = %s AND m.id = %s AND m.revision = %s
+                              AND m.status IN ('active','candidate')
+                              AND (m.expires_at IS NULL OR m.expires_at > now())
+                              AND (m.task_id IS NULL OR t.status != 'deleted')
+                            """,
+                            (run["chat_id"], selected["id"], selected["revision"]),
+                        )
+                    ).fetchone()
+                    if not current_memory:
+                        return "目标记忆已变更，这个选择不能继续。请重新发起修改。"
+                    action, body = choice["action"], selected["id"]
+                    if action == "correct":
+                        body += " " + choice["content"]
+                    natural = None
+                    await conn.execute(
+                        "UPDATE kestri.conversations SET memory_choice = NULL WHERE chat_id = %s",
+                        (run["chat_id"],),
+                    )
                 changed = False
                 notice = "未作变更。使用 /remember 内容；/correct 记忆ID 新内容；/forget 记忆ID。"
                 if not body or len(body) > 1200:
@@ -156,7 +207,12 @@ class MemoryService:
                 else:
                     if natural:
                         body, notice = await self._resolve_target(
-                            conn, run, natural.target, allow_id=natural.id_target
+                            conn,
+                            run,
+                            natural.target,
+                            allow_id=natural.id_target,
+                            action=natural.action,
+                            content=natural.content,
                         )
                         if body and natural.action == "correct":
                             body += " " + (natural.content or "")
@@ -218,7 +274,7 @@ class MemoryService:
                         )
                     await conn.execute(
                         (
-                            "UPDATE kestri.conversations SET thread_id=NULL,"
+                            "UPDATE kestri.conversations SET thread_id=NULL,memory_choice=NULL,"
                             "memory_revision=memory_revision+1,memory_epoch=memory_epoch+1,updated_at=now()"
                             " "
                             "WHERE chat_id=%s"
@@ -232,7 +288,14 @@ class MemoryService:
                 return notice
 
     async def _resolve_target(
-        self, conn: Any, run: Row, target: str, *, allow_id: bool = False
+        self,
+        conn: Any,
+        run: Row,
+        target: str,
+        *,
+        allow_id: bool = False,
+        action: str = "forget",
+        content: str | None = None,
     ) -> tuple[str, str]:
         """Only a unique literal owner target authorizes mutation; otherwise offer IDs."""
         limit = (
@@ -267,10 +330,32 @@ class MemoryService:
             suggestions = lexical_rank(rows[:limit], target)[:5]
         if not suggestions:
             return "", "未作变更。没有找到明确目标；请用 /memory 查看，再提供记忆 ID。"
-        lines = ["未作变更。请确认下面的目标，再发送 /correct ID 完整新内容 或 /forget ID："]
-        for row in suggestions:
+        state = await (
+            await conn.execute(
+                "SELECT memory_epoch FROM kestri.conversations WHERE chat_id = %s",
+                (run["chat_id"],),
+            )
+        ).fetchone()
+        choice = {
+            "token": uuid4().hex[:16],
+            "action": action,
+            "content": content,
+            "run_id": str(run["id"]),
+            "epoch": state["memory_epoch"],
+            "expires": (datetime.now(UTC) + timedelta(minutes=10)).isoformat(),
+            "targets": [{"id": str(r["id"]), "revision": r["revision"]} for r in suggestions],
+        }
+        await conn.execute(
+            "UPDATE kestri.conversations SET memory_choice = %s WHERE chat_id = %s",
+            (Jsonb(choice), run["chat_id"]),
+        )
+        lines = [
+            "未作变更。请确认下面的目标，再发送 /correct ID 完整新内容 或 /forget ID：",
+            "也可以回复“第二条”或点击对应按钮。选择在 10 分钟后失效。",
+        ]
+        for number, row in enumerate(suggestions, 1):
             scope = "个人" if row["task_id"] is None else "任务 " + str(row["task_id"])[:8]
-            lines.append(f"{str(row['id'])[:8]} · {scope} · {row['content'][:120]}")
+            lines.append(f"{number}. {str(row['id'])[:8]} · {scope} · {row['content'][:120]}")
         if len(rows) > limit:
             lines.append("可选记忆超出检查上限；请使用明确 ID。")
         return "", "\n".join(lines)
@@ -351,7 +436,7 @@ class MemoryService:
                 if rows:
                     await conn.execute(
                         (
-                            "UPDATE kestri.conversations SET thread_id=NULL,"
+                            "UPDATE kestri.conversations SET thread_id=NULL,memory_choice=NULL,"
                             "memory_revision=memory_revision+1,memory_epoch=memory_epoch+1 "
                             "WHERE chat_id=%s"
                         ),

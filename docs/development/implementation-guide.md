@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 42 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -473,3 +473,15 @@ The [layout guide](repository-layout.md) describes six domain packages, correspo
 [Intent module](../../src/kestri/memory/intent.py): `NaturalMemoryControl` stores parsed owner targets, `natural_control` recognizes anchored commands, and `normalize_target` performs literal matching normalization. `MemoryService._resolve_target` checks a complete bounded owner snapshot; suggestions never authorize writes. `Store._delivery_current` and `delivery_current` suppress revoked automatic notices before sending. [Control reference](../reference/memory-controls.md) owns their policy.
 
 [Quality CLI](../../scripts/evaluate_memory_quality.py) dispatches four collectors under [scripts/memory_evaluation](../../scripts/memory_evaluation/__init__.py). `common.py` owns bounded in-memory accounting/scorers; `extraction.py`, `selection.py`, `history.py` and `history_answer.py` separate collection responsibilities. Evaluation outputs are synthetic evidence, not production ledger records.
+
+[Current conversational memory additions](../reference/memory-assistant.md)：Migration 10, logical backup schema 8, natural settings, short-lived choices and answer diagnostics. Older sections retain their historical scope.
+
+## Conversational memory modules
+
+| Module | Responsibility |
+| --- | --- |
+| [memory/management.py](../../src/kestri/memory/management.py) | Current request routing, bounded proposals, authority checks and commits |
+| [memory/views.py](../../src/kestri/memory/views.py) | Bounded home, pagination, candidate and settings views |
+| [memory/presentation.py](../../src/kestri/memory/presentation.py) | Escaped HTML, local time and button metadata |
+| [memory/diagnostics.py](../../src/kestri/memory/diagnostics.py) | Revocation checks for actual injection/history evidence |
+| [storage/sql/010_memory_assistant.sql](../../src/kestri/storage/sql/010_memory_assistant.sql) | Choice and presentation metadata columns |

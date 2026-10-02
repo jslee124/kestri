@@ -25,6 +25,7 @@ def chunks(text: str, limit: int = 3500) -> list[str]:
 class Store:
     def __init__(self, dsn: str, redactor: Redactor) -> None:
         self.embedding_space: str | None = None
+        self.owner_timezone: str | None = None
         self.redactor = redactor
         self.pool = AsyncConnectionPool[AsyncConnection[Row]](
             dsn,
@@ -78,6 +79,10 @@ class Store:
                 )
                 await conn.execute(
                     files("kestri").joinpath("storage/sql/009_checkpoint_schema.sql").read_text(),
+                    prepare=False,
+                )
+                await conn.execute(
+                    files("kestri").joinpath("storage/sql/010_memory_assistant.sql").read_text(),
                     prepare=False,
                 )
 
@@ -282,13 +287,24 @@ class Store:
                     )
                 else:
                     notice = "已收到，正在处理。你可以用 /stop 停止当前执行。"
+                from kestri.memory.presentation import current_presentation
+
                 for part in chunks(notice):
                     await conn.execute(
                         (
                             "INSERT INTO kestri.outbox(id,chat_id,reply_to,"
-                            "run_id,content) VALUES (%s,%s,%s,%s,%s)"
+                            "run_id,content,presentation) VALUES (%s,%s,%s,%s,%s,%s)"
                         ),
-                        (uuid4(), chat_id, message_id, run_id, part),
+                        (
+                            uuid4(),
+                            chat_id,
+                            message_id,
+                            run_id,
+                            part,
+                            Jsonb(await current_presentation(conn, chat_id, part))
+                            if command == "memory"
+                            else None,
+                        ),
                     )
         return True, run_id
 
@@ -296,7 +312,13 @@ class Store:
         if command == "memory":
             from kestri.memory.repository import memory_command
 
-            return await memory_command(conn, chat_id, text, embedding_space=self.embedding_space)
+            return await memory_command(
+                conn,
+                chat_id,
+                text,
+                embedding_space=self.embedding_space,
+                timezone=self.owner_timezone,
+            )
         if command == "history":
             args = text.split()
             if len(args) > 1:
@@ -622,11 +644,22 @@ class Store:
                         ),
                         (run_id, row["chat_id"], row["memory_epoch"]),
                     )
+                from kestri.memory.presentation import current_presentation
+
+                choice_row = await (
+                    await conn.execute(
+                        "SELECT memory_choice FROM kestri.conversations WHERE chat_id = %s",
+                        (row["chat_id"],),
+                    )
+                ).fetchone()
+                choice = choice_row["memory_choice"] if choice_row else None
+                if choice and choice.get("run_id") != str(run_id):
+                    choice = None
                 for part in chunks(answer):
                     await conn.execute(
                         (
                             "INSERT INTO kestri.outbox(id,chat_id,reply_to,"
-                            "run_id,content,task_id) VALUES (%s,%s,%s,%s,%s,%s)"
+                            "run_id,content,task_id,presentation) VALUES (%s,%s,%s,%s,%s,%s,%s)"
                         ),
                         (
                             uuid4(),
@@ -635,6 +668,27 @@ class Store:
                             run_id,
                             part,
                             row["task_id"],
+                            Jsonb(await current_presentation(conn, row["chat_id"], part, choice))
+                            if row["kind"] == "memory_control"
+                            else (
+                                Jsonb(
+                                    {
+                                        "reply_markup": {
+                                            "inline_keyboard": [
+                                                [
+                                                    {
+                                                        "text": "记忆依据",
+                                                        "callback_data": "mem:why:"
+                                                        + str(run_id)[:8],
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                )
+                                if row["kind"] == "foreground" and status == "completed"
+                                else None
+                            ),
                         ),
                     )
 
@@ -895,7 +949,8 @@ class Store:
                         await conn.execute(
                             """
                             UPDATE kestri.outbox
-                            SET status = 'failed', content = '', error_type = 'MemoryNoticeRevoked'
+                            SET status = 'failed', content = '', presentation = NULL,
+                                error_type = 'MemoryNoticeRevoked'
                             WHERE id = %s
                             """,
                             (row["id"],),
@@ -910,6 +965,16 @@ class Store:
 
     async def _delivery_current(self, conn: Any, row: Row) -> bool:
         """Recheck published automatic notices against current consent and source facts."""
+        display = row.get("presentation")
+        if display and "epoch" in display:
+            current = await (
+                await conn.execute(
+                    "SELECT memory_epoch FROM kestri.conversations WHERE chat_id = %s",
+                    (row["chat_id"],),
+                )
+            ).fetchone()
+            if not current or current["memory_epoch"] != display["epoch"]:
+                return False
         if row["run_id"] is None:
             return True
         state = await (
@@ -963,7 +1028,8 @@ class Store:
             await self.execute(
                 """
                 UPDATE kestri.outbox
-                SET status = 'failed', content = '', error_type = 'MemoryNoticeRevoked'
+                SET status = 'failed', content = '', presentation = NULL,
+                                error_type = 'MemoryNoticeRevoked'
                 WHERE id = %s AND status IN ('pending', 'sending')
                 """,
                 (row["id"],),

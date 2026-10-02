@@ -2,7 +2,7 @@
 
 [简体中文](database.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: the implemented schema after migrations 1–6 and the checkpoint saver installed from `uv.lock`. This is a source-level reference, not an inspection of an owner's live database.
+Updated: 2026-10-02. Scope: the implemented schema after migrations 1–10 and the checkpoint saver installed from `uv.lock`. This is a source-level reference, not an inspection of an owner's live database.
 
 ## Storage ownership
 
@@ -218,3 +218,5 @@ Migration 7 adds optional rebuildable `history_embeddings` (source IDs/hashes, g
 Migration 8 adds persistent `history_index_jobs`; logical schema 7 includes this table while omitting vectors. Restore cancels historical jobs and fills an empty job table for schema 4/5/6. See the [history reference](../reference/history-retrieval.md) for budgets and leases.
 
 Migration 9 pins framework checkpoint placement to `public` and preserves legacy tables created in `kestri`; collisions roll back. It adds no business table or logical-backup field. See [controls and checkpoint storage](memory-controls.md).
+
+[Current conversational memory additions](memory-assistant.md)：Migration 10, logical backup schema 8, natural settings, short-lived choices and answer diagnostics. Older sections retain their historical scope.

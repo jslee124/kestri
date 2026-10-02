@@ -3,6 +3,8 @@
 from typing import Any
 
 from kestri.memory.extractor import MemoryProposal
+from kestri.memory.service import MemoryService
+from tests.helpers import accept_memory_control_run, research_settings
 
 TEXT = "我希望 Kestri 帮助我找工作。"
 
@@ -41,3 +43,10 @@ def proposal(batch: Any, **changes: Any) -> MemoryProposal:
         **changes,
     }
     return MemoryProposal(operations=[op])
+
+
+async def apply_control(store: Any, text: str, identity: int) -> str:
+    run = await accept_memory_control_run(store, text, identity)
+    result = await MemoryService(store, research_settings()).apply(run)
+    await store.finish(run["id"], "completed", result)
+    return result

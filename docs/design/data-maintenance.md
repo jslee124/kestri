@@ -100,3 +100,5 @@ After database commit, cleanup lists pending evidence, removes each UUID-scoped 
 ## Verification and operator limits
 
 [Data lifecycle integration tests](../../tests/storage/test_data_lifecycle_integration.py) cover empty-target validation, corruption/permissions/owner rejection, quarantine, transaction/file failures, sequence behavior, busy deferral, erasure/retention, no-follow cleanup, and cancellation/lease handling. They establish controlled boundaries, not every abrupt crash point or external-copy deletion. A backup-schema change needs an explicit compatibility decision; older bundles are not auto-upgraded by a version-neutral importer.
+
+[Current conversational memory additions](../reference/memory-assistant.md)：Migration 10, logical backup schema 8, natural settings, short-lived choices and answer diagnostics. Older sections retain their historical scope.

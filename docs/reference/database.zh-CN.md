@@ -2,7 +2,7 @@
 
 [English](database.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：迁移 1–6 完成后的实际结构，以及从 `uv.lock` 安装的 checkpoint saver。这是源码级参考，不代表检查了主人的运行数据库。
+更新：2026-10-02。范围：迁移 1–10 完成后的实际结构，以及从 `uv.lock` 安装的 checkpoint saver。这是源码级参考，不代表检查了主人的运行数据库。
 
 ## 存储归属
 
@@ -218,3 +218,5 @@ erDiagram
 迁移 8 增加持久 `history_index_jobs`；逻辑 schema 7 备份包含此表并继续省略向量，恢复取消历史作业，旧 schema 4/5/6 补空作业。预算及租约契约见[历史参考](../reference/history-retrieval.zh-CN.md)。
 
 迁移 9 将框架 checkpoint 固定在 `public` 并保留旧 `kestri` 表，冲突时回滚，不增加业务表或逻辑备份字段。见[控制与 checkpoint 存储](memory-controls.zh-CN.md)。
+
+[当前对话式记忆增量](memory-assistant.zh-CN.md)：迁移 10、逻辑备份 schema 8、自然语言设置、短期目标选择与回答诊断。旧版本章节保留原有范围。

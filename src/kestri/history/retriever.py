@@ -227,6 +227,14 @@ class HistoryRetriever:
             results.append(candidate)
             self.handles[item["id"]] = (item["owner_id"], item["id"], self.version(state))
         await self.recheck(state)
+        await self.store.event(
+            self.run["id"],
+            "history_diagnostic",
+            {
+                "action": "search",
+                "archive_ids": [self.handles[r["segment_id"]][0] for r in results],
+            },
+        )
         return self.output(
             {
                 "status": "searched",
@@ -252,6 +260,14 @@ class HistoryRetriever:
         if not rows or rows[0]["id"] != issued[1]:
             raise PolicyDenied("HistorySourceChanged")
         await self.recheck(state)
+        await self.store.event(
+            self.run["id"],
+            "history_diagnostic",
+            {
+                "action": "read",
+                "archive_ids": [m["archive_id"] for m in rows[0]["messages"]],
+            },
+        )
         return self.output(
             {
                 "segment_id": segment_id,

@@ -61,3 +61,5 @@ Current bundles use schema 6 with 18 business tables including `memory_index_job
 Migration 7 adds optional rebuildable `history_embeddings` (source IDs/hashes, generations and vectors, without copied chat text); see the [history reference](../reference/history-retrieval.md). Logical backup is now schema 7 and omits fact/history vectors; restore requires empty derived indexes and disables auto/use/semantic. Source changes, run-history expiry, and settings/floors purge the historical cache.
 
 Migration 8 adds persistent `history_index_jobs`; logical schema 7 includes this table while omitting vectors. Restore cancels historical jobs and fills an empty job table for schema 4/5/6. See the [history reference](../reference/history-retrieval.md) for budgets and leases.
+
+[Current conversational memory additions](memory-assistant.md)：Migration 10, logical backup schema 8, natural settings, short-lived choices and answer diagnostics. Older sections retain their historical scope.

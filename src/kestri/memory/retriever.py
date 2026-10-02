@@ -108,6 +108,9 @@ class MemoryRetriever:
         self.attempted = False
         self.cached_version: tuple[int, int] | None = None
         self.cached_ids: list[str] = []
+        self.method = "lexical"
+        self.fallback: str | None = None
+        self.profile_ids: set[str] = set()
 
     async def snapshot(self, run: Row) -> tuple[Row, list[Row]]:
         async with self.store.pool.connection() as conn:
@@ -156,6 +159,7 @@ class MemoryRetriever:
                 if len(profile) < 6 and chars + len(row["content"]) <= 2000:
                     profile.append(row)
                     chars += len(row["content"])
+        self.profile_ids = {str(r["id"]) for r in profile}
         output = list(profile)
         ids = {str(r["id"]) for r in profile}
         count = 0
@@ -286,7 +290,9 @@ class MemoryRetriever:
                                 lexical, await self.dense(run, rows)
                             )
                             related = await self.select(self.query, candidates)
+                            self.method = "hybrid"
                     except Exception:
+                        self.fallback = "SemanticUnavailable"
                         await self.store.event(
                             self.budget.control.run_id,
                             "memory_retrieval_fallback",
@@ -311,6 +317,7 @@ class MemoryRetriever:
             ):
                 raise PolicyDenied("MemoryContextChanged")
             related = lexical_rank(rows, self.query)[: self.budget.settings.memory_context_limit]
+            self.method = "lexical"
             final = await self.store.one(
                 "SELECT memory_revision,memory_epoch,memory_retrieval_generation FROM "
                 "kestri.conversations WHERE chat_id=%s",

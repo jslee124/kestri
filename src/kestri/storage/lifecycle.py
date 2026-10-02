@@ -185,7 +185,7 @@ class DataService:
             payload = {
                 "format": FORMAT,
                 "kind": "export" if export else "backup",
-                "schema": 7,
+                "schema": 8,
                 "created_at": datetime.now(UTC).isoformat(),
                 "tables": tables,
                 "evidence_text": attachments,
@@ -236,7 +236,7 @@ class DataService:
 
     async def restore(self, path: Path, *, apply: bool = False) -> dict[str, Any]:
         payload = await disk_operation(read_private, path)
-        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5, 6, 7}:
+        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5, 6, 7, 8}:
             raise PolicyDenied("NotRestorableBackup")
         tables = payload.get("tables")
         attachments = payload.get("evidence_text")
@@ -348,10 +348,21 @@ class DataService:
                     for original in tables[table]:
                         if schema < 6:
                             original = self._upgrade_legacy_row(table, original, schema)
+                        if schema < 8:
+                            original = dict(original)
+                            field = {
+                                "conversations": "memory_choice",
+                                "outbox": "presentation",
+                            }.get(table)
+                            if field:
+                                if field in original:
+                                    raise PolicyDenied("LegacyBackupColumnMismatch")
+                                original[field] = None
                         if set(original) != set(names):
                             raise PolicyDenied("BackupColumnMismatch")
                         row = dict(original)
                         if table == "conversations":
+                            row["memory_choice"] = None
                             row["thread_id"] = None
                             row["memory_epoch"] += 1
                             row["auto_memory_enabled"] = False
@@ -387,6 +398,13 @@ class DataService:
                             )
                         elif table == "usage" and row["state"] == "reserved":
                             row["state"] = "unknown"
+                        if table == "events" and row["kind"] in {
+                            "memory_injected",
+                            "history_diagnostic",
+                        }:
+                            continue
+                        if table == "outbox":
+                            row["presentation"] = None
                         if apply:
                             values = [
                                 Jsonb(row[c["column_name"]])
@@ -527,6 +545,15 @@ class DataService:
                     ),
                     (now, now),
                 )
+            await conn.execute(
+                """
+                UPDATE kestri.conversations SET memory_choice = NULL
+                WHERE memory_choice IS NOT NULL AND (
+                    %s OR (memory_choice->>'expires')::timestamptz <= now()
+                )
+                """,
+                (erase,),
+            )
             # Sources must be invalidated before cascade removes their evidence.
             await conn.execute(
                 "UPDATE kestri.memories SET status='expired',updated_at=now(),revision=revision+1 "

@@ -10,7 +10,7 @@ Updated: 2026-10-02. Implemented owner controls and durable automatic notices.
 
 [MemoryService](../../src/kestri/memory/service.py) resolves targets inside the owner transaction. An unquoted full/partial UUID uses the existing unique-ID check only with explicit ID syntax (`/correct`, `/forget`, `更正记忆`, `忘记记忆`). A target in `关于deadbeef的记忆` remains literal content, even if it looks hexadecimal. Other targets use Unicode NFKC, case-folding and whitespace normalization; a literal substring of at least two characters must identify exactly one active/candidate, unexpired owner record across personal/task scopes. Deleted-task records are excluded. The snapshot checks one more than the configured automatic, explicit and candidate capacity; overflow disables automatic resolution.
 
-If a target is absent or ambiguous, no memory/revision/epoch changes. At most five literal or lexical suggestions show IDs, scope and bounded content. Lexical/semantic relevance never authorizes a mutation. The owner chooses with a new `/correct ID full-content` or `/forget ID` command; that command rechecks the current target. There is no implicit “first suggestion” authorization or pending free-form choice. A successful correction creates an explicit replacement, supersedes the old fact and resets context; forgetting also advances the automatic history floor. Existing run-based idempotence and credential rejection apply.
+If a target is absent or ambiguous, no memory/revision/epoch changes. At most five literal or lexical suggestions show IDs, scope and bounded content. Lexical/semantic relevance never authorizes a mutation. The owner chooses with a new `/correct ID full-content` or `/forget ID` command; that command rechecks the current target. Migration 10 adds explicit numbered replies and buttons with durable ten-minute choices bound to epoch and target revision. A successful correction creates an explicit replacement, supersedes the old fact and resets context; forgetting also advances the automatic history floor. Existing run-based idempotence and credential rejection apply.
 
 ## Automatic change notices
 
@@ -27,3 +27,7 @@ Store connections now pin `search_path=public`. [Migration 9](../../src/kestri/s
 ## Verification
 
 [Control integration tests](../../tests/memory/test_memory_controls_integration.py) cover unique correction/forget, ambiguity and explicit selection, similarity without authorization, legacy Chinese IDs, notice restart/reinforcement, disable/forget revocation, replacement epochs and candidate silence. [Schema tests](../../tests/storage/test_checkpoint_schema_integration.py) preserve legacy migration rows and reject collisions without deleting either copy. [Completion evidence](../development/memory-v2-completion.md) separates controlled tests, synthetic quality, actual Telegram checks and deployment.
+
+[Current conversational memory additions](memory-assistant.md)：Migration 10, logical backup schema 8, natural settings, short-lived choices and answer diagnostics. Older sections retain their historical scope.
+
+Ambiguous targets now support durable numbered replies and owner buttons. Choices bind the operation, epoch, target revision and ten-minute lifetime; execution revalidates and consumes them once.

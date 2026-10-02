@@ -100,3 +100,5 @@ Apply 删除过期归档，清空旧 run 请求/结果并标记 history expired�
 ## 验证与操作边界
 
 [数据生命周期集成测试](../../tests/storage/test_data_lifecycle_integration.py)覆盖空目标、损坏/权限/主人拒绝、隔离、事务/文件失败、序列、忙时推迟、清除/保留、no-follow 清理、取消/租约。它们证明受控边界，不证明全部突然崩溃点或外部副本删除。备份 schema 修改需明确兼容性决策，旧格式不会由无版本差异 importer 自动升级。
+
+[当前对话式记忆增量](../reference/memory-assistant.zh-CN.md)：迁移 10、逻辑备份 schema 8、自然语言设置、短期目标选择与回答诊断。旧版本章节保留原有范围。

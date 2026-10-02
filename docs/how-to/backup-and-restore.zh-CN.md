@@ -42,10 +42,12 @@ uv run kestri data status
 
 ## 处理失败
 
-验证失败不改动目标。受控执行失败回滚记录并清除新证据。突然退出/断电可能留下孤立文件：保留源，检查失败目标，再换独立空数据库/工作区重试。不要删除唯一数据副本。仅接受 schema 4、5、6、7 备份，不接受任意 PostgreSQL dump 或导出。范围和保留政策见[数据参考](../reference/data-lifecycle.zh-CN.md)。
+验证失败不改动目标。受控执行失败回滚记录并清除新证据。突然退出/断电可能留下孤立文件：保留源，检查失败目标，再换独立空数据库/工作区重试。不要删除唯一数据副本。仅接受 schema 4、5、6、7、8 备份，不接受任意 PostgreSQL dump 或导出。范围和保留政策见[数据参考](../reference/data-lifecycle.zh-CN.md)。
 
 schema 6 恢复还关闭记忆 use 和语义召回。重新输入需要的事实后 `/memory use on`；向量部署就绪时再单独开启语义。派生向量不从备份恢复。
 
-迁移 7 增加可选、可重建的 `history_embeddings`（来源 ID/hash、配置代次及向量，无聊天正文副本），详情见[历史参考](../reference/history-retrieval.zh-CN.md)。逻辑备份当前为 schema 7，省略事实与历史向量；恢复需要派生索引为空，并关闭 auto/use/semantic。来源变化、run 历史到期及开关/水位变更会清除历史缓存。
+迁移 7 增加可选、可重建的 `history_embeddings`（来源 ID/hash、配置代次及向量，无聊天正文副本），详情见[历史参考](../reference/history-retrieval.zh-CN.md)。迁移 8 时逻辑备份为 schema 7，当前版本为 schema 8，省略事实与历史向量；恢复需要派生索引为空，并关闭 auto/use/semantic。来源变化、run 历史到期及开关/水位变更会清除历史缓存。
 
 迁移 8 增加持久 `history_index_jobs`；逻辑 schema 7 备份包含此表并继续省略向量，恢复取消历史作业，旧 schema 4/5/6 补空作业。预算及租约契约见[历史参考](../reference/history-retrieval.zh-CN.md)。
+
+[当前对话式记忆增量](../reference/memory-assistant.zh-CN.md)：迁移 10、逻辑备份 schema 8、自然语言设置、短期目标选择与回答诊断。旧版本章节保留原有范围。
