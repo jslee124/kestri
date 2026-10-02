@@ -44,4 +44,5 @@ jobs:
       - run: uv run mypy src
       - run: uv run pytest -q
       - run: uv run python scripts/check_docs.py
+      - run: uv run python scripts/check_sql_readability.py
       - run: uv build

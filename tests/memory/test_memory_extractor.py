@@ -15,6 +15,7 @@ from kestri.memory.extractor import (
     MemoryExtractor,
     MemoryProposal,
     MemorySource,
+    extraction_data,
     validate_proposal,
 )
 from kestri.redaction import Redactor
@@ -264,3 +265,21 @@ async def test_secret_source_rejected_before_model_or_budget() -> None:
     with pytest.raises(PolicyDenied, match="MemorySourceContainsSecret"):
         await extractor.extract(batch(sources=(source,)), cast(Budget, budget))
     assert not budget.reservations
+
+
+def test_complete_anchors_use_unicode_and_exclude_context() -> None:
+    fresh = batch().sources[0].model_copy(update={"text": "我喜欢🍵清茶。"})
+    context = fresh.model_copy(
+        update={"message_id": 9, "role": "assistant", "provenance": "context", "fresh": False}
+    )
+    older_owner = fresh.model_copy(update={"message_id": 8, "fresh": False})
+    source_batch = batch(sources=(older_owner, context, fresh))
+    data = json.loads(extraction_data(source_batch))
+    reference = {"message_id": 10, "quote": fresh.text, "start": 0, "end": len(fresh.text)}
+    assert data["complete_source_refs"] == [reference]
+    assert reference["end"] != len(fresh.text.encode())
+    assert validate(operation(source_refs=[reference]), source_batch).operations
+    with pytest.raises(PolicyDenied, match="InvalidMemorySource"):
+        validate(
+            operation(source_refs=[{**reference, "end": len(fresh.text.encode())}]), source_batch
+        )

@@ -1,0 +1,1 @@
+"""Synthetic evaluation scoring contracts."""

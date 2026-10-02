@@ -1,0 +1,1137 @@
+{
+  "version": "chinese-retrieval-v1",
+  "label_source": "hand-authored synthetic labels; no owner archive; single author, no independent review",
+  "scope": "candidate ranking of eligible personal facts only; not extraction, selector, or history tool acceptance",
+  "facts": [
+    {
+      "id": "f01",
+      "content": "我长期吃素，不吃肉类。"
+    },
+    {
+      "id": "f02",
+      "content": "我不喝咖啡，平时用茶提神。"
+    },
+    {
+      "id": "f03",
+      "content": "我喜欢徒步，不喜欢跑步。"
+    },
+    {
+      "id": "f04",
+      "content": "我日常使用 Python 开发后端服务。"
+    },
+    {
+      "id": "f05",
+      "content": "我主要用 macOS 电脑工作。"
+    },
+    {
+      "id": "f06",
+      "content": "我学新技术时喜欢先看完整示例再读原理。"
+    },
+    {
+      "id": "f07",
+      "content": "我喜欢简洁回答，必要时再展开细节。"
+    },
+    {
+      "id": "f08",
+      "content": "我希望回答用中文，代码标识符用英文。"
+    },
+    {
+      "id": "f09",
+      "content": "我读代码时喜欢描述清楚的变量名。"
+    },
+    {
+      "id": "f10",
+      "content": "我习惯把复杂任务拆成小步骤逐个完成。"
+    },
+    {
+      "id": "f11",
+      "content": "我选择 PostgreSQL 作为个人助手的主数据库。"
+    },
+    {
+      "id": "f12",
+      "content": "我决定先做 Telegram 入口，再做网页界面。"
+    },
+    {
+      "id": "f13",
+      "content": "我的个人助手项目目标是展示智能体工程能力。"
+    },
+    {
+      "id": "f14",
+      "content": "我为个人助手选择 Python 和 LangGraph。"
+    },
+    {
+      "id": "f15",
+      "content": "我决定个人助手的长期记忆保存在本地数据库。"
+    },
+    {
+      "id": "f16",
+      "content": "我决定用人民币预算核算国内 embedding 的费用。"
+    },
+    {
+      "id": "f17",
+      "content": "我以前爱吃辣，现在更喜欢清淡的食物。"
+    },
+    {
+      "id": "f18",
+      "content": "我以前用 VS Code，现在主要使用 Zed 写代码。"
+    },
+    {
+      "id": "f19",
+      "content": "我原来晚上运动，现在改为早晨锻炼。"
+    },
+    {
+      "id": "f20",
+      "content": "我原来偏爱纸质书，现在更常读电子书。"
+    },
+    {
+      "id": "f21",
+      "content": "我之前喜欢详细日报，现在只要每周摘要。"
+    },
+    {
+      "id": "f22",
+      "content": "我原来习惯同步开会，现在更喜欢异步文字沟通。"
+    },
+    {
+      "id": "f23",
+      "content": "我曾优先追求新功能，现在优先改善稳定性。"
+    },
+    {
+      "id": "f24",
+      "content": "我过去偏好自动执行，现在重要操作希望先确认。"
+    }
+  ],
+  "cases": [
+    {
+      "id": "q01-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "给我安排一顿没有荤菜的晚饭",
+      "relevant_ids": [
+        "f01"
+      ]
+    },
+    {
+      "id": "q01-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "饮食建议应该避开什么？",
+      "relevant_ids": [
+        "f01"
+      ]
+    },
+    {
+      "id": "q01-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "做饭时按我的长期饮食习惯安排",
+      "relevant_ids": [
+        "f01"
+      ]
+    },
+    {
+      "id": "q01-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "朋友说我该吃肉，但我自己的饮食习惯是什么？",
+      "relevant_ids": [
+        "f01"
+      ]
+    },
+    {
+      "id": "q02-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "下午犯困了我一般喝什么提神？",
+      "relevant_ids": [
+        "f02"
+      ]
+    },
+    {
+      "id": "q02-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我常喝的提神饮品是哪种？",
+      "relevant_ids": [
+        "f02"
+      ]
+    },
+    {
+      "id": "q02-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "帮我选一种符合我习惯的提神饮料",
+      "relevant_ids": [
+        "f02"
+      ]
+    },
+    {
+      "id": "q02-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "别人喜欢咖啡，我平时提神的选择是什么？",
+      "relevant_ids": [
+        "f02"
+      ]
+    },
+    {
+      "id": "q03-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "周末户外活动按我的爱好怎么安排？",
+      "relevant_ids": [
+        "f03"
+      ]
+    },
+    {
+      "id": "q03-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "这两种户外运动我偏爱哪一个？",
+      "relevant_ids": [
+        "f03"
+      ]
+    },
+    {
+      "id": "q03-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "给我安排符合喜好的户外锻炼",
+      "relevant_ids": [
+        "f03"
+      ]
+    },
+    {
+      "id": "q03-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "同事喜欢跑步，我自己喜欢哪项运动？",
+      "relevant_ids": [
+        "f03"
+      ]
+    },
+    {
+      "id": "q04-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "服务端功能我惯用哪门语言实现？",
+      "relevant_ids": [
+        "f04"
+      ]
+    },
+    {
+      "id": "q04-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "后端代码按我日常习惯该用什么语言？",
+      "relevant_ids": [
+        "f04"
+      ]
+    },
+    {
+      "id": "q04-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "推荐与我开发习惯相符的服务端示例",
+      "relevant_ids": [
+        "f04"
+      ]
+    },
+    {
+      "id": "q04-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "团队有人用 Java，我自己日常后端语言是什么？",
+      "relevant_ids": [
+        "f04"
+      ]
+    },
+    {
+      "id": "q05-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "适合我工作电脑的安装步骤是什么系统？",
+      "relevant_ids": [
+        "f05"
+      ]
+    },
+    {
+      "id": "q05-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我的主力工作机跑什么操作系统？",
+      "relevant_ids": [
+        "f05"
+      ]
+    },
+    {
+      "id": "q05-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "给我准备符合主力系统的环境配置",
+      "relevant_ids": [
+        "f05"
+      ]
+    },
+    {
+      "id": "q05-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "教程写 Windows，我的工作电脑是哪种系统？",
+      "relevant_ids": [
+        "f05"
+      ]
+    },
+    {
+      "id": "q06-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "给我讲新框架该从案例还是理论开始？",
+      "relevant_ids": [
+        "f06"
+      ]
+    },
+    {
+      "id": "q06-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "按我的学习顺序应该先看哪部分？",
+      "relevant_ids": [
+        "f06"
+      ]
+    },
+    {
+      "id": "q06-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "为我设计符合习惯的新技术学习流程",
+      "relevant_ids": [
+        "f06"
+      ]
+    },
+    {
+      "id": "q06-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "有人先看理论，我自己的学习顺序是什么？",
+      "relevant_ids": [
+        "f06"
+      ]
+    },
+    {
+      "id": "q07-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "讲解时篇幅该怎样控制才适合我？",
+      "relevant_ids": [
+        "f07"
+      ]
+    },
+    {
+      "id": "q07-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "回答长短应该遵循我什么偏好？",
+      "relevant_ids": [
+        "f07"
+      ]
+    },
+    {
+      "id": "q07-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按我的习惯概括后再补充解释",
+      "relevant_ids": [
+        "f07"
+      ]
+    },
+    {
+      "id": "q07-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "朋友爱看长文，我希望回答采用什么长度？",
+      "relevant_ids": [
+        "f07"
+      ]
+    },
+    {
+      "id": "q08-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "解释技术方案时我偏好哪种语言？",
+      "relevant_ids": [
+        "f08"
+      ]
+    },
+    {
+      "id": "q08-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "给我回答时自然语言和变量名怎么选择？",
+      "relevant_ids": [
+        "f08"
+      ]
+    },
+    {
+      "id": "q08-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "请按我的语言习惯讲解并举代码例子",
+      "relevant_ids": [
+        "f08"
+      ]
+    },
+    {
+      "id": "q08-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "英文文档很多，我希望你用哪种语言讲解？",
+      "relevant_ids": [
+        "f08"
+      ]
+    },
+    {
+      "id": "q09-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "代码里的命名怎么写比较适合我阅读？",
+      "relevant_ids": [
+        "f09"
+      ]
+    },
+    {
+      "id": "q09-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "变量名应该按我的什么习惯来写？",
+      "relevant_ids": [
+        "f09"
+      ]
+    },
+    {
+      "id": "q09-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "为我生成容易理解命名的代码示例",
+      "relevant_ids": [
+        "f09"
+      ]
+    },
+    {
+      "id": "q09-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "别人习惯单字母，我希望变量怎么命名？",
+      "relevant_ids": [
+        "f09"
+      ]
+    },
+    {
+      "id": "q10-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "面对大任务怎样安排执行顺序适合我？",
+      "relevant_ids": [
+        "f10"
+      ]
+    },
+    {
+      "id": "q10-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "按我的习惯这项复杂工作怎么推进？",
+      "relevant_ids": [
+        "f10"
+      ]
+    },
+    {
+      "id": "q10-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "给我一个符合习惯的大任务执行方式",
+      "relevant_ids": [
+        "f10"
+      ]
+    },
+    {
+      "id": "q10-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "有人一次全做完，我希望复杂任务怎样拆分？",
+      "relevant_ids": [
+        "f10"
+      ]
+    },
+    {
+      "id": "q11-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "个人助理的持久数据我们选了哪种数据库？",
+      "relevant_ids": [
+        "f11"
+      ]
+    },
+    {
+      "id": "q11-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "这个助手最终采用什么主存储？",
+      "relevant_ids": [
+        "f11"
+      ]
+    },
+    {
+      "id": "q11-3",
+      "category": "historical_decision",
+      "split": "holdout",
+      "query": "回顾个人助理项目的数据库选择",
+      "relevant_ids": [
+        "f11"
+      ]
+    },
+    {
+      "id": "q11-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "有人建议 MongoDB，我已经选择什么主数据库？",
+      "relevant_ids": [
+        "f11"
+      ]
+    },
+    {
+      "id": "q12-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "个人助理先接哪个聊天渠道？",
+      "relevant_ids": [
+        "f12"
+      ]
+    },
+    {
+      "id": "q12-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "界面开发顺序当时是怎么定的？",
+      "relevant_ids": [
+        "f12"
+      ]
+    },
+    {
+      "id": "q12-3",
+      "category": "historical_decision",
+      "split": "holdout",
+      "query": "回顾助手入口和网页开发的先后决定",
+      "relevant_ids": [
+        "f12"
+      ]
+    },
+    {
+      "id": "q12-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "有人想先写网页，我已经定下的入口顺序是什么？",
+      "relevant_ids": [
+        "f12"
+      ]
+    },
+    {
+      "id": "q13-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "这个助理作品主要想证明哪方面的能力？",
+      "relevant_ids": [
+        "f13"
+      ]
+    },
+    {
+      "id": "q13-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我做这个项目的展示目标是什么？",
+      "relevant_ids": [
+        "f13"
+      ]
+    },
+    {
+      "id": "q13-3",
+      "category": "historical_decision",
+      "split": "holdout",
+      "query": "回顾个人助手项目的能力展示目的",
+      "relevant_ids": [
+        "f13"
+      ]
+    },
+    {
+      "id": "q13-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "朋友为了卖产品开发，我的助手项目展示目标是什么？",
+      "relevant_ids": [
+        "f13"
+      ]
+    },
+    {
+      "id": "q14-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "助理实现采用哪门语言和哪个编排框架？",
+      "relevant_ids": [
+        "f14"
+      ]
+    },
+    {
+      "id": "q14-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "这个助手的技术组合最终是什么？",
+      "relevant_ids": [
+        "f14"
+      ]
+    },
+    {
+      "id": "q14-3",
+      "category": "historical_decision",
+      "split": "holdout",
+      "query": "回顾助手语言及图编排框架的选择",
+      "relevant_ids": [
+        "f14"
+      ]
+    },
+    {
+      "id": "q14-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "教程用 TypeScript，我给助手定下的技术栈是什么？",
+      "relevant_ids": [
+        "f14"
+      ]
+    },
+    {
+      "id": "q15-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "用户的长期资料当时决定存到哪里？",
+      "relevant_ids": [
+        "f15"
+      ]
+    },
+    {
+      "id": "q15-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "长期记忆的存储位置怎么定的？",
+      "relevant_ids": [
+        "f15"
+      ]
+    },
+    {
+      "id": "q15-3",
+      "category": "historical_decision",
+      "split": "holdout",
+      "query": "回顾助手个人记忆存储的选择",
+      "relevant_ids": [
+        "f15"
+      ]
+    },
+    {
+      "id": "q15-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "有人用云端笔记，我定下的长期记忆保存位置是什么？",
+      "relevant_ids": [
+        "f15"
+      ]
+    },
+    {
+      "id": "q16-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "国内向量模型调用的费用用什么币种核算？",
+      "relevant_ids": [
+        "f16"
+      ]
+    },
+    {
+      "id": "q16-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "这类服务的预算币种怎么定的？",
+      "relevant_ids": [
+        "f16"
+      ]
+    },
+    {
+      "id": "q16-3",
+      "category": "historical_decision",
+      "split": "holdout",
+      "query": "回顾国内向量服务的预算核算决定",
+      "relevant_ids": [
+        "f16"
+      ]
+    },
+    {
+      "id": "q16-4",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "有人按美元算，我给国内 embedding 定的核算币种是什么？",
+      "relevant_ids": [
+        "f16"
+      ]
+    },
+    {
+      "id": "q17-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "现在给我点菜应该选重口味还是清淡？",
+      "relevant_ids": [
+        "f17"
+      ]
+    },
+    {
+      "id": "q17-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我的最新口味偏好是哪种？",
+      "relevant_ids": [
+        "f17"
+      ]
+    },
+    {
+      "id": "q17-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按照更新后的饮食口味帮我选菜",
+      "relevant_ids": [
+        "f17"
+      ]
+    },
+    {
+      "id": "q17-4",
+      "category": "conflicting_preference",
+      "split": "holdout",
+      "query": "不要沿用旧的吃辣习惯，我当前偏好什么口味？",
+      "relevant_ids": [
+        "f17"
+      ]
+    },
+    {
+      "id": "q18-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "现在开发时我主要打开哪个编辑器？",
+      "relevant_ids": [
+        "f18"
+      ]
+    },
+    {
+      "id": "q18-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我的最新主力代码编辑器是什么？",
+      "relevant_ids": [
+        "f18"
+      ]
+    },
+    {
+      "id": "q18-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按照当前编辑器习惯准备配置建议",
+      "relevant_ids": [
+        "f18"
+      ]
+    },
+    {
+      "id": "q18-4",
+      "category": "conflicting_preference",
+      "split": "holdout",
+      "query": "别按旧 VS Code 习惯，我现在主要用什么编辑器？",
+      "relevant_ids": [
+        "f18"
+      ]
+    },
+    {
+      "id": "q19-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "我最新安排把锻炼放在一天的什么时候？",
+      "relevant_ids": [
+        "f19"
+      ]
+    },
+    {
+      "id": "q19-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "目前我习惯什么时候运动？",
+      "relevant_ids": [
+        "f19"
+      ]
+    },
+    {
+      "id": "q19-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按更新后的运动时间安排一天",
+      "relevant_ids": [
+        "f19"
+      ]
+    },
+    {
+      "id": "q19-4",
+      "category": "conflicting_preference",
+      "split": "holdout",
+      "query": "不要照旧安排到晚上，我现在什么时候锻炼？",
+      "relevant_ids": [
+        "f19"
+      ]
+    },
+    {
+      "id": "q20-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "目前我日常阅读更常选哪种载体？",
+      "relevant_ids": [
+        "f20"
+      ]
+    },
+    {
+      "id": "q20-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我的最新阅读载体偏好是什么？",
+      "relevant_ids": [
+        "f20"
+      ]
+    },
+    {
+      "id": "q20-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按现在习惯选合适的书籍形式",
+      "relevant_ids": [
+        "f20"
+      ]
+    },
+    {
+      "id": "q20-4",
+      "category": "conflicting_preference",
+      "split": "holdout",
+      "query": "不要按以前纸书偏好，我现在通常读什么形式？",
+      "relevant_ids": [
+        "f20"
+      ]
+    },
+    {
+      "id": "q21-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "目前报告频率和详细程度怎么安排适合我？",
+      "relevant_ids": [
+        "f21"
+      ]
+    },
+    {
+      "id": "q21-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我的最新简报要求是什么？",
+      "relevant_ids": [
+        "f21"
+      ]
+    },
+    {
+      "id": "q21-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按更新后的简报习惯安排推送",
+      "relevant_ids": [
+        "f21"
+      ]
+    },
+    {
+      "id": "q21-4",
+      "category": "conflicting_preference",
+      "split": "holdout",
+      "query": "不要继续详细日报，我现在需要什么汇报形式？",
+      "relevant_ids": [
+        "f21"
+      ]
+    },
+    {
+      "id": "q22-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "目前讨论工作采用什么交流方式适合我？",
+      "relevant_ids": [
+        "f22"
+      ]
+    },
+    {
+      "id": "q22-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我最新的工作沟通偏好是什么？",
+      "relevant_ids": [
+        "f22"
+      ]
+    },
+    {
+      "id": "q22-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按当前沟通习惯组织协作",
+      "relevant_ids": [
+        "f22"
+      ]
+    },
+    {
+      "id": "q22-4",
+      "category": "conflicting_preference",
+      "split": "holdout",
+      "query": "不要沿用开会习惯，我现在更喜欢怎么交流？",
+      "relevant_ids": [
+        "f22"
+      ]
+    },
+    {
+      "id": "q23-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "现阶段项目迭代我更看重哪个方向？",
+      "relevant_ids": [
+        "f23"
+      ]
+    },
+    {
+      "id": "q23-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我的最新工程优先级是什么？",
+      "relevant_ids": [
+        "f23"
+      ]
+    },
+    {
+      "id": "q23-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按更新后的工程侧重点安排迭代",
+      "relevant_ids": [
+        "f23"
+      ]
+    },
+    {
+      "id": "q23-4",
+      "category": "conflicting_preference",
+      "split": "holdout",
+      "query": "不要按旧的功能优先安排，我目前优先什么？",
+      "relevant_ids": [
+        "f23"
+      ]
+    },
+    {
+      "id": "q24-1",
+      "category": "paraphrase",
+      "split": "development",
+      "query": "现在执行重要操作前我希望怎么处理？",
+      "relevant_ids": [
+        "f24"
+      ]
+    },
+    {
+      "id": "q24-2",
+      "category": "coreference",
+      "split": "development",
+      "query": "我的最新重要操作授权偏好是什么？",
+      "relevant_ids": [
+        "f24"
+      ]
+    },
+    {
+      "id": "q24-3",
+      "category": "paraphrase",
+      "split": "holdout",
+      "query": "按目前重要操作偏好推进执行",
+      "relevant_ids": [
+        "f24"
+      ]
+    },
+    {
+      "id": "q24-4",
+      "category": "conflicting_preference",
+      "split": "holdout",
+      "query": "不要沿用自动执行习惯，我现在希望重要操作先做什么？",
+      "relevant_ids": [
+        "f24"
+      ]
+    },
+    {
+      "id": "temporary_emotion-1",
+      "category": "temporary_emotion",
+      "split": "development",
+      "query": "今天我觉得很烦。",
+      "relevant_ids": []
+    },
+    {
+      "id": "temporary_emotion-2",
+      "category": "temporary_emotion",
+      "split": "development",
+      "query": "刚才那阵雨让我有点难过。",
+      "relevant_ids": []
+    },
+    {
+      "id": "temporary_emotion-3",
+      "category": "temporary_emotion",
+      "split": "development",
+      "query": "此刻我只是有点累。",
+      "relevant_ids": []
+    },
+    {
+      "id": "temporary_emotion-4",
+      "category": "temporary_emotion",
+      "split": "holdout",
+      "query": "今天的排队让我生气。",
+      "relevant_ids": []
+    },
+    {
+      "id": "temporary_emotion-5",
+      "category": "temporary_emotion",
+      "split": "holdout",
+      "query": "这会儿心情不错。",
+      "relevant_ids": []
+    },
+    {
+      "id": "temporary_emotion-6",
+      "category": "temporary_emotion",
+      "split": "holdout",
+      "query": "刚刚有点紧张。",
+      "relevant_ids": []
+    },
+    {
+      "id": "hypothetical-1",
+      "category": "hypothetical",
+      "split": "development",
+      "query": "假如我是一名宇航员，会怎样？",
+      "relevant_ids": []
+    },
+    {
+      "id": "hypothetical-2",
+      "category": "hypothetical",
+      "split": "development",
+      "query": "假设我养了一只恐龙呢？",
+      "relevant_ids": []
+    },
+    {
+      "id": "hypothetical-3",
+      "category": "hypothetical",
+      "split": "development",
+      "query": "如果月球变成糖果会怎样？",
+      "relevant_ids": []
+    },
+    {
+      "id": "hypothetical-4",
+      "category": "hypothetical",
+      "split": "holdout",
+      "query": "假如海水变成牛奶会怎样？",
+      "relevant_ids": []
+    },
+    {
+      "id": "hypothetical-5",
+      "category": "hypothetical",
+      "split": "holdout",
+      "query": "如果我能隐身一分钟呢？",
+      "relevant_ids": []
+    },
+    {
+      "id": "hypothetical-6",
+      "category": "hypothetical",
+      "split": "holdout",
+      "query": "假如树木能说话会怎样？",
+      "relevant_ids": []
+    },
+    {
+      "id": "quotation-1",
+      "category": "quotation",
+      "split": "development",
+      "query": "小说角色说：“我要成为国王”。",
+      "relevant_ids": []
+    },
+    {
+      "id": "quotation-2",
+      "category": "quotation",
+      "split": "development",
+      "query": "电影里的反派说：“宝藏属于我”。",
+      "relevant_ids": []
+    },
+    {
+      "id": "quotation-3",
+      "category": "quotation",
+      "split": "development",
+      "query": "童话里的兔子说：“我在月亮上”。",
+      "relevant_ids": []
+    },
+    {
+      "id": "quotation-4",
+      "category": "quotation",
+      "split": "holdout",
+      "query": "故事里的海盗说：“我藏了金币”。",
+      "relevant_ids": []
+    },
+    {
+      "id": "quotation-5",
+      "category": "quotation",
+      "split": "holdout",
+      "query": "漫画人物说：“我要拯救宇宙”。",
+      "relevant_ids": []
+    },
+    {
+      "id": "quotation-6",
+      "category": "quotation",
+      "split": "holdout",
+      "query": "戏剧台词是：“我是森林的守护者”。",
+      "relevant_ids": []
+    },
+    {
+      "id": "unrelated-1",
+      "category": "unrelated",
+      "split": "development",
+      "query": "企鹅有几种？",
+      "relevant_ids": []
+    },
+    {
+      "id": "unrelated-2",
+      "category": "unrelated",
+      "split": "development",
+      "query": "土星有多少卫星？",
+      "relevant_ids": []
+    },
+    {
+      "id": "unrelated-3",
+      "category": "unrelated",
+      "split": "development",
+      "query": "光速是多少？",
+      "relevant_ids": []
+    },
+    {
+      "id": "unrelated-4",
+      "category": "unrelated",
+      "split": "holdout",
+      "query": "长颈鹿有多高？",
+      "relevant_ids": []
+    },
+    {
+      "id": "unrelated-5",
+      "category": "unrelated",
+      "split": "holdout",
+      "query": "珠穆朗玛峰有多高？",
+      "relevant_ids": []
+    },
+    {
+      "id": "unrelated-6",
+      "category": "unrelated",
+      "split": "holdout",
+      "query": "水的化学式是什么？",
+      "relevant_ids": []
+    }
+  ]
+}

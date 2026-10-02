@@ -108,3 +108,7 @@ Before accepting a documentation change, check local links, English/Chinese pair
 - [Bounded chat history tools](reference/history-retrieval.md)
 
 - [Repository layout](development/repository-layout.md)
+
+- [Chinese memory candidate evaluation](development/memory-evaluation.md)
+
+- [Isolated Memory v2 live validation](development/memory-live-validation.md)

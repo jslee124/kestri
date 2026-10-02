@@ -40,6 +40,43 @@ class MemoryBudget(Budget):
         )
 
 
+# Persist only known static reasons, never arbitrary exception text.
+EXTRACTION_POLICY_REASONS = {
+    "InvalidMemorySource",
+    "InvalidMemorySourceID",
+    "InvalidMemorySourceEligibility",
+    "InvalidMemorySourceQuote",
+    "InvalidMemorySourceSpan",
+    "InvalidMemorySourceOffset",
+    "InvalidMemorySourceSecret",
+    "DuplicateMemorySource",
+    "MemorySourceContainsSecret",
+    "MemorySecretOrEmptyContent",
+    "MemoryScopeMismatch",
+    "InferenceMustRemainCandidate",
+    "MemoryTargetStaleOrUnavailable",
+    "ReinforcementCannotChangeContent",
+    "UnexpectedMemoryTarget",
+    "DuplicateMemoryOperation",
+    "MemoryExpiryNotFuture",
+    "MemoryReviewNotFuture",
+    "InvalidMemoryTimeRange",
+    "MemorySourceUnavailable",
+    "MemorySourceOversized",
+    "MemoryJobChanged",
+}
+
+
+# Bad model-produced source annotations may be regenerated within the existing three-attempt cap.
+# Eligibility, consent, secrets and target policy rejections remain terminal.
+SOURCE_ANNOTATION_RETRY_REASONS = {
+    "InvalidMemorySourceID",
+    "InvalidMemorySourceQuote",
+    "InvalidMemorySourceSpan",
+    "InvalidMemorySourceOffset",
+}
+
+
 class MemoryWorker:
     def __init__(self, store: Store, settings: ResearchSettings, model: BaseChatModel) -> None:
         self.repository = MemoryRepository(store, settings)
@@ -76,11 +113,12 @@ class MemoryWorker:
                 retry=error.status_code >= 500 or error.status_code == 429,
             )
         except PolicyDenied as error:
-            # Only version conflicts are retryable. Policy messages contain fixed categories.
+            # Retry malformed annotations; eligibility and consent failures stay terminal.
             await self.repository.fail(
                 job,
-                "MemoryJobChanged" if str(error) == "MemoryJobChanged" else "PolicyRejected",
-                retry=str(error) == "MemoryJobChanged",
+                str(error) if str(error) in EXTRACTION_POLICY_REASONS else "PolicyRejected",
+                retry=str(error) == "MemoryJobChanged"
+                or str(error) in SOURCE_ANNOTATION_RETRY_REASONS,
             )
         except BudgetExceeded:
             await self.repository.fail(job, "MaintenanceBudgetExceeded")

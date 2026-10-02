@@ -22,3 +22,7 @@ Agent orchestration composes domain services and integrations. Domain code recei
 Tests mirror domain packages under `tests/agent`, `memory`, `history`, `tasks`, `storage`, and `integrations`. Shared isolated fixtures remain in `tests/conftest.py` and helpers in `tests/helpers.py`; tests import helpers by their absolute package name. Configuration tests stay at the test root. The normal `pytest` command discovers all folders.
 
 The [implementation guide](implementation-guide.md) links to current concrete source paths. Historical validation records retain their original evidence boundaries even when links follow moved source files. Runtime references own behavior contracts; design documents own target architecture. Run [checks](../how-to/run-checks.md) after moving modules, including both PostgreSQL variants, docs links, and wheel resource checks.
+
+## Readability
+
+Use four-space SQL indentation, one table column or assignment per line, and separate boolean conditions. Name local rows by their purpose; keep nested trigger branches aligned. Add short comments for consent, invalidation, leases and cost boundaries. `python scripts/check_sql_readability.py` checks tabs, indentation and 100-column width in CI; it is a formatting guard, not a SQL parser or a substitute for review. Embedded Python queries should use multiline SQL when joins or authorization conditions become complex.

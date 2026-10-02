@@ -38,7 +38,7 @@ retriever 在 run 内缓存选中 ID，每次模型请求重查合法事实/版�
 | `KESTRI_EMBEDDING_USD_PER_CNY` | 0.15 | 大于 0、不超过 1；固定操作者换算，不是实时汇率报价 |
 | `KESTRI_EMBEDDING_CONVERSION_VERSION` | `fixed-v1` | 1–64 字符；保留在账本元数据 |
 | `KESTRI_MEMORY_RETRIEVAL_TIMEOUT_SECONDS` | 10 | 大于 0、不超过 30；查询 embedding/筛选总期限 |
-| `KESTRI_MEMORY_DENSE_MIN_SIMILARITY` | 0.30 | -1–1；编码空间的暂定过滤值，**不是已校准质量证据** |
+| `KESTRI_MEMORY_DENSE_MIN_SIMILARITY` | 0.50 | -1–1；合成事实候选初步校准，最终选择质量仍未测量 |
 
 0.5 CNY/百万估算与 2026-10-02 核对的[官方模型价格](https://help.aliyun.com/zh/model-studio/text-embedding-v4)中北京在线文本输入一致，不保证将来账单价格。换算是明确的本地记账策略。HTTP 前按 UTF-8 字节加每文本 256 单位预留，USD 估算向上舍入为 micro-USD，保留原币种估算/费率/版本。按合法用量结算，未知调用保留保守预留。秘密/尺寸本地拒绝先于预留，免费额度不关闭预算。
 

@@ -1,0 +1,48 @@
+{
+  "checked_at": "2026-10-02T09:50:10.393507+00:00",
+  "corpus_version": "chinese-retrieval-v1",
+  "corpus_sha256": "f52254b9942b35b7552ca236b4dc28f0d0466f0a080f52fe8493a9af96a75701",
+  "scorer_version": "eligible-fact-candidates-recall8-v1",
+  "lexical_version": "nfkc-ascii-overlapping-cjk-bigram-v1",
+  "scope": "candidate ranking of eligible personal facts only; not extraction, selector, or history tool acceptance",
+  "label_source": "hand-authored synthetic labels; no owner archive; single author, no independent review",
+  "case_count": 120,
+  "categories": {
+    "paraphrase": 58,
+    "coreference": 24,
+    "historical_decision": 6,
+    "conflicting_preference": 8,
+    "temporary_emotion": 6,
+    "hypothetical": 6,
+    "quotation": 6,
+    "unrelated": 6
+  },
+  "mode": "offline_lexical",
+  "limits": [
+    "single-author synthetic labels",
+    "same facts across query splits",
+    "candidate errors are not final injection errors",
+    "no extraction, selector, database, history, Telegram or restart acceptance"
+  ],
+  "metrics": {
+    "lexical": {
+      "development": {
+        "relevant_labels": 48,
+        "retrieved_relevant_at_8": 34,
+        "recall_at_8": 0.7083333333333334,
+        "negative_queries": 12,
+        "negative_queries_with_candidates": 0,
+        "false_candidate_rate": 0.0
+      },
+      "holdout": {
+        "relevant_labels": 48,
+        "retrieved_relevant_at_8": 41,
+        "recall_at_8": 0.8541666666666666,
+        "negative_queries": 12,
+        "negative_queries_with_candidates": 0,
+        "false_candidate_rate": 0.0
+      }
+    }
+  },
+  "annotation_note": "Category labels corrected after collection; query texts and relevant IDs unchanged."
+}

@@ -1,0 +1,229 @@
+{
+  "checked_at": "2026-10-02T10:13:52.615627+00:00",
+  "base_commit": "33e6395006cd2e6289aef12ca88221c48a9894f2",
+  "runtime": "local Python from modified feature worktree, isolated PostgreSQL 17 with pgvector 0.8.7",
+  "source_manifest_sha256": "4b9906e0d48fe495e67bf46e1900d68dd9a142cbaecf74f0f29f9b540fdc0c08",
+  "scope": "synthetic messages through existing owner-only Telegram bot; production poller paused and restored; no production database migration",
+  "fact_threshold": 0.5,
+  "history_threshold": 0.3,
+  "checks": {
+    "natural_chat_auto_extraction": true,
+    "query_embedding_and_selector_billed": true,
+    "fresh_context_recall": true,
+    "process_restart_recall": true,
+    "forget_removes_vector": true,
+    "forget_answer_abstains": true,
+    "actual_history_search_and_full_read": true,
+    "schema7_restore_quarantines": true,
+    "restored_answer_abstains": true
+  },
+  "failures_and_reprobes": "Initial preference failed source validation twice. Added complete Unicode reference anchors and static diagnostics. New preference succeeded. Project source first failed; one manual isolated re-probe succeeded. No automatic re-probe of policy failures occurred in those runs. Final code allows only malformed ID/quote/span/offset annotations to retry under the existing three-attempt cap; controlled tests cover exhaustion, live exhaustion was not tested.",
+  "limits": [
+    "small synthetic workflow, not precision/recall gate acceptance",
+    "history threshold remains provisional",
+    "no production vector-volume upgrade",
+    "latest code is not persistently deployed",
+    "screenshot and private backup remain local, not in Git",
+    "costs are configured estimates, not invoices"
+  ],
+  "source": {
+    "switches": {
+      "auto_memory_enabled": true,
+      "memory_use_enabled": true,
+      "memory_semantic_enabled": true
+    },
+    "memories": [
+      {
+        "status": "active",
+        "count": 3
+      },
+      {
+        "status": "forgotten",
+        "count": 1
+      }
+    ],
+    "extraction_jobs": [
+      {
+        "status": "failed",
+        "attempts": 2,
+        "error_type": "InvalidMemorySource"
+      },
+      {
+        "status": "succeeded",
+        "attempts": 1,
+        "error_type": null
+      },
+      {
+        "status": "succeeded",
+        "attempts": 1,
+        "error_type": null
+      },
+      {
+        "status": "succeeded",
+        "attempts": 2,
+        "error_type": null
+      },
+      {
+        "status": "succeeded",
+        "attempts": 1,
+        "error_type": null
+      }
+    ],
+    "history_jobs": [
+      {
+        "status": "succeeded",
+        "count": 5
+      }
+    ],
+    "fact_vectors": 3,
+    "history_vectors": 2,
+    "usage": [
+      {
+        "kind": "history_index",
+        "state": "recorded",
+        "count": 7,
+        "amount_micro_usd": 141
+      },
+      {
+        "kind": "history_retrieval",
+        "state": "recorded",
+        "count": 2,
+        "amount_micro_usd": 2
+      },
+      {
+        "kind": "memory_extract",
+        "state": "recorded",
+        "count": 7,
+        "amount_micro_usd": 5147
+      },
+      {
+        "kind": "memory_index",
+        "state": "recorded",
+        "count": 5,
+        "amount_micro_usd": 7
+      },
+      {
+        "kind": "memory_query",
+        "state": "recorded",
+        "count": 3,
+        "amount_micro_usd": 13
+      },
+      {
+        "kind": "memory_select",
+        "state": "recorded",
+        "count": 3,
+        "amount_micro_usd": 717
+      },
+      {
+        "kind": "model",
+        "state": "recorded",
+        "count": 9,
+        "amount_micro_usd": 4503
+      }
+    ],
+    "latest_answer": "查询结果（未联网，仅历史记录）：\n\n相关记录只有一个片段，已完整读取（未截断），共 3 条消息，时间 2026-10-02T10:07:09–10:07:12 UTC。\n\n决定内容（来源：owner 消息，archive_id 31 / telegram_id 145）：\n- 项目命名：演示项目命名为“雪松”\n- 入口：先用 Telegram\n- 数据存储：PostgreSQL\n\n原话：“我决定把演示项目命名为雪松，入口先用 Telegram，数据存 PostgreSQL。请只回复收到，不搜索。”\n\n来源消息 ID：\n- owner 决定：telegram_id 145（archive_id 31）\n- 助手回复：telegram_id 146（archive_id 32）内容为“已收到，正在处理。你可以用 /stop 停止当前执行。”\n- 助手回复：telegram_id 147（archive_id 33）内容为“收到”\n\n说明与限制：\n- 上述三点是 owner 的历史决定陈述，属于历史证据；助手的“收到”不是授权或执行确认。\n- 检索范围：最近至多 200 条本人可选入的对话轮次，索引轮次仅 1 条，未索引部分仅走词法匹配；这不等于全量归档召回，可能仍有未被覆盖的相关记录。\n- 我未联网，未调用网络工具，本次结论仅基于历史检索与片段读取。",
+    "checkpoint_tool_names": [
+      "search_history",
+      "search_history",
+      "read_history_segment"
+    ]
+  },
+  "restored": {
+    "switches": {
+      "auto_memory_enabled": false,
+      "memory_use_enabled": false,
+      "memory_semantic_enabled": false
+    },
+    "memories": [
+      {
+        "status": "forgotten",
+        "count": 1
+      },
+      {
+        "status": "quarantined",
+        "count": 3
+      }
+    ],
+    "extraction_jobs": [
+      {
+        "status": "cancelled",
+        "attempts": 2,
+        "error_type": "RestoreQuarantine"
+      },
+      {
+        "status": "cancelled",
+        "attempts": 1,
+        "error_type": "RestoreQuarantine"
+      },
+      {
+        "status": "cancelled",
+        "attempts": 1,
+        "error_type": "RestoreQuarantine"
+      },
+      {
+        "status": "cancelled",
+        "attempts": 2,
+        "error_type": "RestoreQuarantine"
+      },
+      {
+        "status": "cancelled",
+        "attempts": 1,
+        "error_type": "RestoreQuarantine"
+      }
+    ],
+    "history_jobs": [
+      {
+        "status": "cancelled",
+        "count": 5
+      }
+    ],
+    "fact_vectors": 0,
+    "history_vectors": 0,
+    "usage": [
+      {
+        "kind": "history_index",
+        "state": "recorded",
+        "count": 7,
+        "amount_micro_usd": 141
+      },
+      {
+        "kind": "history_retrieval",
+        "state": "recorded",
+        "count": 2,
+        "amount_micro_usd": 2
+      },
+      {
+        "kind": "memory_extract",
+        "state": "recorded",
+        "count": 7,
+        "amount_micro_usd": 5147
+      },
+      {
+        "kind": "memory_index",
+        "state": "recorded",
+        "count": 5,
+        "amount_micro_usd": 7
+      },
+      {
+        "kind": "memory_query",
+        "state": "recorded",
+        "count": 3,
+        "amount_micro_usd": 13
+      },
+      {
+        "kind": "memory_select",
+        "state": "recorded",
+        "count": 3,
+        "amount_micro_usd": 717
+      },
+      {
+        "kind": "model",
+        "state": "recorded",
+        "count": 10,
+        "amount_micro_usd": 4863
+      }
+    ],
+    "latest_answer": "我不知道。\n\n原因说明：我这次会话里没有可用的雪松项目历史记录。当前有效记忆是空的，且我没有在本次对话中查阅过任何历史片段；按规定这类问题需要依据历史证据，而我没有可引用的证据，所以不能给出入口或数据库的答案。\n\n如果你希望，我可以用历史检索工具去查（需你同意后我再进行）。",
+    "checkpoint_tool_names": []
+  }
+}

@@ -22,3 +22,7 @@ Agent 编排组合领域服务及外部集成。领域代码接收应用提供�
 测试按领域放入 `tests/agent`、`memory`、`history`、`tasks`、`storage` 和 `integrations`。共享隔离 fixture 保留在 `tests/conftest.py`，helper 在 `tests/helpers.py`，测试使用绝对包名导入 helper。配置测试保留在测试顶层。正常 `pytest` 命令会发现全部目录。
 
 [实现阅读指南](implementation-guide.zh-CN.md)指向当前具体源码路径。历史验收记录保留当时的证据边界，即使源码链接跟随移动。运行参考维护行为契约，设计文档维护目标架构。移动模块后执行[检查](../how-to/run-checks.zh-CN.md)，包括两套 PostgreSQL、文档链接及 wheel 资源检查。
+
+## 可读性
+
+SQL 使用四空格缩进，每行一个表字段或赋值，布尔条件分行。局部记录变量按职责命名，触发器嵌套分支对齐。在同意水位、失效、租约和计费边界添加简短解释。CI 中的 `python scripts/check_sql_readability.py` 检查 tab、缩进和 100 列宽；它是排版检查，不是 SQL 解析器，也不能代替审查。Python 中的内嵌 SQL 在连接或授权条件复杂时应使用多行文本。

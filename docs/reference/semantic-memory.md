@@ -38,7 +38,7 @@ Product configuration uses `DASHSCOPE_API_KEY` plus `KESTRI_EMBEDDING_BASE_URL`,
 | `KESTRI_EMBEDDING_USD_PER_CNY` | 0.15 | Greater than 0, at most 1; fixed operator conversion, not a live FX quote |
 | `KESTRI_EMBEDDING_CONVERSION_VERSION` | `fixed-v1` | 1–64 characters; retained in ledger metadata |
 | `KESTRI_MEMORY_RETRIEVAL_TIMEOUT_SECONDS` | 10 | Greater than 0, at most 30; combined query embedding/selection deadline |
-| `KESTRI_MEMORY_DENSE_MIN_SIMILARITY` | 0.30 | -1–1; provisional recipe-specific filter, **not calibrated quality evidence** |
+| `KESTRI_MEMORY_DENSE_MIN_SIMILARITY` | 0.50 | -1–1; initial synthetic fact-candidate calibration; final selection quality remains unmeasured |
 
 The configured 0.5 CNY/million estimate matches Beijing online text input in the [official model pricing](https://help.aliyun.com/zh/model-studio/text-embedding-v4) checked on 2026-10-02; it is not a guaranteed future invoice price. Conversion is an explicit local accounting policy. Reserve before HTTP using UTF-8 bytes plus 256 units per text, round USD estimates upward to micro-USD, and retain original CNY estimates/rate/version. Settle validated usage; unknown calls retain conservative reservations. Local secret/size rejection happens before reservation. Free quota does not disable budgets.
 

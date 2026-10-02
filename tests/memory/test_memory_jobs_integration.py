@@ -2,7 +2,7 @@ import asyncio
 import hashlib
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from psycopg.errors import CheckViolation
@@ -558,3 +558,50 @@ async def test_crashed_final_attempt_cancels_and_preserves_unknown_cost(store: A
     assert len(usage) == 3 and all(
         r == {"state": "unknown", "amount_micro_usd": 1000} for r in usage
     )
+
+
+@pytest.mark.parametrize(
+    ("reason", "expected"),
+    [
+        ("InvalidMemorySource", "InvalidMemorySource"),
+        ("private arbitrary provider body", "PolicyRejected"),
+    ],
+)
+async def test_policy_failure_retains_only_known_static_reason(
+    store: Any, reason: str, expected: str
+) -> None:
+    await enable(store)
+    await enqueue(store)
+
+    class RejectedExtractor:
+        async def extract(self, *args: Any) -> Any:
+            raise PolicyDenied(reason)
+
+    worker = MemoryWorker(store, research_settings(), cast(Any, object()))
+    worker.extractor = cast(Any, RejectedExtractor())
+    assert await worker.work_once(111)
+    job = await store.one("SELECT * FROM kestri.memory_jobs")
+    assert job["status"] == "failed"
+    assert job["error_type"] == expected
+    assert await store.one("SELECT id FROM kestri.memories") is None
+
+
+async def test_source_annotation_retries_are_bounded_and_never_publish(store: Any) -> None:
+    await enable(store)
+    await enqueue(store)
+
+    class BadAnnotationExtractor:
+        async def extract(self, *args: Any) -> Any:
+            raise PolicyDenied("InvalidMemorySourceOffset")
+
+    worker = MemoryWorker(store, research_settings(), cast(Any, object()))
+    worker.extractor = cast(Any, BadAnnotationExtractor())
+    for attempt in range(1, 4):
+        assert await worker.work_once(111)
+        job = await store.one("SELECT * FROM kestri.memory_jobs")
+        assert job["attempts"] == attempt
+        assert job["status"] == ("retry_wait" if attempt < 3 else "failed")
+        assert job["error_type"] == "InvalidMemorySourceOffset"
+        assert await store.one("SELECT id FROM kestri.memories") is None
+        await store.execute("UPDATE kestri.memory_jobs SET available_at=now()")
+    assert not await worker.work_once(111)

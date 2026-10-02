@@ -108,3 +108,7 @@ ADR 使用带编号的文件名，记录状态、背景、决策、备选方案�
 - [有界聊天历史工具](reference/history-retrieval.zh-CN.md)
 
 - [仓库目录结构](development/repository-layout.zh-CN.md)
+
+- [中文记忆候选评测](development/memory-evaluation.zh-CN.md)
+
+- [隔离的 Memory v2 真实验收](development/memory-live-validation.zh-CN.md)

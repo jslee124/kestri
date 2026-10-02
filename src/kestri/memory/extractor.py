@@ -33,6 +33,10 @@ Only fresh, direct owner messages substantiate facts. Assistant/context messages
 references. Exclude quoted, hypothetical, forwarded or third-party statements, jokes, temporary
 emotions, credentials and sensitive personal facts without explicit retention intent.
 Output at most eight atomic facts, with exact verbatim quotes and Python Unicode offsets.
+Prefer copying one supplied complete_source_refs entry verbatim for each supporting fresh message.
+Those references already have exact start/end positions. Do not estimate Unicode offsets or use
+Telegram IDs. A whole-message quote can support several separate atomic facts. Context messages
+are not eligible references. Smaller spans are allowed only when their offsets and quote are exact.
 Direct statements may create/reinforce/replace facts; inference ONLY becomes a candidate.
 Never promote a guess through repetition. Reinforce equivalent facts, replace only an explicitly
 changed attribute; preserve compatible preferences separately. Do not infer a task association.
@@ -169,17 +173,18 @@ def validate_proposal(
         refs = []
         for ref in op.source_refs:
             source = sources.get(ref.message_id)
-            if (
-                source is None
-                or source.role != "owner"
-                or source.provenance != "direct"
-                or not source.fresh
-                or not ref.start < ref.end <= len(source.text)
-                or source.text[ref.start : ref.end] != ref.quote
-                or redactor.text(ref.quote) != ref.quote
-                or SECRET_PATTERN.search(ref.quote)
-            ):
-                raise PolicyDenied("InvalidMemorySource")
+            if source is None:
+                raise PolicyDenied("InvalidMemorySourceID")
+            if source.role != "owner" or source.provenance != "direct" or not source.fresh:
+                raise PolicyDenied("InvalidMemorySourceEligibility")
+            if ref.quote not in source.text:
+                raise PolicyDenied("InvalidMemorySourceQuote")
+            if not ref.start < ref.end <= len(source.text):
+                raise PolicyDenied("InvalidMemorySourceSpan")
+            if source.text[ref.start : ref.end] != ref.quote:
+                raise PolicyDenied("InvalidMemorySourceOffset")
+            if redactor.text(ref.quote) != ref.quote or SECRET_PATTERN.search(ref.quote):
+                raise PolicyDenied("InvalidMemorySourceSecret")
             refs.append(source)
         if len({r.message_id for r in op.source_refs}) != len(op.source_refs):
             raise PolicyDenied("DuplicateMemorySource")
@@ -221,6 +226,17 @@ def validate_proposal(
     return ValidatedExtraction(batch, tuple(normalized))
 
 
+def extraction_data(batch: ExtractionBatch) -> str:
+    data = batch.model_dump(mode="json")
+    # Give the model exact evidence anchors; publication still validates every quote and offset.
+    data["complete_source_refs"] = [
+        {"message_id": source.message_id, "quote": source.text, "start": 0, "end": len(source.text)}
+        for source in batch.sources
+        if source.fresh and source.role == "owner" and source.provenance == "direct"
+    ]
+    return json.dumps(data, ensure_ascii=False)
+
+
 class MemoryExtractor:
     def __init__(self, model: BaseChatModel, redactor: Redactor) -> None:
         self.model = model
@@ -229,7 +245,7 @@ class MemoryExtractor:
     async def extract(self, batch: ExtractionBatch, budget: Budget) -> ValidatedExtraction:
         from kestri.agent.research import BoundsMiddleware
 
-        data = json.dumps(batch.model_dump(mode="json"), ensure_ascii=False)
+        data = extraction_data(batch)
         if self.redactor.text(data) != data or any(
             SECRET_PATTERN.search(text)
             for text in (

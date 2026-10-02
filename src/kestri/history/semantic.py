@@ -184,6 +184,6 @@ class HistorySemantic:
         dense = [
             allowed[r["owner_message_id"]]
             for r in eligible
-            if r["similarity"] >= history.budget.settings.memory_dense_min_similarity
+            if r["similarity"] >= history.budget.settings.history_dense_min_similarity
         ][:20]
         return dense, len(eligible)
