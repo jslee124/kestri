@@ -26,3 +26,5 @@ The [implementation guide](implementation-guide.md) links to current concrete so
 ## Readability
 
 Use four-space SQL indentation, one table column or assignment per line, and separate boolean conditions. Name local rows by their purpose; keep nested trigger branches aligned. Add short comments for consent, invalidation, leases and cost boundaries. `python scripts/check_sql_readability.py` checks tabs, indentation and 100-column width in CI; it is a formatting guard, not a SQL parser or a substitute for review. Embedded Python queries should use multiline SQL when joins or authorization conditions become complex.
+
+Synthetic collectors are organized under `scripts/memory_evaluation/`, with a thin quality CLI at `scripts/evaluate_memory_quality.py`. Their ledger/scorers and extraction, selection, history calibration and answer harness stay separate. Shared automatic-memory test fixtures live in `tests/memory/helpers.py`; test modules do not import other test modules.

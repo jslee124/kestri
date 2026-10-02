@@ -211,6 +211,8 @@ class Application:
         row = await self.store.claim_delivery()
         if row is None:
             return False
+        if not await self.store.delivery_current(row):
+            return True
         try:
             identity = await self.telegram.send(row["chat_id"], row["content"], row["reply_to"])
         except DeliveryProblem as error:

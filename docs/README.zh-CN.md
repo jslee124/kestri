@@ -103,7 +103,7 @@ ADR 使用带编号的文件名，记录状态、背景、决策、备选方案�
 
 接受文档变更前，检查本地链接、英中配对、标识符一致性与格式。软件实现后，将验收标准关联到实际验证证据，区分离线检查、真实 API 行为、恢复测试与部署验收。
 
-- [语义记忆运行参考](reference/semantic-memory.zh-CN.md)：已实现向量索引/混合召回、主人开关、币种记账和可选部署；真实质量未验收。
+- [语义记忆运行参考](reference/semantic-memory.zh-CN.md)：已实现向量索引/混合召回、主人开关、币种记账和可选部署；合成回归与隔离真实验收已通过；独立人工质量尚未测量。
 
 - [有界聊天历史工具](reference/history-retrieval.zh-CN.md)
 
@@ -114,3 +114,5 @@ ADR 使用带编号的文件名，记录状态、背景、决策、备选方案�
 - [隔离的 Memory v2 真实验收](development/memory-live-validation.zh-CN.md)
 
 - [Memory v2 部署](how-to/deploy-memory-v2.zh-CN.md)：当前机器人升级、重启证据与回退流程。
+
+- [记忆控制](reference/memory-controls.zh-CN.md)与[Memory v2 完成记录](development/memory-v2-completion.zh-CN.md)。

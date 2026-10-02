@@ -2,6 +2,8 @@
 
 [简体中文](memory-evaluation.zh-CN.md) · [Documentation](../README.md)
 
+Current status (2026-10-02): the [completion record](../development/memory-v2-completion.md) supersedes earlier pending/deferred statements below. Natural controls, change notices, extraction/selection/history-answer synthetic evaluation and history calibration are implemented. Independent human and longitudinal quality are unmeasured.
+
 ## Corpus and scope
 
 The [versioned corpus](../../evals/memory/chinese-retrieval-v1.json) has 24 synthetic eligible personal facts and 120 hand-labeled queries: 96 positive and 24 negative. Categories cover paraphrases, references to the user's habits, remembered project decisions, changed preferences, temporary emotions, hypotheses, quotations and unrelated questions. Labels have one author and no independent review. These are candidate-ranking labels, not extraction labels: quoted and hypothetical messages must not become facts, but this runner does not execute the extractor. The reference category does not test multi-turn anaphora resolution. Changed preferences are single current records containing before/after wording; database supersession is tested separately.
@@ -34,10 +36,12 @@ The [offline report](evidence/memory-lexical-v1.json) and [live embedding report
 | Dense, 0.50 | 46/48 | 47/48 | 1/12 | 0/12 |
 | Hybrid, 0.50 | 46/48 | 48/48 | 1/12 | 0/12 |
 
-The fact default changes to **0.50**, a bounded initial calibration for this configured fact recipe. An explicit environment override still wins. Historical recall gets an independent `KESTRI_HISTORY_DENSE_MIN_SIMILARITY` default 0.30; it remains provisional. Neither threshold is a universal semantic relevance rule.
+The fact default changes to **0.50**, a bounded initial calibration for this configured fact recipe. An explicit environment override still wins. Historical recall originally used a provisional 0.30; the independently calibrated `KESTRI_HISTORY_DENSE_MIN_SIMILARITY` now defaults to 0.60. Neither threshold is a universal semantic relevance rule.
 
-## Remaining acceptance
+## Evidence boundary
 
-The small synthetic corpus and twelve negative holdout queries cannot establish the complete Memory v2 quality gates. Development false candidate rate is still 1/12, exceeding 5%, and neither active-fact precision nor extraction recall nor final injection rate has been measured. Add independent labels, harder same-topic distractors, multi-label and multi-turn cases, and live extractor/selector/answer scoring before full acceptance.
+Candidate ranking alone does not measure extraction or final injection. The final collection below adds those stages. Independent human/domain labels, harder multi-turn cases and longitudinal user quality remain unmeasured.
 
-The running production image remains older, while [isolated live validation](memory-live-validation.md) now verifies a bounded latest-worktree Telegram workflow, restart, forget and restore quarantine. That separate evidence does not establish corpus-wide extraction/selection quality or persistent deployment. See [progress](memory-v2-progress.md).
+## Final quality collection
+
+The candidate results above describe the earlier increment. The [completion record](memory-v2-completion.md) now records actual extraction, final related-fact assembly, full-turn history calibration and registered-tool historical answers. History now defaults to 0.60. Synthetic regression and isolated Telegram acceptance have passed; independent labels and long-term personal-chat quality remain unmeasured. See the deployment procedure for the running version.

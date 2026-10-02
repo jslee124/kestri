@@ -2,9 +2,9 @@
 
 [English](deploy-memory-v2.md) · [文档](../README.zh-CN.md)
 
-更新：2026-10-02。本文同时记录已完成的本地部署。完整语义质量验收仍待完成。
+更新：2026-10-02。本文同时记录已完成的本地部署。最终实现与合成回归验收已完成；独立人工/长期质量尚未测量。
 
-## 当前部署
+## 早期迁移 8 部署
 
 源码 `b1d7bf27450fde2f595db85a2374d12fb5884824` 正运行于原有 `kestri-app-1`，容器中的 Python/SQL hash 与该版本一致。PostgreSQL 保留 `kestri_database`、同一 PostgreSQL 17 Alpine 基础镜像与数据目录；可选覆盖文件增加 pgvector 0.8.7。数据库从迁移 4 升至 8。迁移刚完成时，原有 27 条运行记录、113 条消息不变。原工作区卷保留。
 
@@ -75,6 +75,12 @@ docker run --rm -i --network none \
 
 检查恢复记录和 Telegram offset/待处理工作后，使用同一私有 Compose 文件启动回退 app。同一个 bot 只能运行一个 poller。快照回退不包含快照后接收的聊天，且可能重新暴露 Telegram 待处理更新。保留升级后的卷以便对账，不删除任一数据副本。原始 dump 恢复与 `kestri data restore` 不同；后者接受逻辑备份并主动隔离状态。
 
-## 剩余工作
+## 最终升级到迁移 9
 
-常驻部署已完成，显式授权开关关闭。独立提取/选择/回答评分、历史 JSON 阈值校准、自然语言模糊纠正和主动记忆变更提示仍待完成。候选召回指标与合成真实工作流不代表完整 [Memory v2 质量门槛](../design/memory-v2.zh-CN.md)通过。
+最终[部署记录](../development/evidence/memory-v2-final-deployment.json)替代上文迁移 8 的运行版本。保留现有卷，将新的原始数据库备份恢复到独立数据库，其四个 checkpoint 表行数与正式库一致。迁移 9 把框架表移到 `public`，保留全部行数（10 migration、161 checkpoint、111 blob、251 write）。最终轮询进程启动前，原正式业务记录仍为 27 run/117 message。工作区归档已逐文件读取验证（86 条目）。auto/use/semantic 设置保持不变，最终镜像及后续健康/重启/UI 证据记录在 JSON。
+
+最终私有快照位于 `.kestri/deployment/2026-10-02-final-memory-v2/`；旧应用保留为 `kestri-app:rollback-before-final-memory-v2`。迁移 9 回滚使用独立卷、该镜像与新 `database-before.dump`/`workspace-before.tar.gz`，沿用上文隔离恢复流程。早期回滚文件对应原迁移 4 快照，不能与最终迁移 8 备份混淆。不要让旧应用直接连接已迁移框架表的数据库，其默认 search path 可能新建第二套表。只运行一个轮询进程，启动前协调快照后的更新。
+
+[Memory v2 完成记录](../development/memory-v2-completion.zh-CN.md)记录已实现的自然控制/提示、合成提取/选择/历史回答评测和历史阈值校准。独立人工/领域评审与长期质量尚未测量。
+
+最终私有 `rollback.compose.yaml` 选择 pgvector（迁移 8 备份所需）、保留的应用镜像和独立 `kestri-final-memory-v2-rollback` 项目。已检查配置；未启动回滚轮询进程。

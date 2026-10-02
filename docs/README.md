@@ -103,7 +103,7 @@ ADRs use a numbered filename and record status, context, decision, alternatives,
 
 Before accepting a documentation change, check local links, English/Chinese pairing, identifier consistency, and formatting. Once software exists, connect acceptance criteria to actual validation evidence. Distinguish offline checks, live API behavior, recovery tests, and deployment acceptance.
 
-- [Semantic memory runtime](reference/semantic-memory.md): implemented vector indexing/hybrid recall, owner switches, currency accounting and optional deployment; live quality remains unverified.
+- [Semantic memory runtime](reference/semantic-memory.md): implemented vector indexing/hybrid recall, owner switches, currency accounting and optional deployment; synthetic regression and isolated live acceptance passed; independent human quality remains unmeasured.
 
 - [Bounded chat history tools](reference/history-retrieval.md)
 
@@ -114,3 +114,5 @@ Before accepting a documentation change, check local links, English/Chinese pair
 - [Isolated Memory v2 live validation](development/memory-live-validation.md)
 
 - [Memory v2 deployment](how-to/deploy-memory-v2.md): current bot upgrade, restart evidence and rollback procedure.
+
+- [Memory controls](reference/memory-controls.md) and [Memory v2 completion](development/memory-v2-completion.md).

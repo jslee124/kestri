@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 41 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: all 42 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -257,7 +257,7 @@ Business transactions · [Detailed mechanism](../reference/database.md)
 | --- | --- |
 | `chunks` | Split at 3500 characters and supply an empty-result placeholder. |
 | `Store.__init__` | Construct/capture component dependencies and local state; see owning guide for defaults/resources. |
-| `Store.open` | Open pool and run four idempotent business migrations under a transaction lock. |
+| `Store.open` | Open pool and run nine idempotent migrations under a transaction lock. |
 | `Store.close` | Close connection pool. |
 | `Store.one` | Fetch one dictionary row using parameterized SQL. |
 | `Store.all` | Fetch dictionary rows using parameterized SQL. |
@@ -396,7 +396,7 @@ Scoped evidence filesystem · [Detailed mechanism](../design/tools.md)
 
 ## SQL and engineering files
 
-The four [SQL migrations](../reference/database.md) define business state, cyclic task foreign keys, epochs, and restore fields; the saver owns separate framework tables. The following files also shape implementation:
+The nine [SQL migrations](../reference/database.md) define business state, cyclic task foreign keys, epochs, and restore fields; the saver owns separate framework tables. The following files also shape implementation:
 
 | File | Contract |
 | --- | --- |
@@ -467,3 +467,9 @@ The [layout guide](repository-layout.md) describes six domain packages, correspo
 [HistorySemantic](../../src/kestri/history/semantic.py) provides bounded encoding/query caching/exact ranking in `rank` and owner/source-locked revalidation in `publish`; `history_space`/`encode_turn` version complete-message encoding. [Migration 7](../../src/kestri/storage/sql/007_history_embeddings.sql) owns source/settings/run-expiry invalidation.
 
 [HistoryIndexWorker](../../src/kestri/history/worker.py) provides source-version jobs, leases, atomic publication and bounded recovery through `claim`/`ensure_active`/`publish`/`fail`/`work_once`; `HistoryJobControl`/`HistoryIndexBudget` gate billing through valid leases and shared maintenance caps. [Migration 8](../../src/kestri/storage/sql/008_history_jobs.sql) owns archive/settings/source-expiry enqueue and revocation.
+
+## Memory controls and quality collectors
+
+[Intent module](../../src/kestri/memory/intent.py): `NaturalMemoryControl` stores parsed owner targets, `natural_control` recognizes anchored commands, and `normalize_target` performs literal matching normalization. `MemoryService._resolve_target` checks a complete bounded owner snapshot; suggestions never authorize writes. `Store._delivery_current` and `delivery_current` suppress revoked automatic notices before sending. [Control reference](../reference/memory-controls.md) owns their policy.
+
+[Quality CLI](../../scripts/evaluate_memory_quality.py) dispatches four collectors under [scripts/memory_evaluation](../../scripts/memory_evaluation/__init__.py). `common.py` owns bounded in-memory accounting/scorers; `extraction.py`, `selection.py`, `history.py` and `history_answer.py` separate collection responsibilities. Evaluation outputs are synthetic evidence, not production ledger records.

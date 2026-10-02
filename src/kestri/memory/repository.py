@@ -467,6 +467,7 @@ class MemoryRepository:
                 assert counts is not None
                 active, candidate = counts["active"], counts["candidate"]
                 replacements = False
+                notice_lines: list[str] = []
                 for op in result.operations:
                     status = "candidate" if op.action == "candidate" else "active"
                     if op.action == "reinforce":
@@ -534,6 +535,9 @@ class MemoryRepository:
                                 (op.target_memory_id,),
                             )
                             replacements = True
+                    if op.action in {"create", "replace"}:
+                        verb = "更新" if op.action == "replace" else "记住"
+                        notice_lines.append(f"{verb} {str(memory_id)[:8]}：{op.content[:120]}")
                     for ref in op.source_refs:
                         await conn.execute(
                             "INSERT INTO "
@@ -566,7 +570,16 @@ class MemoryRepository:
                     "committed' WHERE id=%s",
                     (job["run_id"],),
                 )
-                # No unsolicited Telegram notice; /memory exposes content and sources.
+                if notice_lines:
+                    notice = "记忆已更新：\n" + "\n".join(notice_lines)
+                    notice += "\n不准确时可用 /correct ID 完整内容；不再保留可用 /forget ID。"
+                    await conn.execute(
+                        """
+                        INSERT INTO kestri.outbox (id, chat_id, run_id, content)
+                        VALUES (%s, %s, %s, %s)
+                        """,
+                        (uuid4(), job["chat_id"], job["run_id"], self.store.redactor.text(notice)),
+                    )
                 return len(result.operations)
 
     async def fail(self, job: Row, error_type: str, retry: bool = False) -> None:

@@ -95,7 +95,7 @@ async def test_default_off_enqueue_index_once_and_version_invalidation(vector_st
     )
     assert len(await store.all("SELECT * FROM kestri.memory_index_jobs WHERE status='queued'")) == 1
     await store.open()
-    assert (await store.one("SELECT max(version) AS n FROM kestri.migrations"))["n"] == 8
+    assert (await store.one("SELECT max(version) AS n FROM kestri.migrations"))["n"] == 9
 
 
 async def test_index_lease_reclaim_forget_and_closed_setting_guard(vector_store: Any) -> None:

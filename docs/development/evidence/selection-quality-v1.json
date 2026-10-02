@@ -1,0 +1,777 @@
+{
+  "recorded_at": "2026-10-02T13:00:24.091870+00:00",
+  "stage": "selection",
+  "scorer": "active-extraction-and-final-selection-v1",
+  "model": "deepseek-flash",
+  "results": {
+    "q01-1": {
+      "selected_ids": [
+        "f01",
+        "f17"
+      ],
+      "error": null
+    },
+    "q01-2": {
+      "selected_ids": [
+        "f01",
+        "f17"
+      ],
+      "error": null
+    },
+    "q01-3": {
+      "selected_ids": [
+        "f01",
+        "f17"
+      ],
+      "error": null
+    },
+    "q01-4": {
+      "selected_ids": [
+        "f01",
+        "f17"
+      ],
+      "error": null
+    },
+    "q02-1": {
+      "selected_ids": [
+        "f02"
+      ],
+      "error": null
+    },
+    "q02-2": {
+      "selected_ids": [
+        "f02"
+      ],
+      "error": null
+    },
+    "q02-3": {
+      "selected_ids": [
+        "f02"
+      ],
+      "error": null
+    },
+    "q02-4": {
+      "selected_ids": [
+        "f02"
+      ],
+      "error": null
+    },
+    "q03-1": {
+      "selected_ids": [
+        "f03"
+      ],
+      "error": null
+    },
+    "q03-2": {
+      "selected_ids": [
+        "f03"
+      ],
+      "error": null
+    },
+    "q03-3": {
+      "selected_ids": [
+        "f03",
+        "f19"
+      ],
+      "error": null
+    },
+    "q03-4": {
+      "selected_ids": [
+        "f03"
+      ],
+      "error": null
+    },
+    "q04-1": {
+      "selected_ids": [
+        "f04"
+      ],
+      "error": null
+    },
+    "q04-2": {
+      "selected_ids": [
+        "f04",
+        "f14",
+        "f08",
+        "f18"
+      ],
+      "error": null
+    },
+    "q04-3": {
+      "selected_ids": [
+        "f04",
+        "f06",
+        "f10"
+      ],
+      "error": null
+    },
+    "q04-4": {
+      "selected_ids": [
+        "f04"
+      ],
+      "error": null
+    },
+    "q05-1": {
+      "selected_ids": [
+        "f05",
+        "f10"
+      ],
+      "error": null
+    },
+    "q05-2": {
+      "selected_ids": [
+        "f05"
+      ],
+      "error": null
+    },
+    "q05-3": {
+      "selected_ids": [
+        "f05"
+      ],
+      "error": null
+    },
+    "q05-4": {
+      "selected_ids": [
+        "f05"
+      ],
+      "error": null
+    },
+    "q06-1": {
+      "selected_ids": [
+        "f06"
+      ],
+      "error": null
+    },
+    "q06-2": {
+      "selected_ids": [
+        "f06"
+      ],
+      "error": null
+    },
+    "q06-3": {
+      "selected_ids": [
+        "f06",
+        "f10"
+      ],
+      "error": null
+    },
+    "q06-4": {
+      "selected_ids": [
+        "f06"
+      ],
+      "error": null
+    },
+    "q07-1": {
+      "selected_ids": [],
+      "error": null
+    },
+    "q07-2": {
+      "selected_ids": [
+        "f07"
+      ],
+      "error": null
+    },
+    "q07-3": {
+      "selected_ids": [
+        "f07",
+        "f10",
+        "f21"
+      ],
+      "error": null
+    },
+    "q07-4": {
+      "selected_ids": [],
+      "error": null
+    },
+    "q08-1": {
+      "selected_ids": [
+        "f22",
+        "f06"
+      ],
+      "error": null
+    },
+    "q08-2": {
+      "selected_ids": [
+        "f08",
+        "f09",
+        "f07"
+      ],
+      "error": null
+    },
+    "q08-3": {
+      "selected_ids": [
+        "f08",
+        "f09",
+        "f06",
+        "f10"
+      ],
+      "error": null
+    },
+    "q08-4": {
+      "selected_ids": [
+        "f08"
+      ],
+      "error": null
+    },
+    "q09-1": {
+      "selected_ids": [
+        "f08",
+        "f09"
+      ],
+      "error": null
+    },
+    "q09-2": {
+      "selected_ids": [
+        "f09",
+        "f08"
+      ],
+      "error": null
+    },
+    "q09-3": {
+      "selected_ids": [
+        "f06",
+        "f08",
+        "f09"
+      ],
+      "error": null
+    },
+    "q09-4": {
+      "selected_ids": [
+        "f08",
+        "f09"
+      ],
+      "error": null
+    },
+    "q10-1": {
+      "selected_ids": [
+        "f10",
+        "f24"
+      ],
+      "error": null
+    },
+    "q10-2": {
+      "selected_ids": [
+        "f10",
+        "f22",
+        "f24"
+      ],
+      "error": null
+    },
+    "q10-3": {
+      "selected_ids": [
+        "f10",
+        "f24"
+      ],
+      "error": null
+    },
+    "q10-4": {
+      "selected_ids": [
+        "f10",
+        "f24"
+      ],
+      "error": null
+    },
+    "q11-1": {
+      "selected_ids": [
+        "f11",
+        "f15"
+      ],
+      "error": null
+    },
+    "q11-2": {
+      "selected_ids": [
+        "f11",
+        "f15"
+      ],
+      "error": null
+    },
+    "q11-3": {
+      "selected_ids": [
+        "f11",
+        "f15",
+        "f14"
+      ],
+      "error": null
+    },
+    "q11-4": {
+      "selected_ids": [
+        "f11"
+      ],
+      "error": null
+    },
+    "q12-1": {
+      "selected_ids": [
+        "f12"
+      ],
+      "error": null
+    },
+    "q12-2": {
+      "selected_ids": [
+        "f12"
+      ],
+      "error": null
+    },
+    "q12-3": {
+      "selected_ids": [
+        "f12"
+      ],
+      "error": null
+    },
+    "q12-4": {
+      "selected_ids": [
+        "f12"
+      ],
+      "error": null
+    },
+    "q13-1": {
+      "selected_ids": [
+        "f13"
+      ],
+      "error": null
+    },
+    "q13-2": {
+      "selected_ids": [
+        "f13"
+      ],
+      "error": null
+    },
+    "q13-3": {
+      "selected_ids": [
+        "f13"
+      ],
+      "error": null
+    },
+    "q13-4": {
+      "selected_ids": [
+        "f13"
+      ],
+      "error": null
+    },
+    "q14-1": {
+      "selected_ids": [
+        "f14"
+      ],
+      "error": null
+    },
+    "q14-2": {
+      "selected_ids": [
+        "f14",
+        "f11",
+        "f15",
+        "f13"
+      ],
+      "error": null
+    },
+    "q14-3": {
+      "selected_ids": [
+        "f14",
+        "f13"
+      ],
+      "error": null
+    },
+    "q14-4": {
+      "selected_ids": [
+        "f14",
+        "f11",
+        "f15",
+        "f12",
+        "f13"
+      ],
+      "error": null
+    },
+    "q15-1": {
+      "selected_ids": [
+        "f15"
+      ],
+      "error": null
+    },
+    "q15-2": {
+      "selected_ids": [
+        "f15"
+      ],
+      "error": null
+    },
+    "q15-3": {
+      "selected_ids": [
+        "f15",
+        "f11"
+      ],
+      "error": null
+    },
+    "q15-4": {
+      "selected_ids": [
+        "f15",
+        "f11"
+      ],
+      "error": null
+    },
+    "q16-1": {
+      "selected_ids": [
+        "f16"
+      ],
+      "error": null
+    },
+    "q16-2": {
+      "selected_ids": [
+        "f16"
+      ],
+      "error": null
+    },
+    "q16-3": {
+      "selected_ids": [
+        "f16"
+      ],
+      "error": null
+    },
+    "q16-4": {
+      "selected_ids": [
+        "f16"
+      ],
+      "error": null
+    },
+    "q17-1": {
+      "selected_ids": [
+        "f17",
+        "f01"
+      ],
+      "error": null
+    },
+    "q17-2": {
+      "selected_ids": [
+        "f17"
+      ],
+      "error": null
+    },
+    "q17-3": {
+      "selected_ids": [
+        "f17"
+      ],
+      "error": null
+    },
+    "q17-4": {
+      "selected_ids": [
+        "f17",
+        "f01"
+      ],
+      "error": null
+    },
+    "q18-1": {
+      "selected_ids": [
+        "f18"
+      ],
+      "error": null
+    },
+    "q18-2": {
+      "selected_ids": [
+        "f18"
+      ],
+      "error": null
+    },
+    "q18-3": {
+      "selected_ids": [
+        "f18"
+      ],
+      "error": null
+    },
+    "q18-4": {
+      "selected_ids": [
+        "f18"
+      ],
+      "error": null
+    },
+    "q19-1": {
+      "selected_ids": [
+        "f19"
+      ],
+      "error": null
+    },
+    "q19-2": {
+      "selected_ids": [
+        "f19"
+      ],
+      "error": null
+    },
+    "q19-3": {
+      "selected_ids": [
+        "f19"
+      ],
+      "error": null
+    },
+    "q19-4": {
+      "selected_ids": [
+        "f19"
+      ],
+      "error": null
+    },
+    "q20-1": {
+      "selected_ids": [
+        "f20"
+      ],
+      "error": null
+    },
+    "q20-2": {
+      "selected_ids": [
+        "f20"
+      ],
+      "error": null
+    },
+    "q20-3": {
+      "selected_ids": [
+        "f20"
+      ],
+      "error": null
+    },
+    "q20-4": {
+      "selected_ids": [
+        "f20"
+      ],
+      "error": null
+    },
+    "q21-1": {
+      "selected_ids": [
+        "f21"
+      ],
+      "error": null
+    },
+    "q21-2": {
+      "selected_ids": [
+        "f21"
+      ],
+      "error": null
+    },
+    "q21-3": {
+      "selected_ids": [
+        "f21",
+        "f22",
+        "f24"
+      ],
+      "error": null
+    },
+    "q21-4": {
+      "selected_ids": [
+        "f21"
+      ],
+      "error": null
+    },
+    "q22-1": {
+      "selected_ids": [
+        "f22"
+      ],
+      "error": null
+    },
+    "q22-2": {
+      "selected_ids": [
+        "f22",
+        "f21",
+        "f24"
+      ],
+      "error": null
+    },
+    "q22-3": {
+      "selected_ids": [
+        "f22"
+      ],
+      "error": null
+    },
+    "q22-4": {
+      "selected_ids": [
+        "f22",
+        "f21",
+        "f07"
+      ],
+      "error": null
+    },
+    "q23-1": {
+      "selected_ids": [
+        "f13",
+        "f23"
+      ],
+      "error": null
+    },
+    "q23-2": {
+      "selected_ids": [
+        "f23"
+      ],
+      "error": null
+    },
+    "q23-3": {
+      "selected_ids": [
+        "f23",
+        "f13"
+      ],
+      "error": null
+    },
+    "q23-4": {
+      "selected_ids": [
+        "f23",
+        "f24"
+      ],
+      "error": null
+    },
+    "q24-1": {
+      "selected_ids": [
+        "f24"
+      ],
+      "error": null
+    },
+    "q24-2": {
+      "selected_ids": [
+        "f24"
+      ],
+      "error": null
+    },
+    "q24-3": {
+      "selected_ids": [
+        "f24",
+        "f23"
+      ],
+      "error": null
+    },
+    "q24-4": {
+      "selected_ids": [
+        "f24"
+      ],
+      "error": null
+    },
+    "temporary_emotion-1": {
+      "selected_ids": [],
+      "error": null
+    },
+    "temporary_emotion-2": {
+      "selected_ids": [],
+      "error": null
+    },
+    "temporary_emotion-3": {
+      "selected_ids": [],
+      "error": null
+    },
+    "temporary_emotion-4": {
+      "selected_ids": [],
+      "error": null
+    },
+    "temporary_emotion-5": {
+      "selected_ids": [],
+      "error": null
+    },
+    "temporary_emotion-6": {
+      "selected_ids": [],
+      "error": null
+    },
+    "hypothetical-1": {
+      "selected_ids": [],
+      "error": null
+    },
+    "hypothetical-2": {
+      "selected_ids": [],
+      "error": null
+    },
+    "hypothetical-3": {
+      "selected_ids": [],
+      "error": null
+    },
+    "hypothetical-4": {
+      "selected_ids": [],
+      "error": null
+    },
+    "hypothetical-5": {
+      "selected_ids": [],
+      "error": null
+    },
+    "hypothetical-6": {
+      "selected_ids": [],
+      "error": null
+    },
+    "quotation-1": {
+      "selected_ids": [],
+      "error": null
+    },
+    "quotation-2": {
+      "selected_ids": [],
+      "error": null
+    },
+    "quotation-3": {
+      "selected_ids": [],
+      "error": null
+    },
+    "quotation-4": {
+      "selected_ids": [],
+      "error": null
+    },
+    "quotation-5": {
+      "selected_ids": [],
+      "error": null
+    },
+    "quotation-6": {
+      "selected_ids": [],
+      "error": null
+    },
+    "unrelated-1": {
+      "selected_ids": [],
+      "error": null
+    },
+    "unrelated-2": {
+      "selected_ids": [],
+      "error": null
+    },
+    "unrelated-3": {
+      "selected_ids": [],
+      "error": null
+    },
+    "unrelated-4": {
+      "selected_ids": [],
+      "error": null
+    },
+    "unrelated-5": {
+      "selected_ids": [],
+      "error": null
+    },
+    "unrelated-6": {
+      "selected_ids": [],
+      "error": null
+    }
+  },
+  "metrics": {
+    "development": {
+      "expected_labels": 48,
+      "selected_relevant_at_8": 46,
+      "recall_at_8": 0.9583333333333334,
+      "negative_queries": 12,
+      "negative_queries_with_related_injection": 0,
+      "false_related_injection_rate": 0.0,
+      "scope": "assembled related facts; always-present communication profile excluded",
+      "failed_cases": 0
+    },
+    "holdout": {
+      "expected_labels": 48,
+      "selected_relevant_at_8": 47,
+      "recall_at_8": 0.9791666666666666,
+      "negative_queries": 12,
+      "negative_queries_with_related_injection": 0,
+      "false_related_injection_rate": 0.0,
+      "scope": "assembled related facts; always-present communication profile excluded",
+      "failed_cases": 0
+    }
+  },
+  "limitations": [
+    "synthetic single-author labels; no independent human review",
+    "no owner archive, database or Telegram access",
+    "related injection is measured separately from always-present profile",
+    "keyword/action extraction matching is conservative, not human semantic scoring"
+  ],
+  "corpus_sha256": "f52254b9942b35b7552ca236b4dc28f0d0466f0a080f52fe8493a9af96a75701",
+  "corpus_version": "chinese-retrieval-v1",
+  "case_count": 120,
+  "usage": {
+    "cap_micro_usd": 500000,
+    "estimated_and_unknown_micro_usd": 24683,
+    "requests": 96,
+    "states": {
+      "recorded": 96
+    },
+    "kinds": {
+      "memory_select": 96
+    },
+    "accounting": "in-memory evaluation estimates; outside production ledger; not invoices"
+  },
+  "threshold": 0.5,
+  "embedding_evidence_sha256": "997e5a69035e789c2368f8a4702d1db694a95f1835d5a7da0309165adcebce88"
+}

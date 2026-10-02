@@ -2,6 +2,8 @@
 
 [简体中文](semantic-memory.zh-CN.md) · [Documentation](../README.md)
 
+Current status (2026-10-02): the [completion record](../development/memory-v2-completion.md) supersedes earlier pending/deferred statements below. Natural controls, change notices, extraction/selection/history-answer synthetic evaluation and history calibration are implemented. Independent human and longitudinal quality are unmeasured.
+
 Updated: 2026-10-02. Feature-branch implementation is deployed with auto/semantic off; live private-dialogue quality evaluation remains incomplete. See the [deployment record](../how-to/deploy-memory-v2.md).
 
 ## Controls and data disclosure

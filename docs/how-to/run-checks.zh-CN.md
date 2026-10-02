@@ -12,7 +12,7 @@
 uv sync --locked
 uv run ruff check src tests scripts
 uv run ruff format --check src tests scripts
-uv run mypy src
+uv run mypy src scripts
 uv run pytest -q
 uv run python scripts/check_docs.py
 ```

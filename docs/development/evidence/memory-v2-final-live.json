@@ -1,0 +1,24 @@
+{
+  "scope": "isolated synthetic Chrome Telegram acceptance; no production archive copied",
+  "checks": {
+    "automatic_notice": true,
+    "natural_correction": true,
+    "ambiguous_target_no_mutation": true,
+    "explicit_forget": true,
+    "restart_retains_facts": true,
+    "unique_natural_forget": true,
+    "auto_off": true
+  },
+  "memory_states": {
+    "active": 1,
+    "superseded": 1,
+    "forgotten": 2
+  },
+  "production_preserved_before_upgrade": {
+    "runs": 27,
+    "messages": 117,
+    "migration": 8
+  },
+  "offset_transfer": "final isolated offset copied back to avoid replay into production",
+  "source_scope": "current final memory implementation; actual IDs and owner identifiers omitted"
+}

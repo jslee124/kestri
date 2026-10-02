@@ -2,6 +2,8 @@
 
 [简体中文](personal-memory.zh-CN.md) · [Documentation](../README.md)
 
+Current status (2026-10-02): the [completion record](../development/memory-v2-completion.md) supersedes earlier pending/deferred statements below. Natural controls, change notices, extraction/selection/history-answer synthetic evaluation and history calibration are implemented. Independent human and longitudinal quality are unmeasured.
+
 Updated: 2026-10-02. Scope: M3, after the [Telegram setup tutorial](telegram-research.md).
 
 ## Save and use a preference

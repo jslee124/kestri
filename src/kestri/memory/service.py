@@ -6,6 +6,8 @@ from typing import Any
 from uuid import uuid4
 
 from kestri.errors import PolicyDenied
+from kestri.memory.intent import natural_control, normalize_target
+from kestri.memory.retriever import lexical_rank
 from kestri.settings import ResearchSettings
 from kestri.storage.store import Row, Store
 
@@ -14,6 +16,9 @@ def memory_instruction(text: str) -> tuple[str, str] | None:
     match = re.match(r"^/(remember|correct|forget)(?:@[\w]+)?(?:\s+(.*))?$", text.strip(), re.S)
     if match:
         return match[1], (match[2] or "").strip()
+    natural = natural_control(text)
+    if natural:
+        return natural.action, text.strip()
     for prefix, action in (
         ("记住", "remember"),
         ("更正记忆", "correct"),
@@ -75,6 +80,7 @@ class MemoryService:
         if run["kind"] != "memory_control" or instruction is None:
             raise PolicyDenied("MemoryAuthorizationUnavailable")
         action, body = instruction
+        natural = natural_control(run["request"])
         async with self.store.pool.connection() as conn:
             async with conn.transaction():
                 await conn.execute(
@@ -148,8 +154,14 @@ class MemoryService:
                         expires=expires,
                     )
                 else:
+                    if natural:
+                        body, notice = await self._resolve_target(
+                            conn, run, natural.target, allow_id=natural.id_target
+                        )
+                        if body and natural.action == "correct":
+                            body += " " + (natural.content or "")
                     parts = body.split(maxsplit=1)
-                    if re.fullmatch(r"[0-9a-f-]{8,36}", parts[0]):
+                    if parts and re.fullmatch(r"[0-9a-f-]{8,36}", parts[0]):
                         targets = await (
                             await conn.execute(
                                 (
@@ -218,6 +230,50 @@ class MemoryService:
                     (run["id"], self.store.redactor.text(notice)),
                 )
                 return notice
+
+    async def _resolve_target(
+        self, conn: Any, run: Row, target: str, *, allow_id: bool = False
+    ) -> tuple[str, str]:
+        """Only a unique literal owner target authorizes mutation; otherwise offer IDs."""
+        limit = (
+            self.settings.auto_memory_limit
+            + self.settings.memory_limit
+            + self.settings.memory_candidate_limit
+        )
+        rows = await (
+            await conn.execute(
+                """
+                SELECT m.*
+                FROM kestri.memories AS m
+                LEFT JOIN kestri.tasks AS t ON t.id = m.task_id
+                WHERE m.chat_id = %s
+                  AND m.status IN ('active', 'candidate')
+                  AND (m.expires_at IS NULL OR m.expires_at > now())
+                  AND (m.task_id IS NULL OR t.status != 'deleted')
+                ORDER BY m.updated_at DESC, m.id
+                LIMIT %s
+                """,
+                (run["chat_id"], limit + 1),
+            )
+        ).fetchall()
+        needle = normalize_target(target)
+        if allow_id and re.fullmatch(r"[0-9a-f-]{8,36}", target.strip()):
+            return needle, ""
+        literal = [row for row in rows if needle in normalize_target(row["content"])]
+        if len(needle) >= 2 and len(literal) == 1 and len(rows) <= limit:
+            return str(literal[0]["id"]), ""
+        suggestions = literal[:5] if len(needle) >= 2 else []
+        if not suggestions:
+            suggestions = lexical_rank(rows[:limit], target)[:5]
+        if not suggestions:
+            return "", "未作变更。没有找到明确目标；请用 /memory 查看，再提供记忆 ID。"
+        lines = ["未作变更。请确认下面的目标，再发送 /correct ID 完整新内容 或 /forget ID："]
+        for row in suggestions:
+            scope = "个人" if row["task_id"] is None else "任务 " + str(row["task_id"])[:8]
+            lines.append(f"{str(row['id'])[:8]} · {scope} · {row['content'][:120]}")
+        if len(rows) > limit:
+            lines.append("可选记忆超出检查上限；请使用明确 ID。")
+        return "", "\n".join(lines)
 
     async def _insert(
         self,

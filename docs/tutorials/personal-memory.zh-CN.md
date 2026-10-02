@@ -2,6 +2,8 @@
 
 [English](personal-memory.md) · [文档](../README.zh-CN.md)
 
+当前状态（2026-10-02）：[完成记录](../development/memory-v2-completion.zh-CN.md)替代下文早期的待完成/暂缓状态。自然控制、变更提示、提取/选择/历史回答合成评测和历史校准均已实现；独立人工与长期质量尚未测量。
+
 更新日期：2026-10-02。范围：M3，需先完成 [Telegram 配置教程](telegram-research.zh-CN.md)。
 
 ## 保存和使用偏好

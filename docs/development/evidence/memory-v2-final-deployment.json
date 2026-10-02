@@ -1,0 +1,47 @@
+{
+  "scope": "local existing Telegram service final upgrade; health and UI recorded after startup",
+  "before_migration": 8,
+  "after_migration": 9,
+  "checkpoint_rows_before": {
+    "checkpoint_migrations": 10,
+    "checkpoints": 161,
+    "checkpoint_blobs": 111,
+    "checkpoint_writes": 251
+  },
+  "checkpoint_rows_after": {
+    "checkpoint_migrations": 10,
+    "checkpoints": 161,
+    "checkpoint_blobs": 111,
+    "checkpoint_writes": 251
+  },
+  "restored_checkpoint_rows": {
+    "checkpoint_migrations": 10,
+    "checkpoints": 161,
+    "checkpoint_blobs": 111,
+    "checkpoint_writes": 251
+  },
+  "production_preserved_before_start": {
+    "runs": 27,
+    "messages": 117
+  },
+  "workspace_archive_entries": 86,
+  "app_image": "sha256:612b4b05f3badb924a586f118dae4314a13f87a7da5b55f72fb801d7784bfa71",
+  "pgvector_image": "sha256:e30f754ee1942a7a5f1ef8e22aad313b3890ee406bd50a3cbdc03fe8b4aa8d0f",
+  "backup_sha256": "02ffa813d2c5781181860394b03f63ad95faa6f6b8d80a503eb2a34fc4ad47dc",
+  "owner_switches": "preserved; auto off, use on, semantic off",
+  "rollback_image": "kestri-app:rollback-before-final-memory-v2",
+  "rollback_note": "restore the pre-final database into separate volumes with the preserved pre-final app image; migration 9 moves framework tables and old default search_path must not create another table set",
+  "source_files_verified": 51,
+  "source_manifest_sha256": "76f083ba1436ba1f48e97c1e79ecf3cb3929f58b5310c44e28b6cff8f19afef3",
+  "container_health": "healthy",
+  "checks": {
+    "database_dump_restore": true,
+    "workspace_read_check": true,
+    "checkpoint_counts_preserved": true,
+    "deployed_source_hashes_match": true,
+    "production_telegram_before_restart": true,
+    "production_restart": true,
+    "production_telegram_after_restart": true,
+    "settings_preserved": true
+  }
+}

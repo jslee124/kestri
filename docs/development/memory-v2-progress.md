@@ -2,6 +2,8 @@
 
 [简体中文](memory-v2-progress.zh-CN.md) · [Documentation](../README.md)
 
+Current status (2026-10-02): the [completion record](../development/memory-v2-completion.md) supersedes earlier pending/deferred statements below. Natural controls, change notices, extraction/selection/history-answer synthetic evaluation and history calibration are implemented. Independent human and longitudinal quality are unmeasured.
+
 Date: 2026-10-02. Scope: proposal extraction, durable runtime, semantic fact recall, and bounded lexical history tools on `codex/memory-v2`. [Specification](../design/memory-v2.md) remains the complete target. The verified revision is now deployed to the owner’s Telegram bot; auto/semantic remain off. See the [deployment record](../how-to/deploy-memory-v2.md).
 
 ## Proposal extraction
@@ -58,6 +60,6 @@ Eight migrations now use expanded definitions/conditions, descriptive trigger ro
 
 Revision `b1d7bf2` now runs in the existing bot with migration 8 and pgvector 0.8.7. Original volumes/data were retained; a full pre-upgrade dump was restored in a disposable database, and the workspace archive was read-checked. Both containers are healthy; actual Telegram controls responded before/after restart. Auto/semantic remain off. The prior paragraph records the earlier isolated acceptance; this later deployment supersedes its old-runtime status. See the [deployment record and rollback procedure](../how-to/deploy-memory-v2.md).
 
-## Remaining increments
+## Final implementation
 
-Next: independent harder labels, live extraction/selection/answer scoring, historical JSON calibration, and broader isolated provider/Telegram acceptance. Persistent deployment and restart checks passed with auto/semantic off; full quality acceptance remains separate. Candidate evaluation does not satisfy all quality gates. Communication-profile markers remain provisional. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.
+Current final collectors and acceptance are recorded in the [completion record](memory-v2-completion.md). Natural-language ambiguity controls and proactive notices are implemented. Independent human/domain review and longitudinal accuracy remain unmeasured.

@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 41 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：全部 42 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -257,7 +257,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 | --- | --- |
 | `chunks` | 按 3500 字符分块，空结果补占位符。 |
 | `Store.__init__` | 构造/捕获该组件依赖与本地状态；默认值和资源创建见负责文档。 |
-| `Store.open` | 开连接池，在事务锁下执行四份幂等业务迁移。 |
+| `Store.open` | 开连接池，在事务锁下执行九份幂等迁移。 |
 | `Store.close` | 关闭连接池。 |
 | `Store.one` | 用参数 SQL 取一条字典行。 |
 | `Store.all` | 用参数 SQL 取字典行列表。 |
@@ -396,7 +396,7 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 
 ## SQL 与工程文件
 
-四份 [SQL 迁移](../reference/database.zh-CN.md) 定义业务表、任务循环外键、记忆代次与恢复字段；saver 单独维护框架表。下列文件也是实现的一部分：
+九份 [SQL 迁移](../reference/database.zh-CN.md) 定义业务表、任务循环外键、记忆代次与恢复字段；saver 单独维护框架表。下列文件也是实现的一部分：
 
 | 文件 | 契约 |
 | --- | --- |
@@ -467,3 +467,9 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 [HistorySemantic](../../src/kestri/history/semantic.py) 的 `rank` 提供有界按需编码/查询缓存/精确排序，`publish` 在主人/来源锁内复查并发布派生索引；`history_space`/`encode_turn` 版本化完整消息配方。[迁移 7](../../src/kestri/storage/sql/007_history_embeddings.sql)维护来源、设置及 run 到期失效。
 
 [HistoryIndexWorker](../../src/kestri/history/worker.py) 的 `claim`/`ensure_active`/`publish`/`fail`/`work_once` 提供来源版本作业、租约、原子发布及有限恢复；`HistoryJobControl`/`HistoryIndexBudget` 将计费限定于有效租约和共享维护额度。[迁移 8](../../src/kestri/storage/sql/008_history_jobs.sql)维护归档/设置/来源到期入队与撤销。
+
+## 记忆控制与质量采集器
+
+[意图模块](../../src/kestri/memory/intent.py)：`NaturalMemoryControl` 保存主人目标，`natural_control` 识别完整控制，`normalize_target` 规范化字面目标。`MemoryService._resolve_target` 检查完整有界主人快照，候选不授权修改。`Store._delivery_current` 和 `delivery_current` 在发送前阻止已撤销的自动提示。[控制参考](../reference/memory-controls.zh-CN.md)定义策略。
+
+[质量 CLI](../../scripts/evaluate_memory_quality.py)分发 [scripts/memory_evaluation](../../scripts/memory_evaluation/__init__.py) 下四个采集器。`common.py` 负责有界内存记账/评分，`extraction.py`、`selection.py`、`history.py`、`history_answer.py` 分离采集职责。输出是合成证据，不是生产账本记录。

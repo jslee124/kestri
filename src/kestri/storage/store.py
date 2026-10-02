@@ -33,7 +33,7 @@ class Store:
                 "row_factory": dict_row,
                 "prepare_threshold": 0,
                 "connect_timeout": 10,
-                "options": "-c statement_timeout=10000 -c lock_timeout=5000",
+                "options": "-c statement_timeout=10000 -c lock_timeout=5000 -c search_path=public",
             },
             min_size=1,
             max_size=6,
@@ -74,6 +74,10 @@ class Store:
                 )
                 await conn.execute(
                     files("kestri").joinpath("storage/sql/008_history_jobs.sql").read_text(),
+                    prepare=False,
+                )
+                await conn.execute(
+                    files("kestri").joinpath("storage/sql/009_checkpoint_schema.sql").read_text(),
                     prepare=False,
                 )
 
@@ -872,20 +876,99 @@ class Store:
     async def claim_delivery(self) -> Row | None:
         async with self.pool.connection() as conn:
             async with conn.transaction():
-                row = await (
-                    await conn.execute(
-                        "SELECT *,next_attempt<=now() AS ready FROM kestri.outbox WHERE "
-                        "status='pending' ORDER BY sequence LIMIT 1 FOR UPDATE SKIP LOCKED"
-                    )
-                ).fetchone()
-                if row and row["ready"]:
+                while True:
+                    row = await (
+                        await conn.execute(
+                            """
+                            SELECT *, next_attempt <= now() AS ready
+                            FROM kestri.outbox
+                            WHERE status = 'pending'
+                            ORDER BY sequence
+                            LIMIT 1
+                            FOR UPDATE SKIP LOCKED
+                            """
+                        )
+                    ).fetchone()
+                    if not row or not row["ready"]:
+                        return None
+                    if not await self._delivery_current(conn, row):
+                        await conn.execute(
+                            """
+                            UPDATE kestri.outbox
+                            SET status = 'failed', content = '', error_type = 'MemoryNoticeRevoked'
+                            WHERE id = %s
+                            """,
+                            (row["id"],),
+                        )
+                        continue
                     await conn.execute(
                         "UPDATE kestri.outbox SET status='sending',attempts=attempts+1 WHERE id=%s",
                         (row["id"],),
                     )
                     row["attempts"] += 1
                     return row
-                return None
+
+    async def _delivery_current(self, conn: Any, row: Row) -> bool:
+        """Recheck published automatic notices against current consent and source facts."""
+        if row["run_id"] is None:
+            return True
+        state = await (
+            await conn.execute(
+                """
+                SELECT r.kind,
+                       r.status = 'completed'
+                       AND j.status = 'succeeded'
+                       AND c.auto_memory_enabled
+                       AND c.memory_use_enabled
+                       AND c.memory_settings_generation = j.settings_generation
+                       AND c.memory_epoch = r.memory_epoch + CASE WHEN EXISTS (
+                           SELECT 1 FROM kestri.memory_events AS e
+                           WHERE e.job_id = j.id AND e.operation = 'replace'
+                       ) THEN 1 ELSE 0 END
+                       AND EXISTS (
+                           SELECT 1 FROM kestri.memory_events AS e
+                           WHERE e.job_id = j.id AND e.operation IN ('create', 'replace')
+                       )
+                       AND NOT EXISTS (
+                           SELECT 1
+                           FROM kestri.memory_events AS e
+                           LEFT JOIN kestri.memories AS m ON m.id = e.memory_id
+                           LEFT JOIN kestri.tasks AS t ON t.id = m.task_id
+                           WHERE e.job_id = j.id
+                             AND e.operation IN ('create', 'replace')
+                             AND (
+                                 m.id IS NULL OR m.status != 'active'
+                                 OR m.origin = 'auto_inferred'
+                                 OR (m.expires_at IS NOT NULL AND m.expires_at <= now())
+                                 OR (m.review_after IS NOT NULL AND m.review_after <= now())
+                                 OR (m.valid_from IS NOT NULL AND m.valid_from > now())
+                                 OR (m.task_id IS NOT NULL AND t.status = 'deleted')
+                             )
+                       ) AS notice_current
+                FROM kestri.runs AS r
+                LEFT JOIN kestri.memory_jobs AS j ON j.run_id = r.id
+                LEFT JOIN kestri.conversations AS c ON c.chat_id = r.chat_id
+                WHERE r.id = %s
+                """,
+                (row["run_id"],),
+            )
+        ).fetchone()
+        return bool(state and (state["kind"] != "memory_maintenance" or state["notice_current"]))
+
+    async def delivery_current(self, row: Row) -> bool:
+        # HTTP cannot be atomic with a database transaction; recheck immediately before send.
+        async with self.pool.connection() as conn:
+            allowed = await self._delivery_current(conn, row)
+        if not allowed:
+            await self.execute(
+                """
+                UPDATE kestri.outbox
+                SET status = 'failed', content = '', error_type = 'MemoryNoticeRevoked'
+                WHERE id = %s AND status IN ('pending', 'sending')
+                """,
+                (row["id"],),
+            )
+        return allowed
 
     async def delivered(self, row: Row, telegram_id: int) -> None:
         async with self.pool.connection() as conn:

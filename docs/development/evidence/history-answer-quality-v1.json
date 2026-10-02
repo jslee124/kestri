@@ -1,0 +1,766 @@
+{
+  "recorded_at": "2026-10-02T13:07:05.844009+00:00",
+  "stage": "history_answer",
+  "scorer": "active-extraction-and-final-selection-v1",
+  "model": "deepseek-flash",
+  "results": {
+    "h-0-0-0": {
+      "answer": "云杉版本1选用的是 SQLite。\n\n依据历史记录中项目负责人的决定：archive_id=1 原文为“我决定云杉项目的版本1使用SQLite，入口采用命令行。”\n\narchive_id=1\n\n补充说明：archive_id=2 是助手对该决定的复述（“收到，你为云杉版本1选择了SQLite。”），属生成内容而非独立证据，故仅以 archive_id=1 为准。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-0-0-1": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">云杉 版本1 存储</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-0-1-2": {
+      "answer": "根据历史记录，云杉项目版本2选择了 PostgreSQL。\n\n依据：owner 消息“我决定云杉项目的版本2使用PostgreSQL，入口采用命令行”。\narchive_id=3\n\n说明：该条为一次历史决定记录，未发现后续修改其数据库选择的记录；本次检索为有界检索，不能保证覆盖全部未索引内容。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-0-1-3": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">36161e52b6c97b5cfcf61c1c28ce3fd78da3e87bde49d67b588c4d0566e215d3</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "n-0-4": {
+      "answer": "我不知道。历史证据中没有关于云杉项目预算的记录。\n\n已检查的历史片段中，涉及云杉项目的只有技术选型（版本1使用SQLite、版本2使用PostgreSQL、入口采用命令行），没有任何金额或预算信息：\narchive_id=1\narchive_id=2\narchive_id=3\narchive_id=4\n\n说明：以上仅为抽样查看的片段，覆盖范围有限，不构成对整个历史档案的穷尽检索。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "n-0-5": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">24cff83c8b7d594af1d2a3d6dc962baeb2350a1b786b3a84244b5966351fcb96</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-1-0-6": {
+      "answer": "石桥版本1选的是 SQLite。\n\n依据是项目负责人的原始决定记录：“我决定石桥项目的版本1使用SQLite，入口采用命令行。”\n\narchive_id=11\n\n（该记录对应的助手确认回复为 archive_id=12。）",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "a7bc51700a351759e345172cd016159538bf3e26e431a9519a31f5b269c2b6dd",
+        "d6550c088eb6d2faad2c10befe9f9547fca08c16840968c213b3611f3b36f759",
+        "68b9189f51cf4575ace91d06418490da761abf1e91634489af366e15344295cd",
+        "eea218b92c30244cfbb5c28c1303498c8e56f17f67c31673600cfe04b1f83548",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20"
+      ]
+    },
+    "h-1-0-7": {
+      "answer": "石桥项目第1版的数据存储决定：SQLite。\n\n依据：owner 的原话「我决定石桥项目的版本1使用SQLite，入口采用命令行。」(archive_id=11)\n\n需要说明的边界：\n- 我只找到这条直接记录，以及助手的一句确认回复 (archive_id=12)，该回复是生成内容，不作为独立证据。\n- 我未能逐一穷尽历史的全部片段（检索历史是按段读取的，可能存在未被我读到的段落），所以不能宣称这是全档案的完整回溯；但在已验证的记录中，石桥第1版的存储决定是 SQLite，没有其他并存记录。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "a7bc51700a351759e345172cd016159538bf3e26e431a9519a31f5b269c2b6dd",
+        "d6550c088eb6d2faad2c10befe9f9547fca08c16840968c213b3611f3b36f759",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-1-1-8": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">石桥 版本2 数据库</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "a7bc51700a351759e345172cd016159538bf3e26e431a9519a31f5b269c2b6dd",
+        "d6550c088eb6d2faad2c10befe9f9547fca08c16840968c213b3611f3b36f759",
+        "68b9189f51cf4575ace91d06418490da761abf1e91634489af366e15344295cd",
+        "eea218b92c30244cfbb5c28c1303498c8e56f17f67c31673600cfe04b1f83548",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20"
+      ]
+    },
+    "h-1-1-9": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">ef5185f8c5be2e5fbf0b71d9fd6ef53d7292a3a9429c30a2cc28174b8ab2802c</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "a7bc51700a351759e345172cd016159538bf3e26e431a9519a31f5b269c2b6dd",
+        "d6550c088eb6d2faad2c10befe9f9547fca08c16840968c213b3611f3b36f759",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-1-10": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">石桥 预算 金额 万元 费用 成本</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "a7bc51700a351759e345172cd016159538bf3e26e431a9519a31f5b269c2b6dd",
+        "d6550c088eb6d2faad2c10befe9f9547fca08c16840968c213b3611f3b36f759",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-1-11": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">1c84500916cc86331de6d0e2997bdddfca226d87be58d352cb6c5cd4adf6e069</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "a7bc51700a351759e345172cd016159538bf3e26e431a9519a31f5b269c2b6dd",
+        "d6550c088eb6d2faad2c10befe9f9547fca08c16840968c213b3611f3b36f759",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-2-0-12": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">156745d22f4876ffc99b533f98588a426a4f22a9adf15e57de59fc59d07bd5a3</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "6e56bee75bd257833b049c22b925014015bb5cbc62619ddc03b810fdd8d984a7",
+        "d788efca396bdd6f5b66cec8690549b3b1c4d5b5714d3d23bb25850370a94024",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-2-0-13": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">04f3b25a5d58e3a3b8e9f6a1c2d4e5f60718293a4b5c6d7e8f90123456789abc</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "6e56bee75bd257833b049c22b925014015bb5cbc62619ddc03b810fdd8d984a7",
+        "d788efca396bdd6f5b66cec8690549b3b1c4d5b5714d3d23bb25850370a94024",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-2-1-14": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">68345718e44937a19a4982bd40f0e77488b94b6e35d9a1c1c2e6f1e0a54e5e01</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "6e56bee75bd257833b049c22b925014015bb5cbc62619ddc03b810fdd8d984a7",
+        "d788efca396bdd6f5b66cec8690549b3b1c4d5b5714d3d23bb25850370a94024",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-2-1-15": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">4a24a42eb0f3c6c4ffc70dd8d4f72db0147a23d19ff07a6e69e0cdd7e75e2bb8</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "6e56bee75bd257833b049c22b925014015bb5cbc62619ddc03b810fdd8d984a7",
+        "d788efca396bdd6f5b66cec8690549b3b1c4d5b5714d3d23bb25850370a94024",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-2-16": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">3a552f59273fbcd5c067e0b1cf39ad0d5aa17df4d086167cb202426c89a1775c</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "6e56bee75bd257833b049c22b925014015bb5cbc62619ddc03b810fdd8d984a7",
+        "d788efca396bdd6f5b66cec8690549b3b1c4d5b5714d3d23bb25850370a94024",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-2-17": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">2ef1c605467b8d5db8580564fbc62a6417a057a79ec3727e5564a999a47551a4</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "6e56bee75bd257833b049c22b925014015bb5cbc62619ddc03b810fdd8d984a7",
+        "d788efca396bdd6f5b66cec8690549b3b1c4d5b5714d3d23bb25850370a94024",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-3-0-18": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">竹林 版本1 数据库</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "50f61b9d7f238a207b482e6b669d2fca302305c9d834ed9b9963321581689b3b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1",
+        "dbfcff96644be89cea1fd3dd10aa8654a6312b0ca8225f55f5d0abc7e80a456a"
+      ]
+    },
+    "h-3-0-19": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">竹林 版本1 数据存储</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "50f61b9d7f238a207b482e6b669d2fca302305c9d834ed9b9963321581689b3b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-3-1-20": {
+      "answer": "竹林版本2选择的是 PostgreSQL。\n\n来源为历史记录中的明确表述：\narchive_id=33",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "50f61b9d7f238a207b482e6b669d2fca302305c9d834ed9b9963321581689b3b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a"
+      ]
+    },
+    "h-3-1-21": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">708c25234388265f792d28f841dd33776a8e1087716dcb4612a82ed5b1ee57cb</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "50f61b9d7f238a207b482e6b669d2fca302305c9d834ed9b9963321581689b3b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "n-3-22": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">竹林 预算</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">竹林 项目 费用 金额 元</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "50f61b9d7f238a207b482e6b669d2fca302305c9d834ed9b9963321581689b3b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "n-3-23": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">竹林 部署 机房</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "50f61b9d7f238a207b482e6b669d2fca302305c9d834ed9b9963321581689b3b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-4-0-24": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">青石 版本1 数据库</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "68b9189f51cf4575ace91d06418490da761abf1e91634489af366e15344295cd",
+        "eea218b92c30244cfbb5c28c1303498c8e56f17f67c31673600cfe04b1f83548",
+        "a7bc51700a351759e345172cd016159538bf3e26e431a9519a31f5b269c2b6dd",
+        "d6550c088eb6d2faad2c10befe9f9547fca08c16840968c213b3611f3b36f759",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20"
+      ]
+    },
+    "h-4-0-25": {
+      "answer": "有相关记录，且已直接读到原文。\n\n结论：青石项目第1版的数据存储决定是使用 SQLite。\n\n依据：项目负责人原话——“我决定青石项目的版本1使用SQLite，入口采用命令行。”\n\narchive_id=41\n\n配套的助手确认（非授权性证据，仅供定位）：\narchive_id=42\n\n补充说明：\n- 该决定同时包含入口采用命令行，但你的问题只问数据存储，存储部分为 SQLite。\n- 未检索到青石项目第1版存储决定被推翻或修改的片段；但这不等于穷尽，历史索引覆盖范围有限，我无法声称已完整回查全部记录。\n\n若这条证据不满意，请告知，我可以针对“青石 第1版 存储”做进一步的关键词检索。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "68b9189f51cf4575ace91d06418490da761abf1e91634489af366e15344295cd",
+        "eea218b92c30244cfbb5c28c1303498c8e56f17f67c31673600cfe04b1f83548",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-4-1-26": {
+      "answer": "已找到历史记录，属于业主自己的决定陈述。\n\n青石版本2当时选的是 PostgreSQL，入口采用命令行。\n\narchive_id=43 业主原话：我决定青石项目的版本2使用PostgreSQL，入口采用命令行。\narchive_id=44 助手确认：收到，你为青石版本2选择了PostgreSQL。\n\n补充相关的一条（若你关心版本1）：青石版本1当时选的是 SQLite，见 archive_id=41 和 archive_id=42。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "68b9189f51cf4575ace91d06418490da761abf1e91634489af366e15344295cd",
+        "eea218b92c30244cfbb5c28c1303498c8e56f17f67c31673600cfe04b1f83548",
+        "a7bc51700a351759e345172cd016159538bf3e26e431a9519a31f5b269c2b6dd",
+        "d6550c088eb6d2faad2c10befe9f9547fca08c16840968c213b3611f3b36f759",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20"
+      ]
+    },
+    "h-4-1-27": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">青石项目</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "68b9189f51cf4575ace91d06418490da761abf1e91634489af366e15344295cd",
+        "eea218b92c30244cfbb5c28c1303498c8e56f17f67c31673600cfe04b1f83548",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-4-28": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">青石 预算</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "68b9189f51cf4575ace91d06418490da761abf1e91634489af366e15344295cd",
+        "eea218b92c30244cfbb5c28c1303498c8e56f17f67c31673600cfe04b1f83548",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-4-29": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">4f7b1c2e9a8d70635b4e21c0d5a9f38b6271e4c0da9b53f8172ae6cd40b9f215</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "68b9189f51cf4575ace91d06418490da761abf1e91634489af366e15344295cd",
+        "eea218b92c30244cfbb5c28c1303498c8e56f17f67c31673600cfe04b1f83548",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-5-0-30": {
+      "answer": "历史证据显示：白鹭项目版本1选择了 SQLite。\n\n依据（owner 明确决定）：\narchive_id=51\narchive_id=52\n\n补充区分：白鹭版本2选的是 PostgreSQL，见 archive_id=53\narchive_id=54\n\n以上仅为历史决策记录，不代表当前事实或任务授权。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564",
+        "84ad9a34fb1e206ca5929f014b77a3cb0907ca3ce8a97ef14b0f2c427c543e9f",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-5-0-31": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">a1ba67fcd10b2377093a0ed6d08f61fdcab06620041988a66a57a2e4b0e9161a</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564",
+        "84ad9a34fb1e206ca5929f014b77a3cb0907ca3ce8a97ef14b0f2c427c543e9f",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-5-1-32": {
+      "answer": "白鹭版本2选的是 PostgreSQL。\n\n历史证据（业主声明）archive_id=53：我决定白鹭项目的版本2使用PostgreSQL，入口采用命令行。\n\narchive_id=53",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564",
+        "84ad9a34fb1e206ca5929f014b77a3cb0907ca3ce8a97ef14b0f2c427c543e9f",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-5-1-33": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">白鹭 版本2 数据存储</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564",
+        "84ad9a34fb1e206ca5929f014b77a3cb0907ca3ce8a97ef14b0f2c427c543e9f",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-5-34": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">031e0ea2d3466a2c00d7e6d1e25a1b70e5cc0623d2fb8e3786d6a3c5b6d4a37b</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564",
+        "84ad9a34fb1e206ca5929f014b77a3cb0907ca3ce8a97ef14b0f2c427c543e9f",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-5-35": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">bb163c06b75c2ee6bfbb62fdb5b08c7b2693db94bf30b2c3bdfa07eb24e9e0e7</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564",
+        "84ad9a34fb1e206ca5929f014b77a3cb0907ca3ce8a97ef14b0f2c427c543e9f",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-6-0-36": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">枫叶 版本1 数据库</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "cfb8b94d2715e59b337668b97bb2d37beec4b8bb385e4ffedc6162a87be5997b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-6-0-37": {
+      "answer": "枫叶项目第1版的数据存储决定是 SQLite。\n\n证据（owner 原话）：\narchive_id=61 — “我决定枫叶项目的版本1使用SQLite，入口采用命令行。”\n\n说明：\n这也是我检索到的唯一一条关于“枫叶版本1”的存储决定记录，未发现后续修改或推翻该决定的记录。上述判断仅基于历史证据；archive_id=61 为 owner 陈述，可作为决定依据。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "cfb8b94d2715e59b337668b97bb2d37beec4b8bb385e4ffedc6162a87be5997b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-6-1-38": {
+      "answer": "历史记录中有明确证据：枫叶项目版本2选择了 PostgreSQL。\n\narchive_id=63 记录了用户声明：“我决定枫叶项目的版本2使用PostgreSQL，入口采用命令行。”\n\narchive_id=63\n\n同段中的 archive_id=64 是助手复述，非独立来源；但 archive_id=63 本身即为决定陈述。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "cfb8b94d2715e59b337668b97bb2d37beec4b8bb385e4ffedc6162a87be5997b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-6-1-39": {
+      "answer": "有相关记录。\n\n枫叶项目第2版的数据存储决定：使用 PostgreSQL，入口采用命令行。这是项目所有者的明确陈述。\n\narchive_id=63\n\n（archive_id=64 是助手当时的确认回复，属于生成内容，不构成决定本身。）",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "cfb8b94d2715e59b337668b97bb2d37beec4b8bb385e4ffedc6162a87be5997b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "n-6-40": {
+      "answer": "不知道。历史记录中没有关于枫叶项目预算金额的任何内容。\n\n我检索到的枫叶项目相关记录只涉及技术选型，未提及预算：\narchive_id=63\n\n说明：以上检索受历史索引范围限制，可能存在未覆盖的会话；但在已检索到的记录中没有任何预算信息。",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "cfb8b94d2715e59b337668b97bb2d37beec4b8bb385e4ffedc6162a87be5997b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "n-6-41": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">2c2b6bfff2ca4e7a9c7a19e03b7c2c1c3d1e0a9f5b4c3d2e1f0a9b8c7d6e5f4a</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "cfb8b94d2715e59b337668b97bb2d37beec4b8bb385e4ffedc6162a87be5997b",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "243e94b01a4e8e425e380f80c426a5039349a8aa86e1155d30fb3c8c55103564"
+      ]
+    },
+    "h-7-0-42": {
+      "answer": "据历史记录，溪流版本1选择了 SQLite。这是项目所有者在会话中的直接陈述。来源：\n\narchive_id=71",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "40706e42b86953bf90fe5b08ed48ab0b44aacee035a85bab78a0cabea5e21f87",
+        "ffbaf1d63a8028690304ccefd0e11e2b9a81c5685097dcc04537a18c830bc4ee",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-7-0-43": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">10b07df2e7c35236b7a69cf868b6f723b92cb1f450e3587944306a685d4de9cb</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "40706e42b86953bf90fe5b08ed48ab0b44aacee035a85bab78a0cabea5e21f87",
+        "ffbaf1d63a8028690304ccefd0e11e2b9a81c5685097dcc04537a18c830bc4ee",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-7-1-44": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">088ee8eb8565beafb746bc44f6ce45f9700a37cbcedcc8e2a2a05715c1ec605f</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "40706e42b86953bf90fe5b08ed48ab0b44aacee035a85bab78a0cabea5e21f87",
+        "ffbaf1d63a8028690304ccefd0e11e2b9a81c5685097dcc04537a18c830bc4ee",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-7-1-45": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">b2f7b52e38c1b23f4b0b54d2078b6d9afef91a3230daac0da1634da4e4a05bee</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "40706e42b86953bf90fe5b08ed48ab0b44aacee035a85bab78a0cabea5e21f87",
+        "ffbaf1d63a8028690304ccefd0e11e2b9a81c5685097dcc04537a18c830bc4ee",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-7-46": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">e46bbdcad45e43176d1d48cb9d5c3b0ba8c37ef08da4b0f0b6c0a0d5e6b3fd3c</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "40706e42b86953bf90fe5b08ed48ab0b44aacee035a85bab78a0cabea5e21f87",
+        "ffbaf1d63a8028690304ccefd0e11e2b9a81c5685097dcc04537a18c830bc4ee",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-7-47": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">溪流 机房</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "40706e42b86953bf90fe5b08ed48ab0b44aacee035a85bab78a0cabea5e21f87",
+        "ffbaf1d63a8028690304ccefd0e11e2b9a81c5685097dcc04537a18c830bc4ee",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-8-0-48": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"record_evidence\">\n<｜｜DSML｜｜ parameter name=\"key\" string=\"true\">history:pinecone-v1-db</｜｜DSML｜｜ parameter>\n<｜｜DSML｜｜ parameter name=\"value\" string=\"true\">archive_id=81 owner: 松果项目版本1使用SQLite，入口命令行；archive_id=82 assistant确认。archive_id=83 owner: 松果版本2使用PostgreSQL（仅作对照，非版本1）。</｜｜DSML｜｜ parameter>\n<｜｜DSML｜｜ parameter name=\"tags\" string=\"true\">history,songguo,pinecone,version1,database</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": true,
+      "error": null,
+      "retrieved_segment_ids": [
+        "b16cc5864d6a707091530038b30631d346b4f9141aa839064188740dc9140bf3",
+        "dbfcff96644be89cea1fd3dd10aa8654a6312b0ca8225f55f5d0abc7e80a456a",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "50f61b9d7f238a207b482e6b669d2fca302305c9d834ed9b9963321581689b3b"
+      ]
+    },
+    "h-8-0-49": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">06a5f3e4c48b04c4a02ef13f7db22b6dfae9e2f1d4b7c9a0e2badb19d58f37ee</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "b16cc5864d6a707091530038b30631d346b4f9141aa839064188740dc9140bf3",
+        "dbfcff96644be89cea1fd3dd10aa8654a6312b0ca8225f55f5d0abc7e80a456a",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-8-1-50": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">9325670b8a2fe05d8399d76d00ee7130b27b792c30d1e5277471e5f44d1f67bf</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "b16cc5864d6a707091530038b30631d346b4f9141aa839064188740dc9140bf3",
+        "dbfcff96644be89cea1fd3dd10aa8654a6312b0ca8225f55f5d0abc7e80a456a",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1",
+        "8823f530534724b290a730de5d2a2a8edb2263405080ada67a112a030415d0b1"
+      ]
+    },
+    "h-8-1-51": {
+      "answer": "检索到的历史记录中，涉及松果项目数据存储的决定只有一条，且是第1版而非第2版：\n\narchive_id=81\n\n该条由项目所有者作出，内容为松果项目版本1使用SQLite、入口采用命令行。同一批记录中所有者另有一条松果版本2决定（archive_id=83），但其内容是入口采用命令行，未提及任何数据存储选择。\n\n结论：关于松果项目第2版的数据存储决定，历史证据中没有相关记录，我不知道。\n\n补充说明：以上仅为历史存档中的所有者陈述，不代表当前有效的授权或约定；我的历史检索范围有限，未覆盖全部可能的存档内容。",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "b16cc5864d6a707091530038b30631d346b4f9141aa839064188740dc9140bf3",
+        "dbfcff96644be89cea1fd3dd10aa8654a6312b0ca8225f55f5d0abc7e80a456a",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-8-52": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">129678c1c0391ce933d6fcb0d6c7c0b6ba2264c82b3d278dbe18ce5d15b5cdb0</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "b16cc5864d6a707091530038b30631d346b4f9141aa839064188740dc9140bf3",
+        "dbfcff96644be89cea1fd3dd10aa8654a6312b0ca8225f55f5d0abc7e80a456a",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-8-53": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">松果 机房</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "b16cc5864d6a707091530038b30631d346b4f9141aa839064188740dc9140bf3",
+        "dbfcff96644be89cea1fd3dd10aa8654a6312b0ca8225f55f5d0abc7e80a456a",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-9-0-54": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">faa99b942622f202f5426a29bdfa01761c44f7e5b0e7466d2ba9ecfe8bb85a4a</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "ad59dad6c00b279f158708ff081ed8bafe32ae4b9616caefc9deba5bd12e1665",
+        "eea81db1ad5a5da9b338e988c472196da1baff6f5d9d0550ec603ca6d197b0d6",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-9-0-55": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">山雀 第1版 数据存储</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "ad59dad6c00b279f158708ff081ed8bafe32ae4b9616caefc9deba5bd12e1665",
+        "eea81db1ad5a5da9b338e988c472196da1baff6f5d9d0550ec603ca6d197b0d6",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-9-1-56": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">0223ff7f0f319264e468cbeb68b0a3f9bd4b8a0f46940f74371566a56789f668</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "ad59dad6c00b279f158708ff081ed8bafe32ae4b9616caefc9deba5bd12e1665",
+        "eea81db1ad5a5da9b338e988c472196da1baff6f5d9d0550ec603ca6d197b0d6",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "h-9-1-57": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">山雀 版本2 数据存储</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "ad59dad6c00b279f158708ff081ed8bafe32ae4b9616caefc9deba5bd12e1665",
+        "eea81db1ad5a5da9b338e988c472196da1baff6f5d9d0550ec603ca6d197b0d6",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-9-58": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"search_history\">\n<｜｜DSML｜｜ parameter name=\"query\" string=\"true\">山雀 预算</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "ad59dad6c00b279f158708ff081ed8bafe32ae4b9616caefc9deba5bd12e1665",
+        "eea81db1ad5a5da9b338e988c472196da1baff6f5d9d0550ec603ca6d197b0d6",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    },
+    "n-9-59": {
+      "answer": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"read_history_segment\">\n<｜｜DSML｜｜ parameter name=\"segment_id\" string=\"true\">6f54a55e52e3d3d78fd35776b62cd4ad8ebef31feeb604cc9a1eb05c1eaa9c7f</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+      "correct": false,
+      "error": null,
+      "retrieved_segment_ids": [
+        "ad59dad6c00b279f158708ff081ed8bafe32ae4b9616caefc9deba5bd12e1665",
+        "eea81db1ad5a5da9b338e988c472196da1baff6f5d9d0550ec603ca6d197b0d6",
+        "0117b8ea4ee300dec3b5f73404e2de8e455ca1b29032b7b7b982ac04d8ae6b20",
+        "038a5e1cd7a548a8e321f786b413efb2f89a88505d28c66a4e52fb322b53a63a",
+        "0d53894ab998219047c1879bdea9bc21648833d3ca5e9d022f7db262dd00a8e1"
+      ]
+    }
+  },
+  "metrics": {
+    "development": {
+      "positive_questions": 20,
+      "correct_fact_and_owner_citation": 7,
+      "negative_questions": 10,
+      "correct_missing_evidence_answers": 1,
+      "failed_cases": 0
+    },
+    "holdout": {
+      "positive_questions": 20,
+      "correct_fact_and_owner_citation": 7,
+      "negative_questions": 10,
+      "correct_missing_evidence_answers": 1,
+      "failed_cases": 0
+    }
+  },
+  "limitations": [
+    "synthetic single-author labels; no independent human review",
+    "no owner archive, database or Telegram access",
+    "related injection is measured separately from always-present profile",
+    "keyword/action extraction matching is conservative, not human semantic scoring",
+    "Answers use the production prompt with pre-completed synthetic history tool results; actual tool authorization and database access are separately integration-tested."
+  ],
+  "case_count": 60,
+  "threshold": 0.6,
+  "recipe": "history-complete-messages-json-v1",
+  "usage": {
+    "cap_micro_usd": 500000,
+    "estimated_and_unknown_micro_usd": 39318,
+    "requests": 60,
+    "states": {
+      "recorded": 60
+    },
+    "kinds": {
+      "model": 60
+    },
+    "accounting": "in-memory evaluation estimates; outside production ledger; not invoices"
+  }
+}

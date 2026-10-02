@@ -41,7 +41,7 @@ jobs:
       - run: uv sync --locked
       - run: uv run ruff check src tests scripts
       - run: uv run ruff format --check src tests scripts
-      - run: uv run mypy src
+      - run: uv run mypy src scripts
       - run: uv run pytest -q
       - run: uv run python scripts/check_docs.py
       - run: uv run python scripts/check_sql_readability.py

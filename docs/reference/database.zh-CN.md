@@ -211,8 +211,10 @@ erDiagram
 
 [006_semantic_memory.sql](../../src/kestri/storage/sql/006_semantic_memory.sql) 增加对话 `memory_use_enabled`（普通升级 true）、`memory_semantic_enabled`（false）、`memory_retrieval_generation`、`memory_embedding_space`。`memory_index_jobs` 包含 UUID ID、主人/记忆引用、版本/内容指纹/空间/代次、状态/run/租约/尝试/可用时间/安全错误/时间，记忆/版本/空间/代次唯一。服务器提供 pgvector 时，`memory_embeddings` 包含记忆引用、版本/hash/空间、`public.vector(1024)` 和时间，记忆/空间为主键，删除记忆级联删除向量。不创建近似索引。
 
-`sync_memory_index` 与记忆 INSERT/UPDATE trigger 将事实入队同事务提交，删除失效向量，取消失效作业/run/预留。发布/查询重查开关、归属、时效、内容版本和租约。提供向量时 Kestri 有 21 张表，无向量时 19 张；备份包含 18 张，不含迁移元数据/派生向量。普通 PostgreSQL 继续支持，全部八份迁移幂等执行，安装服务器扩展后，迁移 6 可补建可选向量表。部署权限和生命周期见[语义运行参考](semantic-memory.zh-CN.md)。
+`sync_memory_index` 与记忆 INSERT/UPDATE trigger 将事实入队同事务提交，删除失效向量，取消失效作业/run/预留。发布/查询重查开关、归属、时效、内容版本和租约。提供向量时 Kestri 有 21 张表，无向量时 19 张；备份包含 18 张，不含迁移元数据/派生向量。普通 PostgreSQL 继续支持，全部九份迁移幂等执行，安装服务器扩展后，迁移 6 可补建可选向量表。部署权限和生命周期见[语义运行参考](semantic-memory.zh-CN.md)。
 
 迁移 7 增加可选、可重建的 `history_embeddings`（来源 ID/hash、配置代次及向量，无聊天正文副本），详情见[历史参考](../reference/history-retrieval.zh-CN.md)。逻辑备份当前为 schema 7，省略事实与历史向量；恢复需要派生索引为空，并关闭 auto/use/semantic。来源变化、run 历史到期及开关/水位变更会清除历史缓存。
 
 迁移 8 增加持久 `history_index_jobs`；逻辑 schema 7 备份包含此表并继续省略向量，恢复取消历史作业，旧 schema 4/5/6 补空作业。预算及租约契约见[历史参考](../reference/history-retrieval.zh-CN.md)。
+
+迁移 9 将框架 checkpoint 固定在 `public` 并保留旧 `kestri` 表，冲突时回滚，不增加业务表或逻辑备份字段。见[控制与 checkpoint 存储](memory-controls.zh-CN.md)。

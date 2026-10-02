@@ -1,0 +1,2814 @@
+{
+  "version": "chinese-extraction-v2",
+  "label_source": "hand-authored synthetic keyword/action labels; single author; no independent review",
+  "scope": "source-backed active operations; conservative deterministic semantic matching, not a human judgement of every paraphrase",
+  "cases": [
+    {
+      "id": "direct-00-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我做饭时会避开香菜。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "香菜"
+            ],
+            [
+              "避开",
+              "不",
+              "避免",
+              "讨厌"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-00-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我做饭时会避开香菜。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "香菜"
+            ],
+            [
+              "避开",
+              "不",
+              "避免",
+              "讨厌"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-00-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我做饭时会避开香菜。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "香菜"
+            ],
+            [
+              "避开",
+              "不",
+              "避免",
+              "讨厌"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-00",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我做饭时会避开香菜。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-00",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我做饭时会避开香菜。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-00",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到香菜有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-00",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我做饭时会避开香菜。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "香菜"
+            ],
+            [
+              "避开",
+              "不",
+              "避免",
+              "讨厌"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-01-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我平时用 Go 编写命令行工具。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "go",
+              "Go"
+            ],
+            [
+              "命令行",
+              "CLI",
+              "cli"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-01-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我平时用 Go 编写命令行工具。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "go",
+              "Go"
+            ],
+            [
+              "命令行",
+              "CLI",
+              "cli"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-01-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我平时用 Go 编写命令行工具。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "go",
+              "Go"
+            ],
+            [
+              "命令行",
+              "CLI",
+              "cli"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-01",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我平时用 Go 编写命令行工具。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-01",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我平时用 Go 编写命令行工具。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-01",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到命令行工具有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-01",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我平时用 Go 编写命令行工具。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "go",
+              "Go"
+            ],
+            [
+              "命令行",
+              "CLI",
+              "cli"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-02-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我选择 SQLite 存储小型离线应用的数据。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "sqlite",
+              "SQLite"
+            ],
+            [
+              "离线",
+              "小型"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-02-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我选择 SQLite 存储小型离线应用的数据。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "sqlite",
+              "SQLite"
+            ],
+            [
+              "离线",
+              "小型"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-02-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我选择 SQLite 存储小型离线应用的数据。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "sqlite",
+              "SQLite"
+            ],
+            [
+              "离线",
+              "小型"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-02",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我选择 SQLite 存储小型离线应用的数据。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-02",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我选择 SQLite 存储小型离线应用的数据。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-02",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到离线数据有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-02",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我选择 SQLite 存储小型离线应用的数据。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "sqlite",
+              "SQLite"
+            ],
+            [
+              "离线",
+              "小型"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-03-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我练英语时更喜欢听播客。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "英语"
+            ],
+            [
+              "播客"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-03-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我练英语时更喜欢听播客。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "英语"
+            ],
+            [
+              "播客"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-03-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我练英语时更喜欢听播客。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "英语"
+            ],
+            [
+              "播客"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-03",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我练英语时更喜欢听播客。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-03",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我练英语时更喜欢听播客。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-03",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到英语播客有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-03",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我练英语时更喜欢听播客。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "英语"
+            ],
+            [
+              "播客"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-04-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我习惯每天晚上九点阅读纸质书。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "九点",
+              "9点",
+              "21",
+              "九时"
+            ],
+            [
+              "纸质",
+              "纸书"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-04-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我习惯每天晚上九点阅读纸质书。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "九点",
+              "9点",
+              "21",
+              "九时"
+            ],
+            [
+              "纸质",
+              "纸书"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-04-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我习惯每天晚上九点阅读纸质书。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "九点",
+              "9点",
+              "21",
+              "九时"
+            ],
+            [
+              "纸质",
+              "纸书"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-04",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我习惯每天晚上九点阅读纸质书。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-04",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我习惯每天晚上九点阅读纸质书。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-04",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到读书有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-04",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我习惯每天晚上九点阅读纸质书。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "九点",
+              "9点",
+              "21",
+              "九时"
+            ],
+            [
+              "纸质",
+              "纸书"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-05-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我给演示项目起名为云杉。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "云杉"
+            ],
+            [
+              "项目"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-05-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我给演示项目起名为云杉。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "云杉"
+            ],
+            [
+              "项目"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-05-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我给演示项目起名为云杉。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "云杉"
+            ],
+            [
+              "项目"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-05",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我给演示项目起名为云杉。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-05",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我给演示项目起名为云杉。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-05",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到演示项目有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-05",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我给演示项目起名为云杉。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "云杉"
+            ],
+            [
+              "项目"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-06-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我希望在年底前完成摄影作品集。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "摄影"
+            ],
+            [
+              "作品集"
+            ],
+            [
+              "年底",
+              "年末"
+            ]
+          ],
+          "category": "goal",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-06-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我希望在年底前完成摄影作品集。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "摄影"
+            ],
+            [
+              "作品集"
+            ],
+            [
+              "年底",
+              "年末"
+            ]
+          ],
+          "category": "goal",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-06-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我希望在年底前完成摄影作品集。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "摄影"
+            ],
+            [
+              "作品集"
+            ],
+            [
+              "年底",
+              "年末"
+            ]
+          ],
+          "category": "goal",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-06",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我希望在年底前完成摄影作品集。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-06",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我希望在年底前完成摄影作品集。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-06",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到摄影有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-06",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我希望在年底前完成摄影作品集。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "摄影"
+            ],
+            [
+              "作品集"
+            ],
+            [
+              "年底",
+              "年末"
+            ]
+          ],
+          "category": "goal",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-07-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我去短途旅行时通常乘火车。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "短途"
+            ],
+            [
+              "火车",
+              "铁路"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-07-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我去短途旅行时通常乘火车。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "短途"
+            ],
+            [
+              "火车",
+              "铁路"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-07-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我去短途旅行时通常乘火车。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "短途"
+            ],
+            [
+              "火车",
+              "铁路"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-07",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我去短途旅行时通常乘火车。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-07",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我去短途旅行时通常乘火车。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-07",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到短途旅行有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-07",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我去短途旅行时通常乘火车。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "短途"
+            ],
+            [
+              "火车",
+              "铁路"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-08-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我写文档时优先使用 Markdown。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "markdown",
+              "Markdown"
+            ],
+            [
+              "文档"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-08-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我写文档时优先使用 Markdown。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "markdown",
+              "Markdown"
+            ],
+            [
+              "文档"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-08-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我写文档时优先使用 Markdown。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "markdown",
+              "Markdown"
+            ],
+            [
+              "文档"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-08",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我写文档时优先使用 Markdown。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-08",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我写文档时优先使用 Markdown。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-08",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到文档有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-08",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我写文档时优先使用 Markdown。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "markdown",
+              "Markdown"
+            ],
+            [
+              "文档"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-09-0",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我喜欢先看运行结果，再读代码解释。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "运行结果",
+              "输出"
+            ],
+            [
+              "先",
+              "优先"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-09-1",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我喜欢先看运行结果，再读代码解释。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "运行结果",
+              "输出"
+            ],
+            [
+              "先",
+              "优先"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-09-2",
+      "split": "development",
+      "category": "direct_statement",
+      "source": "我喜欢先看运行结果，再读代码解释。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "运行结果",
+              "输出"
+            ],
+            [
+              "先",
+              "优先"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-09",
+      "split": "development",
+      "category": "quotation",
+      "source": "小说角色说：“我喜欢先看运行结果，再读代码解释。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-09",
+      "split": "development",
+      "category": "hypothetical",
+      "source": "假设我对你说“我喜欢先看运行结果，再读代码解释。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-09",
+      "split": "development",
+      "category": "temporary_emotion",
+      "source": "今天想到代码解释有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-09",
+      "split": "development",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我喜欢先看运行结果，再读代码解释。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "运行结果",
+              "输出"
+            ],
+            [
+              "先",
+              "优先"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-10-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我平时在 Linux 电脑上开发。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "linux",
+              "Linux"
+            ],
+            [
+              "开发"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-10-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我平时在 Linux 电脑上开发。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "linux",
+              "Linux"
+            ],
+            [
+              "开发"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-10-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我平时在 Linux 电脑上开发。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "linux",
+              "Linux"
+            ],
+            [
+              "开发"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-10",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我平时在 Linux 电脑上开发。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-10",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我平时在 Linux 电脑上开发。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-10",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到电脑开发有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-10",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我平时在 Linux 电脑上开发。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "linux",
+              "Linux"
+            ],
+            [
+              "开发"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-11-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我选择 Vue 来做练习项目的前端。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "vue",
+              "Vue"
+            ],
+            [
+              "前端"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-11-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我选择 Vue 来做练习项目的前端。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "vue",
+              "Vue"
+            ],
+            [
+              "前端"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-11-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我选择 Vue 来做练习项目的前端。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "vue",
+              "Vue"
+            ],
+            [
+              "前端"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-11",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我选择 Vue 来做练习项目的前端。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-11",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我选择 Vue 来做练习项目的前端。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-11",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到前端练习有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-11",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我选择 Vue 来做练习项目的前端。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "vue",
+              "Vue"
+            ],
+            [
+              "前端"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-12-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我习惯用铅笔做读书笔记。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "铅笔"
+            ],
+            [
+              "笔记"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-12-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我习惯用铅笔做读书笔记。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "铅笔"
+            ],
+            [
+              "笔记"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-12-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我习惯用铅笔做读书笔记。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "铅笔"
+            ],
+            [
+              "笔记"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-12",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我习惯用铅笔做读书笔记。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-12",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我习惯用铅笔做读书笔记。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-12",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到笔记有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-12",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我习惯用铅笔做读书笔记。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "铅笔"
+            ],
+            [
+              "笔记"
+            ]
+          ],
+          "category": "background",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-13-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我周末通常打羽毛球。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "周末"
+            ],
+            [
+              "羽毛球"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-13-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我周末通常打羽毛球。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "周末"
+            ],
+            [
+              "羽毛球"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-13-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我周末通常打羽毛球。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "周末"
+            ],
+            [
+              "羽毛球"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-13",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我周末通常打羽毛球。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-13",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我周末通常打羽毛球。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-13",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到运动有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-13",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我周末通常打羽毛球。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "周末"
+            ],
+            [
+              "羽毛球"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-14-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我希望做一个能够离线使用的菜谱应用。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "离线"
+            ],
+            [
+              "菜谱",
+              "食谱"
+            ],
+            [
+              "应用"
+            ]
+          ],
+          "category": "goal",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-14-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我希望做一个能够离线使用的菜谱应用。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "离线"
+            ],
+            [
+              "菜谱",
+              "食谱"
+            ],
+            [
+              "应用"
+            ]
+          ],
+          "category": "goal",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-14-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我希望做一个能够离线使用的菜谱应用。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "离线"
+            ],
+            [
+              "菜谱",
+              "食谱"
+            ],
+            [
+              "应用"
+            ]
+          ],
+          "category": "goal",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-14",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我希望做一个能够离线使用的菜谱应用。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-14",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我希望做一个能够离线使用的菜谱应用。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-14",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到菜谱有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-14",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我希望做一个能够离线使用的菜谱应用。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "离线"
+            ],
+            [
+              "菜谱",
+              "食谱"
+            ],
+            [
+              "应用"
+            ]
+          ],
+          "category": "goal",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-15-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我喜欢喝不加糖的豆浆。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "豆浆"
+            ],
+            [
+              "不加糖",
+              "无糖"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-15-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我喜欢喝不加糖的豆浆。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "豆浆"
+            ],
+            [
+              "不加糖",
+              "无糖"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-15-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我喜欢喝不加糖的豆浆。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "豆浆"
+            ],
+            [
+              "不加糖",
+              "无糖"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-15",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我喜欢喝不加糖的豆浆。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-15",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我喜欢喝不加糖的豆浆。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-15",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到豆浆有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-15",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我喜欢喝不加糖的豆浆。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "豆浆"
+            ],
+            [
+              "不加糖",
+              "无糖"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-16-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我决定将示例仓库命名为石桥。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "石桥"
+            ],
+            [
+              "仓库"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-16-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我决定将示例仓库命名为石桥。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "石桥"
+            ],
+            [
+              "仓库"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-16-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我决定将示例仓库命名为石桥。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "石桥"
+            ],
+            [
+              "仓库"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-16",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我决定将示例仓库命名为石桥。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-16",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我决定将示例仓库命名为石桥。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-16",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到示例仓库有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-16",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我决定将示例仓库命名为石桥。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "石桥"
+            ],
+            [
+              "仓库"
+            ]
+          ],
+          "category": "decision",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-17-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我学数学时更喜欢先画图。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "数学"
+            ],
+            [
+              "画图",
+              "图形",
+              "图示"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-17-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我学数学时更喜欢先画图。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "数学"
+            ],
+            [
+              "画图",
+              "图形",
+              "图示"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-17-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我学数学时更喜欢先画图。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "数学"
+            ],
+            [
+              "画图",
+              "图形",
+              "图示"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-17",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我学数学时更喜欢先画图。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-17",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我学数学时更喜欢先画图。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-17",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到数学有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-17",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我学数学时更喜欢先画图。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "数学"
+            ],
+            [
+              "画图",
+              "图形",
+              "图示"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-18-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我旅行时喜欢住靠近车站的地方。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "旅行"
+            ],
+            [
+              "车站"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-18-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我旅行时喜欢住靠近车站的地方。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "旅行"
+            ],
+            [
+              "车站"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-18-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我旅行时喜欢住靠近车站的地方。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "旅行"
+            ],
+            [
+              "车站"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-18",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我旅行时喜欢住靠近车站的地方。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-18",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我旅行时喜欢住靠近车站的地方。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-18",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到旅行住宿有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-18",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我旅行时喜欢住靠近车站的地方。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "旅行"
+            ],
+            [
+              "车站"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-19-0",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我习惯给代码写清晰的中文注释。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "中文"
+            ],
+            [
+              "注释"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-19-1",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "补充一个长期情况：我习惯给代码写清晰的中文注释。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "中文"
+            ],
+            [
+              "注释"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "direct-19-2",
+      "split": "holdout",
+      "category": "direct_statement",
+      "source": "我习惯给代码写清晰的中文注释。以后交流可以参考。",
+      "context": [],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "中文"
+            ],
+            [
+              "注释"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "quote-19",
+      "split": "holdout",
+      "category": "quotation",
+      "source": "小说角色说：“我习惯给代码写清晰的中文注释。”这只是摘录，不是我的情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "hypothetical-19",
+      "split": "holdout",
+      "category": "hypothetical",
+      "source": "假设我对你说“我习惯给代码写清晰的中文注释。”，这是假设，不代表实际情况。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "emotion-19",
+      "split": "holdout",
+      "category": "temporary_emotion",
+      "source": "今天想到代码注释有点烦，但我只是暂时情绪不好，过会儿就好了。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "coreference-19",
+      "split": "holdout",
+      "category": "coreference",
+      "source": "是的，这就是我的长期情况，请记住。",
+      "context": [
+        "你确认下面这句描述符合你吗？我习惯给代码写清晰的中文注释。"
+      ],
+      "existing": null,
+      "expected": [
+        {
+          "terms": [
+            [
+              "中文"
+            ],
+            [
+              "注释"
+            ]
+          ],
+          "category": "preference",
+          "action": "create"
+        }
+      ]
+    },
+    {
+      "id": "conflict-00",
+      "split": "development",
+      "category": "conflicting_preference",
+      "source": "关于练习项目0，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目0的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "0"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-00",
+      "split": "development",
+      "category": "unrelated",
+      "source": "请解释第0个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-01",
+      "split": "development",
+      "category": "conflicting_preference",
+      "source": "关于练习项目1，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目1的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "1"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-01",
+      "split": "development",
+      "category": "unrelated",
+      "source": "请解释第1个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-02",
+      "split": "development",
+      "category": "conflicting_preference",
+      "source": "关于练习项目2，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目2的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "2"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-02",
+      "split": "development",
+      "category": "unrelated",
+      "source": "请解释第2个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-03",
+      "split": "development",
+      "category": "conflicting_preference",
+      "source": "关于练习项目3，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目3的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "3"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-03",
+      "split": "development",
+      "category": "unrelated",
+      "source": "请解释第3个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-04",
+      "split": "development",
+      "category": "conflicting_preference",
+      "source": "关于练习项目4，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目4的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "4"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-04",
+      "split": "development",
+      "category": "unrelated",
+      "source": "请解释第4个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-05",
+      "split": "holdout",
+      "category": "conflicting_preference",
+      "source": "关于练习项目5，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目5的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "5"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-05",
+      "split": "holdout",
+      "category": "unrelated",
+      "source": "请解释第5个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-06",
+      "split": "holdout",
+      "category": "conflicting_preference",
+      "source": "关于练习项目6，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目6的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "6"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-06",
+      "split": "holdout",
+      "category": "unrelated",
+      "source": "请解释第6个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-07",
+      "split": "holdout",
+      "category": "conflicting_preference",
+      "source": "关于练习项目7，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目7的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "7"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-07",
+      "split": "holdout",
+      "category": "unrelated",
+      "source": "请解释第7个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-08",
+      "split": "holdout",
+      "category": "conflicting_preference",
+      "source": "关于练习项目8，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目8的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "8"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-08",
+      "split": "holdout",
+      "category": "unrelated",
+      "source": "请解释第8个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    },
+    {
+      "id": "conflict-09",
+      "split": "holdout",
+      "category": "conflicting_preference",
+      "source": "关于练习项目9，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+      "context": [],
+      "existing": {
+        "content": "练习项目9的数据库选择 MySQL。",
+        "category": "decision"
+      },
+      "expected": [
+        {
+          "terms": [
+            [
+              "SQLite",
+              "sqlite"
+            ],
+            [
+              "9"
+            ]
+          ],
+          "category": "decision",
+          "action": "replace"
+        }
+      ]
+    },
+    {
+      "id": "question-09",
+      "split": "holdout",
+      "category": "unrelated",
+      "source": "请解释第9个数学题的解法，我没有提供个人背景。",
+      "context": [],
+      "existing": null,
+      "expected": []
+    }
+  ],
+  "revision_note": "V1 mixed durable self-statements with temporary-emotion disclaimers. V2 negatives express only temporary emotion. Revised after inspecting V1; not an untouched holdout."
+}

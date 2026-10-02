@@ -26,3 +26,5 @@ Agent 编排组合领域服务及外部集成。领域代码接收应用提供�
 ## 可读性
 
 SQL 使用四空格缩进，每行一个表字段或赋值，布尔条件分行。局部记录变量按职责命名，触发器嵌套分支对齐。在同意水位、失效、租约和计费边界添加简短解释。CI 中的 `python scripts/check_sql_readability.py` 检查 tab、缩进和 100 列宽；它是排版检查，不是 SQL 解析器，也不能代替审查。Python 中的内嵌 SQL 在连接或授权条件复杂时应使用多行文本。
+
+合成采集器放在 `scripts/memory_evaluation/`，`scripts/evaluate_memory_quality.py` 仅提供质量 CLI。记账/评分、提取、选择、历史校准和回答工具各自分离。共享自动记忆测试场景放在 `tests/memory/helpers.py`，测试模块不互相导入。

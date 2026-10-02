@@ -147,7 +147,7 @@ class ResearchSettings(Settings, DataSettings):
     embedding_conversion_version: str = Field(default="fixed-v1", min_length=1, max_length=64)
     memory_retrieval_timeout_seconds: float = Field(default=10, gt=0, le=30)
     memory_dense_min_similarity: float = Field(default=0.5, ge=-1, le=1)
-    history_dense_min_similarity: float = Field(default=0.3, ge=-1, le=1)
+    history_dense_min_similarity: float = Field(default=0.6, ge=-1, le=1)
     memory_limit: int = Field(default=64, ge=1, le=64)
     auto_memory_limit: int = Field(default=1000, ge=1, le=1000)
     memory_candidate_limit: int = Field(default=100, ge=1, le=100)

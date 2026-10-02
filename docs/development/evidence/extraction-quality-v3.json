@@ -1,0 +1,2923 @@
+{
+  "recorded_at": "2026-10-02T13:11:36.410572+00:00",
+  "stage": "extraction",
+  "scorer": "active-extraction-and-final-selection-v1",
+  "model": "deepseek-flash",
+  "results": {
+    "direct-00-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我做饭时会避开香菜。",
+          "fact_key": "diet.coriander.avoid_when_cooking",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我做饭时会避开香菜。",
+              "start": 0,
+              "end": 10
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-00-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "做饭时会避开香菜。",
+          "fact_key": "cooking.avoid_cilantro",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我做饭时会避开香菜。",
+              "start": 0,
+              "end": 19
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-00-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "做饭时会避开香菜。",
+          "fact_key": "cooking.avoid_cilantro",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我做饭时会避开香菜。以后交流可以参考。",
+              "start": 0,
+              "end": 19
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-00": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-00": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-00": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-00": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "做饭时会避开香菜",
+          "fact_key": "cooking.avoid_cilantro",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-01-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "平时使用 Go 编写命令行工具。",
+          "fact_key": "tech.go_cli_tools",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我平时用 Go 编写命令行工具。",
+              "start": 0,
+              "end": 16
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-01-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我平时用 Go 编写命令行工具。",
+          "fact_key": "background.go_cli_tools",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我平时用 Go 编写命令行工具。",
+              "start": 0,
+              "end": 25
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-01-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "平时用 Go 编写命令行工具。",
+          "fact_key": "technical.primary_language_go_cli",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我平时用 Go 编写命令行工具。以后交流可以参考。",
+              "start": 0,
+              "end": 25
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-01": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-01": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-01": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-01": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我平时用 Go 编写命令行工具。",
+          "fact_key": "background.go_cli_tools",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-02-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "选择 SQLite 存储小型离线应用的数据。",
+          "fact_key": "decision.sqlite_small_offline_apps",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我选择 SQLite 存储小型离线应用的数据。",
+              "start": 0,
+              "end": 23
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-02-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "选择使用 SQLite 存储小型离线应用的数据（长期情况）。",
+          "fact_key": "storage.sqlite_choice",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我选择 SQLite 存储小型离线应用的数据。",
+              "start": 0,
+              "end": 32
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-02-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "选择 SQLite 存储小型离线应用的数据。",
+          "fact_key": "storage.sqlite_for_small_offline_apps",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我选择 SQLite 存储小型离线应用的数据。以后交流可以参考。",
+              "start": 0,
+              "end": 32
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 2
+    },
+    "quote-02": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-02": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-02": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-02": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我选择 SQLite 存储小型离线应用的数据。",
+          "fact_key": "storage.sqlite_for_small_offline_apps",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-03-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我练英语时更喜欢听播客。",
+          "fact_key": "english_practice.prefer_podcasts",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我练英语时更喜欢听播客。",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-03-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "练英语时更喜欢听播客。",
+          "fact_key": "english_practice.prefer_podcast",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我练英语时更喜欢听播客。",
+              "start": 0,
+              "end": 21
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-03-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "练英语时更喜欢听播客",
+          "fact_key": "english_practice.prefers_podcasts",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我练英语时更喜欢听播客。以后交流可以参考。",
+              "start": 0,
+              "end": 21
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-03": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-03": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-03": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-03": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "练英语时更喜欢听播客。",
+          "fact_key": "english_practice_prefers_podcasts",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-04-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我习惯每天晚上九点阅读纸质书。",
+          "fact_key": "habit.reading.paper_book_9pm",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我习惯每天晚上九点阅读纸质书。",
+              "start": 0,
+              "end": 15
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-04-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "习惯每天晚上九点阅读纸质书。",
+          "fact_key": "reading.daily_paper_book_9pm",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我习惯每天晚上九点阅读纸质书。",
+              "start": 0,
+              "end": 24
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-04-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "习惯每天晚上九点阅读纸质书。",
+          "fact_key": "habit.reading.paper_book_21_00",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我习惯每天晚上九点阅读纸质书。以后交流可以参考。",
+              "start": 0,
+              "end": 24
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-04": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-04": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-04": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-04": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "习惯每天晚上九点阅读纸质书。",
+          "fact_key": "reading.paper_book_9pm_daily",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-05-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "演示项目被命名为“云杉”。",
+          "fact_key": "project.demo.name",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我给演示项目起名为云杉。",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-05-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我给演示项目起名为云杉。",
+          "fact_key": "demo_project.name",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我给演示项目起名为云杉。",
+              "start": 0,
+              "end": 21
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-05-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "演示项目命名为「云杉」，以后交流可参考该名称。",
+          "fact_key": "project.demo.name",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我给演示项目起名为云杉。以后交流可以参考。",
+              "start": 0,
+              "end": 21
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-05": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-05": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-05": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-05": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "给演示项目起名为云杉。",
+          "fact_key": "demo_project.name",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-06-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "goal",
+          "content": "希望在年底前完成摄影作品集。",
+          "fact_key": "goal.photography_portfolio_by_year_end",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我希望在年底前完成摄影作品集。",
+              "start": 0,
+              "end": 15
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-06-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "goal",
+          "content": "希望在年底前完成摄影作品集。",
+          "fact_key": "goal.photo_portfolio",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我希望在年底前完成摄影作品集。",
+              "start": 0,
+              "end": 24
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-06-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "goal",
+          "content": "希望（有生之年/持续目标）：在2026年年底前完成摄影作品集。",
+          "fact_key": "goal.photo_portfolio_completion",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我希望在年底前完成摄影作品集。以后交流可以参考。",
+              "start": 0,
+              "end": 24
+            }
+          ],
+          "valid_from": null,
+          "expires_at": "2026-12-31T00:00:00Z",
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-06": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-06": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-06": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-06": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "goal",
+          "content": "希望在年底前完成摄影作品集。",
+          "fact_key": "goal.photography_portfolio_by_year_end",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-07-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "短途旅行时通常乘火车。",
+          "fact_key": "travel.short_trip_prefers_train",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我去短途旅行时通常乘火车。",
+              "start": 0,
+              "end": 13
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-07-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我去短途旅行时通常乘火车。",
+          "fact_key": "travel.short_trip_train",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我去短途旅行时通常乘火车。",
+              "start": 0,
+              "end": 22
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-07-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "短途旅行时通常乘火车。",
+          "fact_key": "travel.short_trip_by_train",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我去短途旅行时通常乘火车。以后交流可以参考。",
+              "start": 0,
+              "end": 22
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-07": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-07": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-07": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-07": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "短途旅行时通常乘火车",
+          "fact_key": "travel.short_trip_by_train",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-08-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "写文档时优先使用 Markdown。",
+          "fact_key": "writing.prefer_markdown",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我写文档时优先使用 Markdown。",
+              "start": 0,
+              "end": 19
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-08-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "写文档时优先使用 Markdown。",
+          "fact_key": "preference.document_format.markdown",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我写文档时优先使用 Markdown。",
+              "start": 0,
+              "end": 28
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-08-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我写文档时优先使用 Markdown。",
+          "fact_key": "doc_writing.markdown_preference",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我写文档时优先使用 Markdown。以后交流可以参考。",
+              "start": 0,
+              "end": 28
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-08": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-08": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-08": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-08": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "写文档时优先使用 Markdown。",
+          "fact_key": "preference.writing.markdown_priority",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-09-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "喜欢先看运行结果，再读代码解释。",
+          "fact_key": "learning.prefer_results_before_explanation",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我喜欢先看运行结果，再读代码解释。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-09-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "喜欢先看运行结果，再读代码解释。",
+          "fact_key": "preference.code_explanation_order",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我喜欢先看运行结果，再读代码解释。",
+              "start": 0,
+              "end": 26
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-09-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "喜欢先看运行结果，再读代码解释。",
+          "fact_key": "communication.prefer_output_then_explanation",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我喜欢先看运行结果，再读代码解释。以后交流可以参考。",
+              "start": 0,
+              "end": 26
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-09": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-09": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-09": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-09": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我喜欢先看运行结果，再读代码解释。",
+          "fact_key": "preference.results_before_code_explanation",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-10-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "用户平时在 Linux 电脑上开发。",
+          "fact_key": "dev_environment.os",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我平时在 Linux 电脑上开发。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-10-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我平时在 Linux 电脑上开发。",
+          "fact_key": "dev_environment.linux",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我平时在 Linux 电脑上开发。",
+              "start": 0,
+              "end": 26
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-10-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "在 Linux 电脑上开发",
+          "fact_key": "dev_environment.os",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我平时在 Linux 电脑上开发。以后交流可以参考。",
+              "start": 0,
+              "end": 26
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 2
+    },
+    "quote-10": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-10": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-10": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-10": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "平时在 Linux 电脑上开发。",
+          "fact_key": "dev_environment.linux",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-11-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "选择 Vue 来做练习项目的前端。",
+          "fact_key": "practice_project.frontend_framework",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我选择 Vue 来做练习项目的前端。",
+              "start": 0,
+              "end": 18
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-11-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "选择 Vue 作为练习项目的前端技术。",
+          "fact_key": "practice_project.frontend.vue",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我选择 Vue 来做练习项目的前端。",
+              "start": 0,
+              "end": 27
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-11-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "选择 Vue 作为练习项目的前端技术。",
+          "fact_key": "project.practice.frontend.vue",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我选择 Vue 来做练习项目的前端。以后交流可以参考。",
+              "start": 0,
+              "end": 27
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-11": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-11": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-11": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-11": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "选择 Vue 来做练习项目的前端。",
+          "fact_key": "frontend.practice_project.framework",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-12-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我习惯用铅笔做读书笔记。",
+          "fact_key": "reading_notes.pencil_habit",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我习惯用铅笔做读书笔记。",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-12-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我习惯用铅笔做读书笔记。",
+          "fact_key": "reading_notes.use_pencil",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我习惯用铅笔做读书笔记。",
+              "start": 0,
+              "end": 21
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-12-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我习惯用铅笔做读书笔记。",
+          "fact_key": "reading_notes.prefers_pencil",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我习惯用铅笔做读书笔记。以后交流可以参考。",
+              "start": 0,
+              "end": 21
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-12": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-12": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-12": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-12": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "我习惯用铅笔做读书笔记。",
+          "fact_key": "reading_notes.pencil_habit",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-13-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我周末通常打羽毛球。",
+          "fact_key": "hobby.weekend_badminton",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我周末通常打羽毛球。",
+              "start": 0,
+              "end": 10
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-13-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我周末通常打羽毛球。",
+          "fact_key": "lifestyle.weekend_badminton",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我周末通常打羽毛球。",
+              "start": 0,
+              "end": 19
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-13-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我周末通常打羽毛球。",
+          "fact_key": "hobby.badminton_weekends",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我周末通常打羽毛球。以后交流可以参考。",
+              "start": 0,
+              "end": 19
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-13": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-13": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-13": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-13": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "background",
+          "content": "我周末通常打羽毛球。",
+          "fact_key": "lifestyle.weekend_badminton",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-14-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "goal",
+          "content": "希望做一个能够离线使用的菜谱应用。",
+          "fact_key": "goal.offline_recipe_app",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我希望做一个能够离线使用的菜谱应用。",
+              "start": 0,
+              "end": 18
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-14-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "goal",
+          "content": "希望做一个能够离线使用的菜谱应用。",
+          "fact_key": "goal.offline_recipe_app",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我希望做一个能够离线使用的菜谱应用。",
+              "start": 0,
+              "end": 27
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-14-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "goal",
+          "content": "希望做一个能够离线使用的菜谱应用。",
+          "fact_key": "goal.offline_recipe_app",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我希望做一个能够离线使用的菜谱应用。以后交流可以参考。",
+              "start": 0,
+              "end": 27
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-14": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-14": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-14": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-14": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "goal",
+          "content": "希望做一个能够离线使用的菜谱应用。",
+          "fact_key": "recipe_app.offline_goal",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-15-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "喜欢喝不加糖的豆浆。",
+          "fact_key": "drink.soy_milk.unsweetened",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我喜欢喝不加糖的豆浆。",
+              "start": 0,
+              "end": 11
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-15-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "喜欢喝不加糖的豆浆。",
+          "fact_key": "preference.soy_milk_no_sugar",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我喜欢喝不加糖的豆浆。",
+              "start": 0,
+              "end": 20
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-15-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "喜欢喝不加糖的豆浆。",
+          "fact_key": "beverage.soy_milk_unsweetened",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我喜欢喝不加糖的豆浆。以后交流可以参考。",
+              "start": 0,
+              "end": 20
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-15": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-15": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-15": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-15": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "喜欢喝不加糖的豆浆。",
+          "fact_key": "drink.soy_milk.unsweetened",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-16-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "决定将示例仓库命名为“石桥”。",
+          "fact_key": "example_repo.name",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我决定将示例仓库命名为石桥。",
+              "start": 0,
+              "end": 14
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-16-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "决定将示例仓库命名为「石桥」。",
+          "fact_key": "example_repo.name",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我决定将示例仓库命名为石桥。",
+              "start": 0,
+              "end": 23
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-16-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "将示例仓库命名为“石桥”，以后交流可参考此名称。",
+          "fact_key": "example_repo.name",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我决定将示例仓库命名为石桥。以后交流可以参考。",
+              "start": 0,
+              "end": 23
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-16": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-16": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-16": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-16": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "decision",
+          "content": "决定将示例仓库命名为石桥。",
+          "fact_key": "example_repo_name",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-17-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "学数学时更喜欢先画图。",
+          "fact_key": "math.study.prefer_drawing_first",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我学数学时更喜欢先画图。",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-17-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "学数学时更喜欢先画图。",
+          "fact_key": "math.learning.prefer_draw_diagram_first",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我学数学时更喜欢先画图。",
+              "start": 0,
+              "end": 21
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-17-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "学数学时更喜欢先画图，希望以后交流时可以参考这一点。",
+          "fact_key": "preference.math.learn_by_drawing",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我学数学时更喜欢先画图。以后交流可以参考。",
+              "start": 0,
+              "end": 21
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-17": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-17": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-17": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-17": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "学数学时更喜欢先画图。",
+          "fact_key": "learning.math.prefer_diagrams_first",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-18-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "旅行时喜欢住靠近车站的地方。",
+          "fact_key": "travel_preference.stay_near_station",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我旅行时喜欢住靠近车站的地方。",
+              "start": 0,
+              "end": 15
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-18-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "旅行时喜欢住靠近车站的地方",
+          "fact_key": "travel.accommodation.near_station",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我旅行时喜欢住靠近车站的地方。",
+              "start": 0,
+              "end": 24
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-18-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "旅行时喜欢住靠近车站的地方。",
+          "fact_key": "travel.accommodation.near_station",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我旅行时喜欢住靠近车站的地方。以后交流可以参考。",
+              "start": 0,
+              "end": 24
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-18": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-18": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-18": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-18": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "旅行时喜欢住靠近车站的地方",
+          "fact_key": "travel_prefers_accommodation_near_station",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-19-0": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "习惯给代码写清晰的中文注释。",
+          "fact_key": "coding.comment_language.zh",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我习惯给代码写清晰的中文注释。",
+              "start": 0,
+              "end": 15
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-19-1": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "习惯给代码写清晰的中文注释。",
+          "fact_key": "coding.chinese_comments",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "补充一个长期情况：我习惯给代码写清晰的中文注释。",
+              "start": 0,
+              "end": 24
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "direct-19-2": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "习惯给代码写清晰的中文注释。",
+          "fact_key": "coding.comment_language_chinese",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "我习惯给代码写清晰的中文注释。以后交流可以参考。",
+              "start": 0,
+              "end": 24
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "quote-19": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "hypothetical-19": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "emotion-19": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "coreference-19": {
+      "operations": [
+        {
+          "action": "create",
+          "target_memory_id": null,
+          "expected_revision": null,
+          "category": "preference",
+          "content": "习惯给代码写清晰的中文注释。",
+          "fact_key": "coding.chinese_comments_habit",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "是的，这就是我的长期情况，请记住。",
+              "start": 0,
+              "end": 17
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-00": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "d43fae00-1c0a-5f52-8ee7-9f8e5124f41a",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目0的数据库改用 SQLite，不再使用 MySQL。",
+          "fact_key": "practice_project_0.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目0，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-00": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-01": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "28c08171-e61f-5bcf-87de-6ad2733f0f59",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目1的数据库改用 SQLite，不再用 MySQL。",
+          "fact_key": "practice_project_1.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目1，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-01": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-02": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "e4b1dd7c-2aef-5134-a4e2-77990ac016bf",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目2的数据库改用 SQLite，不再用 MySQL。",
+          "fact_key": "practice_project_2.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目2，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-02": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-03": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "2904792a-fca1-5f04-b574-1c8a97fc06c8",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目3的数据库改用 SQLite，不再用 MySQL。",
+          "fact_key": "practice_project_3.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目3，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-03": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-04": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "e634cd9e-189c-5773-b6bb-3f765f6c18fb",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目4的数据库改用 SQLite，不再用 MySQL。",
+          "fact_key": "practice_project_4.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目4，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-04": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-05": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "eccc8102-812c-516d-a096-23c281cb239f",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目5的数据库选择改用 SQLite，不再用 MySQL。",
+          "fact_key": "practice_project_5.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目5，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-05": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-06": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "e7d6cf0a-7425-50d0-afbb-45f62023af56",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目6的数据库改用 SQLite，不再用 MySQL。",
+          "fact_key": "practice_project_6.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目6，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-06": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-07": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "53d96e4b-43e6-5705-8e20-7fe13b735364",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目7的数据库改用 SQLite，不再使用 MySQL。",
+          "fact_key": "practice_project_7.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目7，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-07": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-08": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "0410752b-3676-5625-8ec9-da4a2f6b1f35",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目8的数据库改用 SQLite，不再用 MySQL。",
+          "fact_key": "practice_project_8.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目8，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-08": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    },
+    "conflict-09": {
+      "operations": [
+        {
+          "action": "replace",
+          "target_memory_id": "bb7c9a99-6a48-5eec-917d-62d807ee405d",
+          "expected_revision": 1,
+          "category": "decision",
+          "content": "练习项目9的数据库改用 SQLite，不再使用 MySQL。",
+          "fact_key": "practice_project_9.database",
+          "scope": "global",
+          "task_id": null,
+          "basis": "direct_statement",
+          "source_refs": [
+            {
+              "message_id": 17,
+              "quote": "关于练习项目9，我改变主意了：数据库改用 SQLite，不再用 MySQL。",
+              "start": 0,
+              "end": 38
+            }
+          ],
+          "valid_from": null,
+          "expires_at": null,
+          "review_after": null
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    "question-09": {
+      "operations": [],
+      "error": null,
+      "attempts": 1
+    }
+  },
+  "metrics": {
+    "development": {
+      "expected_active_labels": 45,
+      "validated_active_operations": 45,
+      "matched_active_labels": 45,
+      "active_precision": 1.0,
+      "direct_recall": 1.0,
+      "negative_cases": 35,
+      "negative_cases_with_active_operations": 0,
+      "false_extraction_rate": 0.0,
+      "failed_cases": 0
+    },
+    "holdout": {
+      "expected_active_labels": 45,
+      "validated_active_operations": 45,
+      "matched_active_labels": 45,
+      "active_precision": 1.0,
+      "direct_recall": 1.0,
+      "negative_cases": 35,
+      "negative_cases_with_active_operations": 0,
+      "false_extraction_rate": 0.0,
+      "failed_cases": 0
+    }
+  },
+  "limitations": [
+    "synthetic single-author labels; no independent human review",
+    "no owner archive, database or Telegram access",
+    "related injection is measured separately from always-present profile",
+    "keyword/action extraction matching is conservative, not human semantic scoring"
+  ],
+  "corpus_sha256": "f6acbddb8d883cedaa82429e538967f9dcb0a226c728d2ff2fea2bad98069cd6",
+  "corpus_version": "chinese-extraction-v2",
+  "case_count": 160,
+  "usage": {
+    "cap_micro_usd": 500000,
+    "estimated_and_unknown_micro_usd": 88255,
+    "requests": 162,
+    "states": {
+      "recorded": 162
+    },
+    "kinds": {
+      "model": 162
+    },
+    "accounting": "in-memory evaluation estimates; outside production ledger; not invoices"
+  }
+}
