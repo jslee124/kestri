@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 26 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：全部 27 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -143,6 +143,12 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 | `MemoryService._insert` | 拒绝凭据模式，限制有效记录，插入来源/替代关系。 |
 | `MemoryService.expire` | 使到期 active 事实无效，更新 epoch/对话头。 |
 | `MemoryService.retrieve` | 筛主人/状态/到期/任务，再按关键词/范围排序并限制。 |
+
+## memory_extractor.py
+
+[源码](../../src/kestri/memory_extractor.py) · [实施边界](memory-v2-progress.zh-CN.md)
+
+`MemorySource`、`ExistingMemory`、`ExtractionBatch` 定义可信输入，`ExtractionBatch.validate_batch` 检查资格/上限；`SourceReference`、`MemoryOperation`、`MemoryProposal` 定义模型 schema；`validate_proposal` 校验并返回不可变 `ValidatedExtraction`；`MemoryExtractor.__init__` 捕获模型与脱敏器，`extract` 执行有界、计费的提案生成。`Record` 是不可变、拒绝额外字段的公共基类。本模块不写数据库。
 
 ## models.py
 

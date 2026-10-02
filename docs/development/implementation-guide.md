@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 26 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: all 27 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -143,6 +143,12 @@ Explicit memory service · [Detailed mechanism](../design/context-management.md)
 | `MemoryService._insert` | Reject credential patterns, enforce active-record limit, insert provenance/supersession. |
 | `MemoryService.expire` | Tombstone due active facts and invalidate conversation epoch/head. |
 | `MemoryService.retrieve` | Filter owner/status/expiry/task, then rank keywords/scope and bound selection. |
+
+## memory_extractor.py
+
+[Source](../../src/kestri/memory_extractor.py) · [Delivery boundary](memory-v2-progress.md)
+
+`MemorySource`, `ExistingMemory`, and `ExtractionBatch` define trusted input; `ExtractionBatch.validate_batch` checks eligibility/limits. `SourceReference`, `MemoryOperation`, and `MemoryProposal` define model schemas; `validate_proposal` validates and returns immutable `ValidatedExtraction`; `MemoryExtractor.__init__` captures model/redactor, and `extract` generates a bounded, charged proposal. `Record` is the immutable extra-field-forbidding base. This module does not write the database.
 
 ## models.py
 

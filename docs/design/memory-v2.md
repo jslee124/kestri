@@ -4,6 +4,8 @@
 
 Date: 2026-10-02. Status: agreed product direction and implementation specification; automatic memory, vector storage, hybrid retrieval, and history tools are **not implemented**. The independently implemented [embedding connection](../reference/embedding.md) is a prerequisite only. [ADR-0007](../decisions/0007-automatic-semantic-memory.md) records the transition from explicit-only memory.
 
+Proposal extraction implementation has started; see [progress](../development/memory-v2-progress.md) for precise delivery boundaries.
+
 ## Goal and scope
 
 Kestri learns useful personal context from ordinary owner dialogue, recalls it across paraphrases, and updates it when the owner changes their mind. Explicit remember/correct/forget controls remain available. First delivery covers direct personal facts, goals, preferences, decisions, temporary state, candidate inference, hybrid recall, bounded history search, and revocation. It does not infer diagnoses/personality or authorize tasks/actions from memory. Success means useful correct recall, not merely successful vector generation.
