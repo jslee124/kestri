@@ -2,7 +2,7 @@
 
 [简体中文](memory-and-context.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Scope: M3 implementation; see the [validation record](../development/m3-validation.md).
+Updated: 2026-10-02. Scope: M3 implementation; see the [validation record](../development/m3-validation.md).
 
 ## Owner controls
 
@@ -29,7 +29,7 @@ Structured owner/scope/expiry filtering precedes bounded retrieval. Task memorie
 
 Every successful save/correction/forget operation clears the foreground checkpoint pointer and increments an owner context epoch. Expiry does the same before new work/model access. Old foreground/background results and evidence from another epoch are excluded from automatic reply/read retrieval, and stale running work cannot start another billable operation or restore the old foreground head. An already-submitted external request cannot be recalled; if it completes after the epoch changes, its answer is replaced by a safe stopped-context notice instead of being delivered. This intentionally broad invalidation sacrifices conversation continuity to avoid deleted-fact resurrection. `/history` is an explicit, read-only archive view and does not feed the model or create memory.
 
-Forgotten content remains in tombstoned rows, original messages, and historical checkpoints until later retention/deletion work. This is removal from active use, not physical erasure or provider-side deletion. A new explicit save request can establish new memory. Backup/restore reconciliation remains M4; do not restore an older database and claim these deletion guarantees persist automatically.
+Forgotten content remains in tombstoned rows, archives, and historical checkpoints until the M4 [retention/deletion policy](data-lifecycle.md) removes local copies. Provider/Telegram copies remain outside that boundary. Restore quarantines imported active facts; use a new explicit save to authorize an intended fact.
 
 ## Automatic compression
 
@@ -50,4 +50,4 @@ Full summary input must fit the admission limit; older data is not silently clip
 | `KESTRI_MAX_SUMMARY_CALLS` | 2 | 1–4 summary calls per run, separate from regular agent model-call count |
 | `KESTRI_SUMMARY_MAX_CHARS` | 4000 | 500–8000 summary characters |
 
-Summary calls share per-run/monthly spending limits and the selected DeepSeek model/output limit. The estimate is conservative UTF-8/framing accounting, not the exact provider tokenizer. Final model admission checks the assembled request, including injected memory and schemas. The broader retention/backup policies remain proposals; M3 does not prune original archives or old checkpoint copies.
+Summary calls share per-run/monthly spending limits and the selected DeepSeek model/output limit. The estimate is conservative UTF-8/framing accounting, not the exact provider tokenizer. Final model admission checks the assembled request, including injected memory and schemas. M4 supplies physical retention and quarantined backup recovery; see the [data reference](data-lifecycle.md).

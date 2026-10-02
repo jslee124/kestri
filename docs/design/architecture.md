@@ -2,7 +2,7 @@
 
 [简体中文](architecture.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: design draft; major technology and boundary decisions accepted. M1 implements foreground research, controlled information tools, canonical records, checkpoints, delivery, and Compose. M2 implements durable task agreements and independent background scheduling; M3 implements explicit personal memory and budgeted context compression; see the [memory/context reference](../reference/memory-and-context.md). Exact implemented behavior is in the [M1 reference](../reference/telegram.md) and [validation record](../development/m1-validation.md).
+Updated: 2026-10-02. Status: design draft; major technology and boundary decisions accepted. M1 implements foreground research, controlled information tools, canonical records, checkpoints, delivery, and Compose. M2 implements durable task agreements and independent background scheduling; M3 implements explicit personal memory and budgeted context compression; see the [memory/context reference](../reference/memory-and-context.md). Exact implemented behavior is in the [M1 reference](../reference/telegram.md) and [validation record](../development/m1-validation.md).
 
 ## System boundary
 
@@ -108,4 +108,4 @@ These values are starting points from the design discussion, not benchmark resul
 
 M3 extends LangChain’s [summarization middleware](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization) with budgeted provider calls and historical-data framing. [M3 evidence](../development/m3-validation.md) covers forced compression, correction preservation, original archives, and real DeepSeek behavior. The request estimate remains conservative and summary quality remains model-dependent.
 
-The task timezone has no implicit default: use an explicitly configured owner timezone or clarify it. M0 defines model/tool/output/time limits and locked dependencies in its configuration reference. Foreground concurrency, spending reservations, and delivery uncertainty are implemented in M1. M2 implements one foreground and one background worker, with a five-second scheduling check against stored agreements. Retention and backup implementation remain open. No automatic model routing or managed agent server is selected for the first version.
+The task timezone has no implicit default: use an explicitly configured owner timezone or clarify it. M0 defines model/tool/output/time limits and locked dependencies in its configuration reference. Foreground concurrency, spending reservations, and delivery uncertainty are implemented in M1. M2 implements one foreground and one background worker, with a five-second scheduling check against stored agreements. M4 implements retention and conservative backup recovery; see the [data reference](../reference/data-lifecycle.md). No automatic model routing or managed agent server is selected for the first version.

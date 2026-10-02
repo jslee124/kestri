@@ -2,7 +2,7 @@
 
 [简体中文](tasks.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Scope: M2 implementation; validation status is tracked in the [M2 record](../development/m2-validation.md).
+Updated: 2026-10-02. Scope: M2 implementation; validation status is tracked in the [M2 record](../development/m2-validation.md).
 
 ## Configuration and schedule
 
@@ -32,7 +32,7 @@ Schedules support daily and weekly local wall-clock times, not arbitrary cron, i
 | Unqualified `/stop` | Stop active foreground work; never implicitly stop a background run |
 | `/new` | Clear foreground committed context when no foreground work is queued/running; preserve tasks and history |
 
-A sole existing task can resolve an otherwise omitted control target. With multiple candidates, require a reply or task ID/name. Deleted tasks are tombstoned and disappear from `/tasks`; records/evidence remain until a later data-lifecycle implementation. Replies to the combined `/tasks` list do not identify one task. Task preferences never update global answer style or personal memory.
+A sole existing task can resolve an otherwise omitted control target. With multiple candidates, require a reply or task ID/name. Deleted tasks are tombstoned and disappear from `/tasks`; records/evidence follow the [data lifecycle policy](data-lifecycle.md). Replies to the combined `/tasks` list do not identify one task. Task preferences never update global answer style or personal memory.
 
 Natural-language routing is intentionally conservative: direct delegation and control phrases in Chinese/English are recognized; quotes, forwarded messages, explanations, and conditional examples cannot grant task authority. Unrecognized wording remains ordinary conversation. Clarifications ask the owner to resend a complete request; there is no multi-step pending-task wizard. Explicit times/weekdays and instruction excerpts are checked independently of the model. Missing timezone, unsupported timing, ambiguous targets, or invalid proposals cause no task mutation.
 
@@ -52,4 +52,4 @@ Pause, update, and delete cancel queued executions from the old agreement; alrea
 
 Selected transient model/transport errors allow one automatic retry after 30 seconds (two attempts total). Each attempt uses fresh background context; accumulated run cost and unknown reservations remain bounded by the same run budget. Paused/deleted/changed or expired work is not retried. Budget, policy, context, and call-limit failures are terminal. Process-interrupted executions are reported once and are not blindly rerun. Routine scheduled work sends only its final briefing, or one final failure/interruption notice; no per-tool progress is sent.
 
-Results and outbox entries commit before sending. Known non-sends reuse saved text with at most three send attempts; ambiguous sends are quarantined as `uncertain`. This does not provide exactly-once remote delivery. `/status` and `/runs` show kinds, evidence/use counts, safe errors, and failed/uncertain delivery counts. M3 supplies scoped personal memory and compression; see the [memory/context reference](memory-and-context.md). Physical retention, restore reconciliation, and manual resend remain deferred. The application must keep running locally; laptop sleep or stopped Docker delays work.
+Results and outbox entries commit before sending. Known non-sends reuse saved text with at most three send attempts; ambiguous sends are quarantined as `uncertain`. This does not provide exactly-once remote delivery. `/status` and `/runs` show kinds, evidence/use counts, safe errors, and failed/uncertain delivery counts. M3 supplies scoped personal memory and compression; see the [memory/context reference](memory-and-context.md). M4 supplies physical retention and conservative restore; imported tasks require explicit resume. Manual resend remains deferred. The application must keep running locally; laptop sleep or stopped Docker delays work.

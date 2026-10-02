@@ -2,7 +2,7 @@
 
 [简体中文](milestones.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: accepted delivery sequence; M0 verified; M1 verified within the research scope; M2 recurring briefings verified; M3 memory/context verified.
+Updated: 2026-10-02. Status: M0, M1, M2, M3, and M4 verified; complete evidence is linked in the first-version acceptance record.
 
 ## Purpose and current position
 
@@ -10,7 +10,7 @@ Deliver Kestri through small, runnable increments. Each milestone defines an obs
 
 [Product](../design/product.md) defines scope, [requirements](../design/requirements.md) defines acceptance, and [architecture](../design/architecture.md) and [security and data](../design/security-and-data.md) define intended mechanisms and defaults. This document orders delivery without replacing those sources.
 
-**Current next target: M4.** M0 is verified as a developer CLI and M1 is verified as the first Telegram research workflow; see [M0 evidence](m0-validation.md) and [M1 evidence](m1-validation.md). M2 recurring briefings and task control are verified; see [M2 evidence](m2-validation.md). M3 personal memory and context management are verified; see [M3 evidence](m3-validation.md). M4 closes data-lifecycle and personal-use acceptance. Later milestones build on earlier ones and preserve their accepted behavior.
+**First-version delivery complete.** See [integrated acceptance](first-version-acceptance.md), alongside the historical evidence below. The owner selected session-flow acceptance for this delivery and separate long-term trial tracking.
 
 | Milestone | Runnable outcome | Status | Evidence |
 | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ Deliver Kestri through small, runnable increments. Each milestone defines an obs
 | M1 | Telegram research with sources and follow-up | Verified | [M1 record](m1-validation.md) |
 | M2 | Recurring briefing and task management | Verified | [M2 record](m2-validation.md) |
 | M3 | Personal memory and managed conversation context | Verified | [M3 record](m3-validation.md) |
-| M4 | Deployable first version accepted for personal use | Not started | None |
+| M4 | Deployable first version accepted for personal use | Verified | [First-version acceptance](first-version-acceptance.md) |
 
 ## Rules for completion
 
@@ -121,7 +121,7 @@ Run the agreed first version through Docker Compose, with all three user journey
 - Validate retention, deletion, backup, and restore, including reconciliation of forgotten memories and deleted tasks before resuming retrieval or scheduling.
 - Demonstrate bounded failures, cancellation, restart, missed-run handling, delivery uncertainty, and inspectable usage across the integrated product.
 - Add verified setup/tutorial, operational how-to, and configuration reference documentation in English and Chinese. State deployment prerequisites, external service use, and remaining limitations.
-- Record a personal-use trial and its findings. The trial duration is to be defined; it does not replace acceptance evidence.
+- Record a personal-use trial and its findings. The owner accepted a session-flow trial for delivery; long-term daily use is tracked separately and does not replace acceptance evidence.
 
 ### Traceability and evidence
 

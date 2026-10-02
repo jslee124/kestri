@@ -2,7 +2,7 @@
 
 [简体中文](requirements.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Status: draft specification based on agreed product behavior. **AC-01 through AC-07 are verified across M1/M2; AC-08 and AC-09 are verified across M1/M2/M3. AC-10 through AC-12 retain partial coverage until M4.** See [M1 evidence](../development/m1-validation.md), [M2 evidence](../development/m2-validation.md), and [M3 evidence](../development/m3-validation.md). [M0 evidence](../development/m0-validation.md) covers only initial model/tool foundations and part of AC-12.
+Updated: 2026-10-02. Status: accepted first-version specification; evidence for all 22 requirements and AC-01 through AC-12 is linked in [first-version acceptance](../development/first-version-acceptance.md). M0, M1, M2, M3, and M4 evidence classes are recorded separately; long-term trial remains separate.
 
 ## Interpretation
 
@@ -56,15 +56,6 @@ These cases define outcomes to demonstrate later. They do not prescribe a test f
 | AC-11 | MEM-003, DATA-002 | Expire temporary material, forget memory, and delete a task. Verify active retrieval and scheduling stop using removed data. A restore procedure accounts for deletions; document the backup expiration boundary. | Retention/deletion checks and restore evidence |
 | AC-12 | WEB-002, OPS-001, OPS-002 | Reach a call, time, output, or budget limit and simulate a terminal provider failure. Work terminates with useful status, inspectable usage, and a concise notification without leaking credentials. | Boundary checks, operation records, and messaging observation |
 
-## Specification work still open
+## Implemented references and further validation
 
-- Archive retention/deletion, backup/restore interfaces, and deletion-marker retention.
-- Full-case acceptance of AC-10 through AC-12 and the integrated M4 personal-use trial.
-
-M1 foreground controls, queue values, restart handling, reservations, credit estimates, and delivery uncertainty are specified in the [implemented reference](../reference/telegram.md). Evidence status is in the [M1 record](../development/m1-validation.md).
-
-Resolve these through focused design review before the affected behavior is called complete. Link later implementation and evidence to the IDs above; keep every acceptance case unverified until supported by actual results.
-
-M2 agreements, controls, concurrency, and catch-up are specified in the [task reference](../reference/tasks.md); acceptance scope is tracked in the [M2 record](../development/m2-validation.md).
-
-M3 explicit memory, original-history inspection, and compression are specified in the [memory/context reference](../reference/memory-and-context.md); see [M3 evidence](../development/m3-validation.md).
+Interfaces and boundaries are specified in [Telegram](../reference/telegram.md), [tasks](../reference/tasks.md), [memory/context](../reference/memory-and-context.md), and [data lifecycle](../reference/data-lifecycle.md). This acceptance closes first-version scope. Long-term reliability, other platforms, and broader model behavior require separate ongoing validation; controlled failures do not establish every crash point or actual network outage.

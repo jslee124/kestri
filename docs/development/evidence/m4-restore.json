@@ -1,0 +1,16 @@
+{
+  "scope": "Actual owner-created logical snapshot restored into an independent empty target; detailed metadata retained privately.",
+  "checks": {
+    "dry_run_did_not_import": true,
+    "actual_restore_completed": true,
+    "evidence_contents_matched": true,
+    "backup_restricted_to_owner": true,
+    "no_imported_active_memory_task_work_or_pending_delivery": true,
+    "personal_deployment_not_replaced_or_erased": true
+  },
+  "limits": [
+    "Existing snapshot memories/tasks were already inactive; active-state quarantine is established by controlled synthetic fixtures.",
+    "Restored Telegram poller was not started; pending-update handling is transport-tested.",
+    "Run identifiers, timestamps, personal contents, charges, and database/restore counts are excluded."
+  ]
+}

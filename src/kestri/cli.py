@@ -1,14 +1,55 @@
-"""Developer entry point for the M0 live integration check."""
+"""Application entry points and local operator controls."""
 
 import argparse
 import asyncio
+import json
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 from pydantic import ValidationError
 
 from kestri.application import run_telegram, show_telegram_ids
-from kestri.settings import ResearchSettings, Settings, TelegramCredentials
+from kestri.data import DataService
+from kestri.redaction import Redactor
+from kestri.settings import DataSettings, ResearchSettings, Settings, TelegramCredentials
 from kestri.smoke import run_smoke, save_evidence
+from kestri.store import Store
+from kestri.workspace import Workspace
+
+
+async def run_data(settings: DataSettings, arguments: argparse.Namespace) -> None:
+    store = Store(
+        settings.database_url.get_secret_value(),
+        Redactor([settings.database_url.get_secret_value()]),
+    )
+    try:
+        if arguments.action == "status":
+            await store.pool.open(wait=True)
+        else:
+            await store.open()
+        service = DataService(store, Workspace(settings.workspace_dir), settings)
+        if arguments.action == "status":
+            result = await service.status()
+        elif arguments.action in {"backup", "export"}:
+            path = await service.backup(arguments.path, export=arguments.action == "export")
+            result = {"path": str(path.absolute()), "private": True}
+        elif arguments.action == "restore":
+            result = await service.restore(arguments.path, apply=arguments.apply)
+        else:
+            before = None
+            if arguments.action == "delete-history":
+                before = (
+                    datetime.fromisoformat(arguments.before)
+                    if arguments.before
+                    else datetime.now(UTC)
+                )
+            result = await service.cleanup(
+                apply=arguments.apply, before=before, erase=arguments.action == "erase"
+            )
+        print(json.dumps(result, ensure_ascii=False, default=str))
+    finally:
+        await store.close()
 
 
 def main() -> int:
@@ -17,10 +58,34 @@ def main() -> int:
     subcommands.add_parser("smoke", help="Run the bounded two-turn DeepSeek integration check")
     subcommands.add_parser("telegram", help="Run the owner-only research and recurring-task bot")
     subcommands.add_parser("telegram-id", help="Inspect pending private user IDs without enrolling")
+    data = subcommands.add_parser("data", help="Local-only archive, backup, restore, and retention")
+    actions = data.add_subparsers(dest="action", required=True)
+    actions.add_parser("status", help="Database counts and last maintenance outcome")
+    for action in ("backup", "export"):
+        command = actions.add_parser(action, help="Write a private logical bundle; stop app first")
+        command.add_argument("path", type=Path, nargs="?" if action == "backup" else None)
+    command = actions.add_parser(
+        "restore",
+        help=(
+            "Restore into an empty database/workspace; quarantine state and "
+            "discard pending Telegram updates"
+        ),
+    )
+    command.add_argument("path", type=Path)
+    command.add_argument("--apply", action="store_true", help="Apply; default only validates")
+    for action in ("cleanup", "delete-history", "erase"):
+        command = actions.add_parser(
+            action, help="Preview lifecycle changes; stop app before applying"
+        )
+        command.add_argument("--apply", action="store_true", help="Apply; default is a dry run")
+        if action == "delete-history":
+            command.add_argument("--before", help="Timezone-aware ISO cutoff; default all history")
     arguments = parser.parse_args()
     if arguments.command != "smoke":
         try:
-            if arguments.command == "telegram-id":
+            if arguments.command == "data":
+                asyncio.run(run_data(DataSettings(), arguments))
+            elif arguments.command == "telegram-id":
                 asyncio.run(show_telegram_ids(TelegramCredentials()))
             else:
                 asyncio.run(run_telegram(ResearchSettings()))

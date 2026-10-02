@@ -1,0 +1,95 @@
+{
+  "scope": "First-version session-flow acceptance; detailed owner-run metadata retained privately, not published.",
+  "live_services": [
+    "DeepSeek official API",
+    "Tavily",
+    "Telegram Bot API"
+  ],
+  "workflow_checks": {
+    "explicit_memory_save": true,
+    "foreground_research_with_retrieved_sources": true,
+    "memory_applied_to_foreground": true,
+    "associated_reply_completed_without_new_web_operations": true,
+    "ordinary_restart_preserved_task_and_memory": true,
+    "one_temporary_scheduled_briefing_delivered": true,
+    "memory_applied_to_background": true,
+    "temporary_task_paused_then_deleted": true,
+    "temporary_memory_forgotten": true,
+    "validation_state_inactive_and_no_pending_work": true
+  },
+  "deployment": {
+    "status": "running",
+    "health": "healthy",
+    "database_health": "healthy",
+    "user": "10001:10001",
+    "read_only_root": true,
+    "cap_drop": [
+      "ALL"
+    ],
+    "security_opt": [
+      "no-new-privileges:true"
+    ],
+    "memory_limit_bytes": 536870912,
+    "nano_cpus": 1000000000,
+    "pids_limit": 128,
+    "tmpfs": {
+      "/tmp": "size=64m,mode=1777"
+    },
+    "mounts": [
+      {
+        "type": "volume",
+        "destination": "/workspace",
+        "rw": true
+      }
+    ],
+    "database_published_ports": {},
+    "app_restart": "unless-stopped",
+    "database_restart": "unless-stopped"
+  },
+  "registered_commands": {
+    "default": [
+      "start",
+      "status",
+      "runs",
+      "usage",
+      "stop",
+      "new",
+      "help",
+      "tasks",
+      "memory",
+      "remember",
+      "correct",
+      "forget",
+      "history",
+      "task"
+    ],
+    "zh": [
+      "start",
+      "status",
+      "runs",
+      "usage",
+      "stop",
+      "new",
+      "help",
+      "tasks",
+      "memory",
+      "remember",
+      "correct",
+      "forget",
+      "history",
+      "task"
+    ]
+  },
+  "final_deployment": {
+    "status": "running",
+    "health": "healthy",
+    "user": "10001:10001",
+    "read_only_root": true,
+    "changes_since_live_trial": "Disk workers retain the maintenance lease through cancellation; covered by the additional regression case. Final image also includes the updated README."
+  },
+  "limits": [
+    "Detailed run IDs, timestamps, charges, owner identifiers, message bodies, and personal database statistics are excluded.",
+    "Long-term daily trial and other-platform qualification remain separate.",
+    "Controlled fault injection does not prove all live outages or crash points."
+  ]
+}

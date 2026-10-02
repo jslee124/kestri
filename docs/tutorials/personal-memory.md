@@ -2,7 +2,7 @@
 
 [简体中文](personal-memory.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Scope: M3, after the [Telegram setup tutorial](telegram-research.md).
+Updated: 2026-10-02. Scope: M3, after the [Telegram setup tutorial](telegram-research.md).
 
 ## Save and use a preference
 
@@ -22,4 +22,4 @@ Restart with `docker compose restart app`, then inspect `/memory` again. Active 
 
 Continue ordinary conversation. Near 70% of the configured input admission budget, Kestri summarizes older history while retaining recent complete tool interactions. Original messages stay in the archive. `/runs` and `/usage` retain outcomes and summary spending. A failed/oversized summary stops safely; `/new` starts fresh context without forgetting personal memory.
 
-For optional expiry, see [memory/context reference](../reference/memory-and-context.md). Do not store API keys or passwords. Forgetting is removal from active retrieval, not deletion of Telegram messages, historical copies, or backups. Full data lifecycle remains M4 work.
+For optional expiry, see [memory/context reference](../reference/memory-and-context.md). Do not store API keys or passwords. Forgetting is removal from active retrieval, not deletion of Telegram messages, historical copies, or backups. M4 provides separate [data lifecycle controls](../reference/data-lifecycle.md).

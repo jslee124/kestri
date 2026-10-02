@@ -2,7 +2,7 @@
 
 [简体中文](telegram.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Scope: implemented `kestri telegram` and `kestri telegram-id`. Full live acceptance status is tracked in the [M1 record](../development/m1-validation.md).
+Updated: 2026-10-02. Scope: implemented `kestri telegram` and `kestri telegram-id`. Full live acceptance status is tracked in the [M1 record](../development/m1-validation.md).
 
 ## Configuration
 
@@ -87,6 +87,6 @@ Default model rates are conservative peak, uncached estimates checked against [D
 
 Base Compose runs a non-root application with read-only root, writable named workspace volume, bounded `/tmp`, dropped capabilities, no added privileges, CPU/memory/PID limits, and no Docker socket or host-home mounts. PostgreSQL uses a separate named volume and an internal network with no published port. `compose.dev.yaml` intentionally publishes a loopback port for local development. Containers do not sandbox controlled tools independently of application privileges.
 
-Canonical records live in the `kestri` schema; LangGraph owns separate checkpoint tables. Workspace text is organized by generated run/evidence UUIDs with no-follow relative file operations. Cleanup, archive-retention enforcement, export, backup, and restore are deferred. M3 implements personal-memory expiry and removal from active use. Design retention values are proposals, not automatic deletion. `docker compose stop` preserves volumes; `down -v` deletes durable data and should not be used as a routine stop command.
+Canonical records live in the `kestri` schema; LangGraph owns separate checkpoint tables. Workspace text is organized by generated run/evidence UUIDs with no-follow relative file operations. M3 implements personal-memory expiry and revocation; M4 adds idle retention, export, private backup, and quarantined restore. See the [data lifecycle reference](data-lifecycle.md). `docker compose stop` preserves volumes; `down -v` deletes durable data and should not be used as a routine stop command.
 
 M2 adds `/tasks` and `/task` alongside every existing command in the native collapsible menu; see the [task reference](tasks.md) for task control and scheduling rules.

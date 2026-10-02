@@ -2,7 +2,15 @@
 
 [English](README.md) · [项目首页](../README.zh-CN.md)
 
-更新日期：2026-10-01。状态：M0 已实现且验证；M1 研究已实现并验证；M2 持续简报已验证；M3 记忆/上下文已验证；M4 仍是目标。
+更新：2026-10-02。状态：M0、M1、M2、M3、M4 已完成第一版交付验收；长期使用另行记录。
+
+## 第一版使用和维护
+
+- [第一版验收记录](development/first-version-acceptance.zh-CN.md)：全部要求、案例和证据边界。
+- [运行维护](how-to/operate-local-agent.zh-CN.md)：启动、检查、重启和清理。
+- [备份恢复](how-to/backup-and-restore.zh-CN.md)：私有快照与空目标恢复。
+- [数据生命周期参考](reference/data-lifecycle.zh-CN.md)：接口、保留期与隔离规则。
+- [ADR-0006](decisions/0006-conservative-data-recovery.zh-CN.md)：保守恢复的取舍。
 
 ## 使用已实现的增量
 
@@ -27,10 +35,10 @@
 | 文档 | 用途 | 状态 |
 | --- | --- | --- |
 | [产品](design/product.zh-CN.md) | 产品定位、用户流程与第一版范围 | 产品方向已确认 |
-| [需求](design/requirements.zh-CN.md) | 带标识符的需求与验收标准 | 基于已达成共识行为的规格草案 |
-| [架构](design/architecture.zh-CN.md) | 职责、边界与执行流程 | 设计草案；主要选择已确认 |
-| [安全与数据](design/security-and-data.zh-CN.md) | 权限、隔离、记忆、上下文与数据生命周期 | 设计草案；策略方向已确认 |
-| [可运行里程碑](development/milestones.zh-CN.md) | 可运行增量、退出条件、需求覆盖与证据 | M0 已验证；M1 已验证；M2 已验证；M3 已验证 |
+| [需求](design/requirements.zh-CN.md) | 带标识符的需求与验收标准 | 基于已达成共识行为的已接受的第一版规格 |
+| [架构](design/architecture.zh-CN.md) | 职责、边界与执行流程 | 第一版架构 |
+| [安全与数据](design/security-and-data.zh-CN.md) | 权限、隔离、记忆、上下文与数据生命周期 | 第一版实现的边界设计 |
+| [可运行里程碑](development/milestones.zh-CN.md) | 可运行增量、退出条件、需求覆盖与证据 | M0、M1、M2、M3、M4 已验证 |
 | [ADR-0001](decisions/0001-agent-stack.zh-CN.md) | Python、LangChain Agent 与 DeepSeek 官方 API | 已接受 |
 | [ADR-0002](decisions/0002-local-deployment-and-tool-boundaries.zh-CN.md) | 本地部署与受控工具 | 已接受 |
 | [ADR-0003](decisions/0003-persistence-and-state-separation.zh-CN.md) | PostgreSQL 与状态分类隔离 | 已接受 |
@@ -47,11 +55,11 @@ Kestri 使用 [Diátaxis](https://diataxis.fr/) 区分学习教程、面向任�
 | 类别 | 读者需求 | 当前情况 |
 | --- | --- | --- |
 | 教程 | 通过有指导的完整实践学习 | 已提供首次运行 agent、Telegram 研究、持续简报与个人记忆 |
-| 操作指南 | 完成具体任务 | 已提供离线开发检查 |
-| 参考 | 查询准确的接口、配置与行为 | 已提供 M0 配置、M1 Telegram、M2 任务与 M3 记忆/上下文参考 |
+| 操作指南 | 完成具体任务 | 已提供开发检查、本地维护与备份恢复 |
+| 参考 | 查询准确的接口、配置与行为 | 已提供 M0 配置、M1 Telegram、M2 任务与 M3 记忆/上下文和 M4 数据参考 |
 | 解释 | 理解概念、机制与取舍 | 当前设计文档提供设计阶段的解释 |
 | 设计 | 审查预期产品行为与系统边界 | 见上方文档 |
-| 开发 | 跟踪可运行交付增量与验证进度 | 已提供里程碑、M0、M1、M2 与 M3 证据 |
+| 开发 | 跟踪可运行交付增量与验证进度 | 已提供里程碑、M0、M1、M2、M3、M4 证据 |
 | 决策 | 理解重要选择的原因 | 见上方文档 |
 
 不得把提案当作已实现功能的参考文档。教程与参考只描述经过验证的实现，未来能力留在设计文档中。

@@ -2,7 +2,7 @@
 
 [English](telegram.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。范围：已实现的 `kestri telegram` 与 `kestri telegram-id`。完整真实验收状态见 [M1 记录](../development/m1-validation.zh-CN.md)。
+更新日期：2026-10-02。范围：已实现的 `kestri telegram` 与 `kestri telegram-id`。完整真实验收状态见 [M1 记录](../development/m1-validation.zh-CN.md)。
 
 ## 配置
 
@@ -87,6 +87,6 @@
 
 基础 Compose 以非 root 运行应用，根文件系统只读、命名工作区卷可写，`/tmp` 有界、移除 capabilities、禁止新增权限，限制 CPU/内存/PID，不挂载 Docker socket 或宿主机 home。PostgreSQL 使用独立命名卷与内部网络，不发布端口。`compose.dev.yaml` 特意发布回环端口用于本地开发。容器不单独隔离受控工具与应用权限。
 
-原始记录位于 `kestri` schema，LangGraph 管理独立 checkpoint 表。工作区文本按生成的执行/证据 UUID 组织，使用不跟随链接的相对文件操作。清理、归档保留期执行、导出、备份与恢复后续实现。M3 已实现个人记忆过期和退出活跃使用。设计保留值是提案，不会自动删除。`docker compose stop` 保留卷；`down -v` 删除持久数据，不作为日常停止命令。
+原始记录位于 `kestri` schema，LangGraph 管理独立 checkpoint 表。工作区文本按生成的执行/证据 UUID 组织，使用不跟随链接的相对文件操作。M3 实现记忆过期和撤销，M4 实现空闲清理、导出、私有备份与隔离恢复。见[数据生命周期参考](data-lifecycle.zh-CN.md)。`docker compose stop` 保留卷；`down -v` 删除持久数据，不作为日常停止命令。
 
 M2 新增 `/tasks`、`/task` 并保留全部原有命令，均在原生可展开菜单中显示；详细任务控制与调度规则见[任务参考](tasks.zh-CN.md)。
