@@ -8,7 +8,7 @@
 
 ## 版本、环境和检查
 
-分支 `codex/m4-first-version`，基于 main `f82db3a23ba03f441ed3859c55f2f996e7715f2b`。Python 3.14、uv 0.12.3、macOS 主机、OrbStack Docker/Linux arm64、PostgreSQL 17，部署 Python 3.14.8。锁定 LangChain 1.4.3、LangGraph 1.2.12 不变，wheel 含迁移 1–4。Ruff lint/format、严格 mypy、双语/链接检查、构建和真实隔离 PostgreSQL 下的 122 项测试通过，**无跳过**。发布后补充 CI 与审核版本。
+分支 `codex/m4-first-version`，基于 main `f82db3a23ba03f441ed3859c55f2f996e7715f2b`。Python 3.14、uv 0.12.3、macOS 主机、OrbStack Docker/Linux arm64、PostgreSQL 17，部署 Python 3.14.8。锁定 LangChain 1.4.3、LangGraph 1.2.12 不变，wheel 含迁移 1–4。Ruff lint/format、严格 mypy、双语/链接检查、构建和真实隔离 PostgreSQL 下的 122 项测试通过，**无跳过**。实现版本 [`4c082ec`](https://github.com/jslee124/kestri/commit/4c082ecb83e34bdd1d515a7bae405202190dc42d) 的 [push CI](https://github.com/jslee124/kestri/actions/runs/36959236660) 和 [PR CI](https://github.com/jslee124/kestri/actions/runs/36959239867) 均已通过，使用 Linux/Python 3.14、可丢弃 PostgreSQL，不提供真实服务密钥。[Draft PR 5](https://github.com/jslee124/kestri/pull/5)包含实现和本验收记录，尚未合并 main。
 
 M4 增加 12 项生命周期测试：业务/证据实际恢复、旧备份中后来忘记/删除的数据、重新显式授权、归档/checkpoint/文件副本物理过期、清除内容但保留费用/身份和无关文件、运行租约/繁忙拒绝、不完整证据/导出拒绝、损坏/私有文件校验、受控文件失败回滚、独立备份过期、恢复后一次性积压命令丢弃、删除失败重试、符号链接边界与取消时备份租约保持至文件工作完成。部分案例含多个转换；先前测试全部重跑。
 
