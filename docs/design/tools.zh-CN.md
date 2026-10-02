@@ -140,3 +140,5 @@ sequenceDiagram
 7. 添加拒绝、取消、限制、费用未知与保留结果的行为测试；需要时同步双语文档和 schema/备份规则。
 
 [边界测试](../../tests/test_boundaries.py)覆盖私网目标、符号链接、有界 HTTP 与发送不确定性。[研究集成测试](../../tests/test_research_integration.py)在真实图中覆盖来源攻击、失败/截断证据、预算与取消。[工具测试](../../tests/test_tools.py)覆盖加法校验，[runtime 测试](../../tests/test_runtime.py)覆盖实际 SDK 序列化与工具错误处理。这里的测试描述不扩大独立验证记录中的真实服务证据。
+
+本分支新增[有界聊天历史工具](../reference/history-retrieval.zh-CN.md)，在 auto/use 同时开启时供模型按需调用；词项检索与个人事实向量检索是独立链路，历史混合索引仍待完成。

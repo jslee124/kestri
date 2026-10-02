@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 32 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: all 33 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -457,3 +457,7 @@ Coverage is traceable implementation documentation, not a formal correctness pro
 ## memory_retriever.py
 
 [Source](../../src/kestri/memory_retriever.py). `lexical_terms`, `lexical_rank`, `reciprocal_rank_fusion` and `bounded_query` define local ranking contracts; `MemorySelection` permits only bounded unique UUIDs; `SelectionBudget` labels foreground selection cost. `MemoryRetriever.snapshot`, `assemble`, `dense`, `select` and `retrieve` implement consistent filtering, transient profile, exact search, ID selection, fallback/cache and final version gates. `ResearchAgent` wires it into `MemoryContext`; see [semantic reference](../reference/semantic-memory.md) for limits, provisional policy and tests.
+
+## History tool entry points
+
+[HistoryRetriever](../../src/kestri/history.py) provides `state`/`version` authorization and generation, `turns` bounded source loading, `search` positive ranking/handles, `read` source revalidation, `recheck` final guard, `output` complete JSON bounds, and `tools` framework registration. `HistorySearchInput`/`HistoryReadInput` provide strict schemas; `instant` checks timezones and `segment` validates complete turns and fingerprints sources. See the [contract](../reference/history-retrieval.md).

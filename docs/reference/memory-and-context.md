@@ -70,3 +70,5 @@ Automatic facts carry category, origin, revision, source excerpts and temporal m
 ## Semantic recall and memory use
 
 Migration 6 adds `/memory semantic on|off` and `/memory use on|off`. Follow the [semantic memory reference](semantic-memory.md) for the complete controls, profile/recall bounds, settings, accounting, deployment and recovery contract. Automatic learning and semantic recall have independent opt-ins. With semantic recall enabled, the latest-64 legacy path described above is replaced by owner/scoped positive lexical plus exact-vector candidates, bounded ID selection, no unrelated recency padding and a transient profile. Use-off stops both legacy and semantic injection; restore disables use until explicitly enabled.
+
+This branch adds [bounded chat history tools](history-retrieval.md), invoked on demand with both auto/use enabled. Lexical archive search is separate from personal-fact vector retrieval; hybrid history indexing remains outstanding.

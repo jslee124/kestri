@@ -2,7 +2,7 @@
 
 [简体中文](memory-v2.zh-CN.md) · [Documentation](../README.md)
 
-Date: 2026-10-02. Status: agreed product direction and implementation specification; durable opt-in automatic extraction is implemented on the feature branch; vector storage and hybrid retrieval are implemented on the feature branch; history tools are **not implemented**. The independently implemented [embedding connection](../reference/embedding.md) is a prerequisite only. [ADR-0007](../decisions/0007-automatic-semantic-memory.md) records the transition from explicit-only memory.
+Date: 2026-10-02. Status: agreed product direction and implementation specification; durable opt-in automatic extraction is implemented on the feature branch; vector storage and hybrid retrieval are implemented on the feature branch; bounded lexical history tools are implemented; hybrid history indexing remains outstanding. The independently implemented [embedding connection](../reference/embedding.md) is a prerequisite only. [ADR-0007](../decisions/0007-automatic-semantic-memory.md) records the transition from explicit-only memory.
 
 Proposal extraction and persistent worker implementation are complete; see [progress](../development/memory-v2-progress.md) for precise delivery boundaries.
 
@@ -89,3 +89,5 @@ Delivery order: (1) standalone embedding connection and docs, implemented; (2) o
 Implemented extraction uses USD caps of 0.15/job and 1.50/month, because it currently calls DeepSeek only. CNY conversion above remains a future embedding requirement. Publication uses one fresh message per job and at most 3 total attempts, including conflicts; exhausted jobs fail visibly without infinite requeue. `/memory changes` is read-only; automatic change notices and the independent memory-use switch remain deferred. See [progress](../development/memory-v2-progress.md) for exact deviations and deployment/evaluation boundaries.
 
 Migration 6 implements semantic storage/indexing and the bounded hybrid model path; [runtime reference](../reference/semantic-memory.md) owns actual behavior. It adds a separate semantic opt-in and use switch, fingerprints symmetric L2 encoding, uses 0.5 CNY/million with a versioned fixed 0.15 USD/CNY estimate, performs provider selection at most once per run, and retries additive version changes locally. These are explicit implementation choices; dense/profile calibration, history tools and live acceptance remain outstanding.
+
+The first history increment is documented in the [runtime reference](../reference/history-retrieval.md): bounded local lexical search, available with both auto/use enabled, with context reset on auto changes. Full hybrid history retrieval remains the target above.

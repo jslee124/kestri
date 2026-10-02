@@ -167,6 +167,7 @@ async def memory_command(
         await conn.execute(
             "UPDATE kestri.conversations SET auto_memory_enabled=%s,"
             "memory_settings_generation=memory_settings_generation+1,"
+            "memory_epoch=memory_epoch+1,thread_id=NULL,"
             "memory_activation_watermark=CASE WHEN %s THEN "
             "(SELECT COALESCE(max(id),0) FROM kestri.messages WHERE chat_id=%s) "
             "ELSE memory_activation_watermark END WHERE chat_id=%s",
@@ -190,11 +191,14 @@ async def memory_command(
             (chat_id,),
         )
         return (
-            "已开启自动记忆：只处理之后的直接聊天，发送到 DeepSeek 整理；旧历史不会扫描。"
+            "已开启自动记忆：只处理之后的直接聊天，发送到 DeepSeek 整理；"
+            "旧历史不会扫描，前台上下文已重置。"
+            "开启后聊天也可按需发送到 DeepSeek，用于回答历史问题。"
             "用 /memory 查看、/memory pending 查看候选、/memory changes 查看后台作业、"
             "/memory auto off 关闭。"
             if enabled
-            else "已关闭自动记忆，在途提案不能提交；已有记忆仍可使用。"
+            else "已关闭自动记忆，在途提案不能提交，历史工具暂停，"
+            "前台上下文已重置；已有记忆仍可使用。"
         )
     if args:
         return "格式：/memory；/memory pending；/memory changes；/memory auto|use|semantic on|off。"

@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 32 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：全部 33 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -457,3 +457,7 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 ## memory_retriever.py
 
 [源码](../../src/kestri/memory_retriever.py)。`lexical_terms`、`lexical_rank`、`reciprocal_rank_fusion`、`bounded_query` 定义本地排序；`MemorySelection` 只接受有界唯一 UUID，`SelectionBudget` 标记前台筛选费用。`MemoryRetriever.snapshot`、`assemble`、`dense`、`select`、`retrieve` 实现一致过滤、临时偏好、精确搜索、ID 筛选、降级/缓存和最终版本检查。`ResearchAgent` 通过 `MemoryContext` 接入，限制、暂定策略和测试见[语义参考](../reference/semantic-memory.zh-CN.md)。
+
+## 历史工具入口
+
+[HistoryRetriever](../../src/kestri/history.py) 提供 `state`/`version` 权限与代次、`turns` 有界来源加载、`search` 正匹配排序/句柄、`read` 来源复核、`recheck` 返回前检查、`output` 完整 JSON 限制、`tools` 框架注册。`HistorySearchInput`/`HistoryReadInput` 严格 schema，`instant` 校验时区，`segment` 校验完整轮次并生成来源 hash。详见[契约](../reference/history-retrieval.zh-CN.md)。

@@ -61,3 +61,5 @@ Backup schema 6 includes settings and index jobs but omits rebuildable vector ro
 [Unit tests](../../tests/test_semantic_memory.py) cover lexical/fusion/query/space contracts. [Database tests](../../tests/test_semantic_memory_integration.py) cover enqueue/versioning, restart lease recovery, cancellation, in-flight disable/forget, shared budgets, CNY metadata/unknown usage, paraphrase selection over HTTP mocks, lexical fallback/no-match, graph injection, source cleanup and schema 5/6 recovery. CI uses separate plain PostgreSQL and pgvector legs; vector tests skip only in the plain leg. Source/wheel checks must include migration 6 and the three new modules.
 
 These prove policy/data boundaries and controlled orchestration, not semantic accuracy of actual provider output. The labeled Chinese corpus, historical tools, live Telegram/provider tests and long-term recall evaluation remain separate increments.
+
+This branch adds [bounded chat history tools](history-retrieval.md), invoked on demand with both auto/use enabled. Lexical archive search is separate from personal-fact vector retrieval; hybrid history indexing remains outstanding.

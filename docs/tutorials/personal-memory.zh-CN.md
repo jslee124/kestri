@@ -31,3 +31,5 @@
 ## 开启语义召回
 
 按[语义指南](../reference/semantic-memory.zh-CN.md)部署可选向量数据库/app，再 `/memory semantic on`。开启自动学习后陈述普通事实，或显式保存一条。等待 `/memory changes` 显示向量作业成功，再换措辞提相关问题，检查回答归属。此教程是验收流程，不证明服务商质量。`/memory use off` 停止全部注入，自动提取另用 `/memory auto off` 关闭。恢复后重新授权需要的事实并显式开启 use，才能召回。
+
+本分支新增[有界聊天历史工具](../reference/history-retrieval.zh-CN.md)，在 auto/use 同时开启时供模型按需调用；词项检索与个人事实向量检索是独立链路，历史混合索引仍待完成。

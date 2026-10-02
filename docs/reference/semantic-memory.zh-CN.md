@@ -61,3 +61,5 @@ docker compose -f compose.yaml -f compose.vector.yaml build postgres
 [单元测试](../../tests/test_semantic_memory.py) 覆盖词项/融合/查询/空间契约。[数据库测试](../../tests/test_semantic_memory_integration.py) 覆盖入队/版本、重启租约、取消、在途关闭/忘记、共享预算、CNY 元数据/未知费用、HTTP mock 语义改写筛选、词项降级/零匹配、图注入、来源清理和 schema 5/6 恢复。CI 分普通 PostgreSQL 和 pgvector 两组，仅普通组跳过向量测试。源码/wheel 检查需包含迁移 6 和三个新模块。
 
 这些证明策略/数据边界和受控流程，不证明实际服务商输出的语义准确性。中文标注语料、历史工具、真实 Telegram/服务商验收和长期召回评测仍是独立增量。
+
+本分支新增[有界聊天历史工具](history-retrieval.zh-CN.md)，在 auto/use 同时开启时供模型按需调用；词项检索与个人事实向量检索是独立链路，历史混合索引仍待完成。

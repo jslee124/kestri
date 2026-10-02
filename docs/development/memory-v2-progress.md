@@ -2,7 +2,7 @@
 
 [简体中文](memory-v2-progress.zh-CN.md) · [Documentation](../README.md)
 
-Date: 2026-10-02. Scope: proposal extraction plus durable automatic-memory runtime on `codex/memory-v2`. [Specification](../design/memory-v2.md) remains the complete target. This code has not been deployed to the owner's Telegram bot.
+Date: 2026-10-02. Scope: proposal extraction, durable runtime, semantic fact recall, and bounded lexical history tools on `codex/memory-v2`. [Specification](../design/memory-v2.md) remains the complete target. This code has not been deployed to the owner's Telegram bot.
 
 ## Proposal extraction
 
@@ -30,6 +30,12 @@ Migration 6, atomic index triggers/jobs, exact pgvector cosine storage, versione
 
 Controlled verification: **208 passed, no skipped cases** with that pgvector image; **195 passed, 13 vector cases skipped** with ordinary PostgreSQL 17. Semantic tests include actual framework selection/research requests over HTTP mocks and absence of selected memory in saved graph messages. Ruff lint/format, mypy (32 modules), bilingual documentation and wheel/sdist checks cover the new increment. The previous 191-case count above describes the preceding extraction increment. None of these results constitutes a live private-dialogue provider test, Chinese recall-quality gate, existing-volume upgrade or deployed-bot acceptance.
 
+## Bounded history tools
+
+[HistoryRetriever](../../src/kestri/history.py) is registered in the foreground graph only with both auto/use enabled; auto changes reset head/epoch. Application dependencies fix owner/task scope. Search covers the newest at most 200 eligible turns and five positive-match snippets; same-run handle reads recheck consent and complete source hashes. Turns have at most 12 messages/8000 characters, oversized turns are skipped whole, and zero matches are never padded. No new tables/migration are added; historical vector indexing is not implemented. See the [contract](../reference/history-retrieval.md).
+
+The history increment has nine controlled tests including actual-framework HTTP mocks, task scoping, and the 200-turn window. Full local pgvector suite: **217 passed**; ordinary PostgreSQL: **204 passed, 13 vector tests skipped**. Ruff, mypy (33 modules), 92 documents, and packaging checks pass. The preceding 208 count describes the previous semantic-fact increment. No private-dialogue provider calls or deployment acceptance were performed; full Memory v2 still awaits evaluation.
+
 ## Remaining increments
 
-Next: bounded history search/read tools, labeled Chinese evaluation corpus, isolated live Telegram/provider recall and restart/forget/restore acceptance. Dense threshold and communication-profile markers are provisional until evaluated. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.
+Next: indexed historical segments and hybrid recall, labeled Chinese evaluation corpus, isolated live Telegram/provider recall and restart/forget/restore acceptance. Dense threshold and communication-profile markers are provisional until evaluated. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.
