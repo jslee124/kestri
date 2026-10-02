@@ -8,7 +8,7 @@ Updated: 2026-10-02. Scope: the implemented schema after migrations 1–6 and th
 
 PostgreSQL holds two groups of tables. Kestri owns 19 tables with vector support (18 without) in the `kestri` schema; LangGraph's `AsyncPostgresSaver` owns four checkpoint tables in `public`. Retrieved text lives separately in the application workspace. Database rows contain file identifiers and provenance, not full page bodies.
 
-The authoritative business definitions are [001_initial.sql](../../src/kestri/sql/001_initial.sql), [002_tasks.sql](../../src/kestri/sql/002_tasks.sql), [003_memory_context.sql](../../src/kestri/sql/003_memory_context.sql), and [004_data_lifecycle.sql](../../src/kestri/sql/004_data_lifecycle.sql). [Store](../../src/kestri/store.py) implements transactions; [DataService](../../src/kestri/data.py) implements retention and logical backup.
+The authoritative business definitions are [001_initial.sql](../../src/kestri/storage/sql/001_initial.sql), [002_tasks.sql](../../src/kestri/storage/sql/002_tasks.sql), [003_memory_context.sql](../../src/kestri/storage/sql/003_memory_context.sql), and [004_data_lifecycle.sql](../../src/kestri/storage/sql/004_data_lifecycle.sql). [Store](../../src/kestri/storage/store.py) implements transactions; [DataService](../../src/kestri/storage/lifecycle.py) implements retention and logical backup.
 
 | Storage | Contents | Why separate |
 | --- | --- | --- |
@@ -187,17 +187,17 @@ Cleanup can delete archived messages, clear request/result/acknowledgement bodie
 
 ## Source and verification map
 
-- Schema and transactions: migration files above and [store.py](../../src/kestri/store.py).
-- Task invariants: [tasks.py](../../src/kestri/tasks.py) and [task integration tests](../../tests/test_tasks_integration.py).
-- Memory invariants: [memory.py](../../src/kestri/memory.py) and [memory/context integration tests](../../tests/test_memory_context_integration.py).
-- Persistence/delivery: [research integration tests](../../tests/test_research_integration.py).
-- Restore/retention: [data lifecycle integration tests](../../tests/test_data_lifecycle_integration.py).
+- Schema and transactions: migration files above and [store.py](../../src/kestri/storage/store.py).
+- Task invariants: [tasks.py](../../src/kestri/tasks/service.py) and [task integration tests](../../tests/tasks/test_tasks_integration.py).
+- Memory invariants: [memory.py](../../src/kestri/memory/service.py) and [memory/context integration tests](../../tests/memory/test_memory_context_integration.py).
+- Persistence/delivery: [research integration tests](../../tests/agent/test_research_integration.py).
+- Restore/retention: [data lifecycle integration tests](../../tests/storage/test_data_lifecycle_integration.py).
 
 These database tests use a disposable `kestri_test` database and drop its business schema. Follow [run checks](../how-to/run-checks.md); do not point them at personal data.
 
 ## Automatic-memory migration 5
 
-[005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) adds conversation `auto_memory_enabled`, `memory_revision`, `memory_settings_generation`, `memory_activation_watermark`, `automatic_history_floor`; message `provenance` defaults to `legacy`, with new ingestion marking `direct`, `forwarded`, `external_reply` or outbound `context`. Memory adds `category`, `origin`, `revision`, `fact_key`, `valid_from`, `review_after`, `last_source_message_id` and `candidate` status. `last_source_message_id` is an archive ID; existing `source_message_id` remains a Telegram ID.
+[005_automatic_memory.sql](../../src/kestri/storage/sql/005_automatic_memory.sql) adds conversation `auto_memory_enabled`, `memory_revision`, `memory_settings_generation`, `memory_activation_watermark`, `automatic_history_floor`; message `provenance` defaults to `legacy`, with new ingestion marking `direct`, `forwarded`, `external_reply` or outbound `context`. Memory adds `category`, `origin`, `revision`, `fact_key`, `valid_from`, `review_after`, `last_source_message_id` and `candidate` status. `last_source_message_id` is an archive ID; existing `source_message_id` remains a Telegram ID.
 
 | Table | Important fields / invariants |
 | --- | --- |
@@ -205,10 +205,10 @@ These database tests use a disposable `kestri_test` database and drop its busine
 | `memory_sources` | Composite memory/archive primary key, exact quote and Unicode offsets; deferred foreign keys; archive deletion cascades quote removal |
 | `memory_events` | Bigserial `id`, owner, memory/job references, operation and timestamp; no prompt text |
 
-`kestri_memory_jobs_pending(chat_id,status,available_at)` supports maintenance scans. Owner conversation locks serialize controls/claims/publication; no model HTTP occurs under these transactions. Extraction cost kind is `memory_extract`, using the existing USD ledger. Backups include 16 business tables, excluding migration metadata. Repeated startup migrations preserve candidate states. These changes still contain no vector column or pgvector extension. [Job tests](../../tests/test_memory_jobs_integration.py) verify transitions and conservative restore on disposable PostgreSQL.
+`kestri_memory_jobs_pending(chat_id,status,available_at)` supports maintenance scans. Owner conversation locks serialize controls/claims/publication; no model HTTP occurs under these transactions. Extraction cost kind is `memory_extract`, using the existing USD ledger. Backups include 16 business tables, excluding migration metadata. Repeated startup migrations preserve candidate states. These changes still contain no vector column or pgvector extension. [Job tests](../../tests/memory/test_memory_jobs_integration.py) verify transitions and conservative restore on disposable PostgreSQL.
 
 ## Semantic-memory migration 6
 
-[006_semantic_memory.sql](../../src/kestri/sql/006_semantic_memory.sql) adds conversation `memory_use_enabled` (true for ordinary upgrades), `memory_semantic_enabled` (false), `memory_retrieval_generation` and `memory_embedding_space`. `memory_index_jobs` contains UUID ID, owner/memory references, revision/content fingerprint/space/generation, status/run/lease/attempts/availability/safe error/times; uniqueness covers memory/revision/space/generation. `memory_embeddings`, when pgvector is available, contains memory reference, revision/hash/space, `public.vector(1024)` and timestamp; primary key is memory/space, memory deletion cascades. No approximate index is created.
+[006_semantic_memory.sql](../../src/kestri/storage/sql/006_semantic_memory.sql) adds conversation `memory_use_enabled` (true for ordinary upgrades), `memory_semantic_enabled` (false), `memory_retrieval_generation` and `memory_embedding_space`. `memory_index_jobs` contains UUID ID, owner/memory references, revision/content fingerprint/space/generation, status/run/lease/attempts/availability/safe error/times; uniqueness covers memory/revision/space/generation. `memory_embeddings`, when pgvector is available, contains memory reference, revision/hash/space, `public.vector(1024)` and timestamp; primary key is memory/space, memory deletion cascades. No approximate index is created.
 
 `sync_memory_index` and its memory INSERT/UPDATE trigger enqueue facts atomically, delete stale vectors and cancel stale jobs/runs/reservations. Settings, ownership, temporal state, content version and leases are rechecked for publication and queries. There are 19 Kestri tables with vector support, 18 without; backups include 17 and omit migration metadata/derived vectors. Ordinary PostgreSQL remains supported. All six migration files run idempotently; migration 6 can add its optional vector table after server extension installation. See [semantic runtime](semantic-memory.md) for deployment permissions and lifecycle.

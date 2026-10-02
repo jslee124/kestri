@@ -12,7 +12,7 @@
 
 ## 索引契约与 worker
 
-迁移 [006_semantic_memory.sql](../../src/kestri/sql/006_semantic_memory.sql) 总是增加设置和 `memory_index_jobs`。服务器提供 pgvector 时，在 `public` 启用扩展并创建 `vector(1024)` 的 `memory_embeddings`，数据库角色需扩展/建表权限。普通 PostgreSQL 仍受支持，开启语义会返回可操作提示。本契约要求 pgvector 位于 `public` schema。
+迁移 [006_semantic_memory.sql](../../src/kestri/storage/sql/006_semantic_memory.sql) 总是增加设置和 `memory_index_jobs`。服务器提供 pgvector 时，在 `public` 启用扩展并创建 `vector(1024)` 的 `memory_embeddings`，数据库角色需扩展/建表权限。普通 PostgreSQL 仍受支持，开启语义会返回可操作提示。本契约要求 pgvector 位于 `public` schema。
 
 数据库 trigger 将合法事实变更与索引作业一起提交。作业标识包括记忆 ID、版本、MD5 内容指纹、向量空间和检索代次；MD5 用于变更检测，不用于鉴权。候选/无效事实不入队。变更删除旧向量，取消失效作业/run/预留。worker 等待前台空闲，按主人顺序领取，租约 120 秒，同一维护 run 最多三次尝试（间隔 5/30 秒）。计算在事务外，发布前重查开关、来源状态/版本/hash、租约和代次。向量计算不能重新启用来源。
 
@@ -58,7 +58,7 @@ docker compose -f compose.yaml -f compose.vector.yaml build postgres
 
 ## 验证边界
 
-[单元测试](../../tests/test_semantic_memory.py) 覆盖词项/融合/查询/空间契约。[数据库测试](../../tests/test_semantic_memory_integration.py) 覆盖入队/版本、重启租约、取消、在途关闭/忘记、共享预算、CNY 元数据/未知费用、HTTP mock 语义改写筛选、词项降级/零匹配、图注入、来源清理和 schema 5/6 恢复。CI 分普通 PostgreSQL 和 pgvector 两组，仅普通组跳过向量测试。源码/wheel 检查需包含迁移 6 和三个新模块。
+[单元测试](../../tests/memory/test_semantic_memory.py) 覆盖词项/融合/查询/空间契约。[数据库测试](../../tests/memory/test_semantic_memory_integration.py) 覆盖入队/版本、重启租约、取消、在途关闭/忘记、共享预算、CNY 元数据/未知费用、HTTP mock 语义改写筛选、词项降级/零匹配、图注入、来源清理和 schema 5/6 恢复。CI 分普通 PostgreSQL 和 pgvector 两组，仅普通组跳过向量测试。源码/wheel 检查需包含迁移 6 和三个新模块。
 
 这些证明策略/数据边界和受控流程，不证明实际服务商输出的语义准确性。中文标注语料、历史工具、真实 Telegram/服务商验收和长期召回评测仍是独立增量。
 

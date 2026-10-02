@@ -6,7 +6,7 @@ Date: 2026-10-02. Scope: standalone Beijing DashScope adapter, independent setti
 
 ## Offline checks
 
-`tests/test_embedding.py` exercises request serialization, reordered output, invalid dimensions/numbers/zero norm/indices/model/usage, input admission, credential-safe errors, redirects, endpoint restrictions, environment dimension parsing, and evidence serialization. The existing test suite also checks shared HTTP behavior and configuration regressions. See [run checks](../how-to/run-checks.md). Final local check outcomes are recorded below after execution; no remote CI or installed-container claim is made.
+`tests/integrations/test_embedding.py` exercises request serialization, reordered output, invalid dimensions/numbers/zero norm/indices/model/usage, input admission, credential-safe errors, redirects, endpoint restrictions, environment dimension parsing, and evidence serialization. The existing test suite also checks shared HTTP behavior and configuration regressions. See [run checks](../how-to/run-checks.md). Final local check outcomes are recorded below after execution; no remote CI or installed-container claim is made.
 
 Final local checks: Ruff lint/format, mypy (26 source files), documentation checks (86 documents), and `git diff --check` passed. Offline suite: 81 passed, 66 skipped; skipped cases require a disposable database, so database integration was not run. The 25 embedding tests cover this increment. No remote CI or running-container replacement was performed. Credential scan found no supplied key in reviewable source/docs; local `.env` mode is 0600.
 

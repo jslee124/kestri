@@ -2,7 +2,7 @@
 
 [简体中文](tools.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: implemented tool schemas, public-information adapters, evidence files, and failure/accounting behavior. Sources: [web.py](../../src/kestri/web.py), [url_policy.py](../../src/kestri/url_policy.py), [workspace.py](../../src/kestri/workspace.py), [research.py](../../src/kestri/research.py), and [budget.py](../../src/kestri/budget.py).
+Updated: 2026-10-02. Scope: implemented tool schemas, public-information adapters, evidence files, and failure/accounting behavior. Sources: [web.py](../../src/kestri/integrations/web.py), [url_policy.py](../../src/kestri/integrations/url_policy.py), [workspace.py](../../src/kestri/storage/workspace.py), [research.py](../../src/kestri/agent/research.py), and [budget.py](../../src/kestri/agent/budget.py).
 
 ## Capability sets and authority
 
@@ -139,6 +139,6 @@ An extension should specify the operation's inputs, scope, side effects, cost, o
 6. Register only in the graph that needs the capability. A write capability needs a separate authorization and recovery design, not only a descriptive prompt.
 7. Add behavioral tests for denial, cancellation, limits, cost uncertainty, and retained results; update both language versions and schema/backup rules where needed.
 
-[Boundary tests](../../tests/test_boundaries.py) cover private targets, symlinks, bounded HTTP, and transport uncertainty. [Research integration tests](../../tests/test_research_integration.py) cover source attacks, failed/truncated evidence, budgeting, and cancellation with the real graph. [Tool tests](../../tests/test_tools.py) cover addition validation; [runtime tests](../../tests/test_runtime.py) cover actual SDK serialization and tool-error handling. No test description here asserts live provider behavior beyond the separately recorded validation evidence.
+[Boundary tests](../../tests/integrations/test_boundaries.py) cover private targets, symlinks, bounded HTTP, and transport uncertainty. [Research integration tests](../../tests/agent/test_research_integration.py) cover source attacks, failed/truncated evidence, budgeting, and cancellation with the real graph. [Tool tests](../../tests/agent/test_tools.py) cover addition validation; [runtime tests](../../tests/agent/test_runtime.py) cover actual SDK serialization and tool-error handling. No test description here asserts live provider behavior beyond the separately recorded validation evidence.
 
 This branch adds [bounded chat history tools](../reference/history-retrieval.md), invoked on demand with both auto/use enabled. Lexical archive search is separate from personal-fact vector retrieval; hybrid history indexing remains outstanding.

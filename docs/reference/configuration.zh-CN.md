@@ -2,7 +2,7 @@
 
 [English](configuration.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-02。范围：`kestri smoke`，实现位于 `src/kestri/settings.py` 和 `src/kestri/runtime.py`。
+更新日期：2026-10-02。范围：`kestri smoke`，实现位于 `src/kestri/settings.py` 和 `src/kestri/agent/runtime.py`。
 
 ## 配置来源
 

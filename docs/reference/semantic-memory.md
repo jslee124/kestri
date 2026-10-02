@@ -12,7 +12,7 @@ Automatic extraction still defaults off and only processes direct dialogue after
 
 ## Index contract and workers
 
-Migration [006_semantic_memory.sql](../../src/kestri/sql/006_semantic_memory.sql) always adds settings and `memory_index_jobs`. If the server exposes pgvector, it enables the extension in `public` and creates `memory_embeddings` with `vector(1024)`; the DB role needs extension/table creation permissions. Plain PostgreSQL remains supported and rejects semantic enable with an actionable notice. Use pgvector in the `public` schema for this contract.
+Migration [006_semantic_memory.sql](../../src/kestri/storage/sql/006_semantic_memory.sql) always adds settings and `memory_index_jobs`. If the server exposes pgvector, it enables the extension in `public` and creates `memory_embeddings` with `vector(1024)`; the DB role needs extension/table creation permissions. Plain PostgreSQL remains supported and rejects semantic enable with an actionable notice. Use pgvector in the `public` schema for this contract.
 
 A database trigger commits eligible fact changes and index jobs together. Jobs identify memory ID, revision, MD5 content fingerprint, embedding space and retrieval generation; MD5 is change detection, not authentication. Candidate/inactive facts cannot enqueue. Changes invalidate old vectors and cancel stale jobs/runs/reservations. A worker waits for foreground capacity, claims an ordered owner lane, uses a 120-second lease, and preserves a maintenance run across at most three attempts (5/30-second delays). It computes outside transactions and rechecks settings, source state/version/hash, lease and generation before publication. No vector computation can reactivate a source.
 
@@ -58,7 +58,7 @@ Backup schema 6 includes settings and index jobs but omits rebuildable vector ro
 
 ## Verification boundary
 
-[Unit tests](../../tests/test_semantic_memory.py) cover lexical/fusion/query/space contracts. [Database tests](../../tests/test_semantic_memory_integration.py) cover enqueue/versioning, restart lease recovery, cancellation, in-flight disable/forget, shared budgets, CNY metadata/unknown usage, paraphrase selection over HTTP mocks, lexical fallback/no-match, graph injection, source cleanup and schema 5/6 recovery. CI uses separate plain PostgreSQL and pgvector legs; vector tests skip only in the plain leg. Source/wheel checks must include migration 6 and the three new modules.
+[Unit tests](../../tests/memory/test_semantic_memory.py) cover lexical/fusion/query/space contracts. [Database tests](../../tests/memory/test_semantic_memory_integration.py) cover enqueue/versioning, restart lease recovery, cancellation, in-flight disable/forget, shared budgets, CNY metadata/unknown usage, paraphrase selection over HTTP mocks, lexical fallback/no-match, graph injection, source cleanup and schema 5/6 recovery. CI uses separate plain PostgreSQL and pgvector legs; vector tests skip only in the plain leg. Source/wheel checks must include migration 6 and the three new modules.
 
 These prove policy/data boundaries and controlled orchestration, not semantic accuracy of actual provider output. The labeled Chinese corpus, historical tools, live Telegram/provider tests and long-term recall evaluation remain separate increments.
 

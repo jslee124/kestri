@@ -8,7 +8,7 @@
 
 PostgreSQL 中有两组表。Kestri 在 `kestri` schema 中提供向量时维护 19 张表（无向量时 18 张）；LangGraph 的 `AsyncPostgresSaver` 在 `public` 中维护 4 张 checkpoint 表。获取的正文另存于应用工作区。数据库保存文件标识和来源信息，不保存完整网页正文。
 
-业务结构以 [001_initial.sql](../../src/kestri/sql/001_initial.sql)、[002_tasks.sql](../../src/kestri/sql/002_tasks.sql)、[003_memory_context.sql](../../src/kestri/sql/003_memory_context.sql) 和 [004_data_lifecycle.sql](../../src/kestri/sql/004_data_lifecycle.sql) 为准。[Store](../../src/kestri/store.py) 实现事务；[DataService](../../src/kestri/data.py) 实现保留策略和逻辑备份。
+业务结构以 [001_initial.sql](../../src/kestri/storage/sql/001_initial.sql)、[002_tasks.sql](../../src/kestri/storage/sql/002_tasks.sql)、[003_memory_context.sql](../../src/kestri/storage/sql/003_memory_context.sql) 和 [004_data_lifecycle.sql](../../src/kestri/storage/sql/004_data_lifecycle.sql) 为准。[Store](../../src/kestri/storage/store.py) 实现事务；[DataService](../../src/kestri/storage/lifecycle.py) 实现保留策略和逻辑备份。
 
 | 存储 | 内容 | 为什么分开 |
 | --- | --- | --- |
@@ -187,17 +187,17 @@ erDiagram
 
 ## 源码与验证地图
 
-- 结构与事务：上方迁移文件及 [store.py](../../src/kestri/store.py)。
-- 任务不变量：[tasks.py](../../src/kestri/tasks.py) 与[任务集成测试](../../tests/test_tasks_integration.py)。
-- 记忆不变量：[memory.py](../../src/kestri/memory.py) 与[记忆/上下文集成测试](../../tests/test_memory_context_integration.py)。
-- 持久化与投递：[研究集成测试](../../tests/test_research_integration.py)。
-- 恢复与保留：[数据生命周期集成测试](../../tests/test_data_lifecycle_integration.py)。
+- 结构与事务：上方迁移文件及 [store.py](../../src/kestri/storage/store.py)。
+- 任务不变量：[tasks.py](../../src/kestri/tasks/service.py) 与[任务集成测试](../../tests/tasks/test_tasks_integration.py)。
+- 记忆不变量：[memory.py](../../src/kestri/memory/service.py) 与[记忆/上下文集成测试](../../tests/memory/test_memory_context_integration.py)。
+- 持久化与投递：[研究集成测试](../../tests/agent/test_research_integration.py)。
+- 恢复与保留：[数据生命周期集成测试](../../tests/storage/test_data_lifecycle_integration.py)。
 
 数据库测试使用可丢弃的 `kestri_test` 并删除其业务 schema。遵循[运行检查](../how-to/run-checks.zh-CN.md)，不能指向个人数据。
 
 ## 自动记忆迁移 5
 
-[005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) 增加对话 `auto_memory_enabled`、`memory_revision`、`memory_settings_generation`、`memory_activation_watermark`、`automatic_history_floor`。消息 `provenance` 默认 `legacy`，新接收标为 `direct`、`forwarded`、`external_reply`，出站为 `context`。记忆增加 `category`、`origin`、`revision`、`fact_key`、`valid_from`、`review_after`、`last_source_message_id` 和 `candidate` 状态。`last_source_message_id` 是归档 ID，已有 `source_message_id` 仍是 Telegram ID。
+[005_automatic_memory.sql](../../src/kestri/storage/sql/005_automatic_memory.sql) 增加对话 `auto_memory_enabled`、`memory_revision`、`memory_settings_generation`、`memory_activation_watermark`、`automatic_history_floor`。消息 `provenance` 默认 `legacy`，新接收标为 `direct`、`forwarded`、`external_reply`，出站为 `context`。记忆增加 `category`、`origin`、`revision`、`fact_key`、`valid_from`、`review_after`、`last_source_message_id` 和 `candidate` 状态。`last_source_message_id` 是归档 ID，已有 `source_message_id` 仍是 Telegram ID。
 
 | 表 | 重要字段 / 不变量 |
 | --- | --- |
@@ -205,10 +205,10 @@ erDiagram
 | `memory_sources` | 记忆/归档联合主键、精确引用和 Unicode 偏移；可延迟外键；删除归档级联删除引用 |
 | `memory_events` | Bigserial `id`、主人、记忆/作业引用、操作与时间；无提示词正文 |
 
-`kestri_memory_jobs_pending(chat_id,status,available_at)` 支持维护扫描。主人对话锁串行控制/领取/提交，模型 HTTP 不在这些事务中执行。提取用量类型为 `memory_extract`，复用 USD 账本。备份包含 17 张业务表，不含迁移元数据。重复启动迁移保留候选状态。仍无向量列或 pgvector 扩展。[作业测试](../../tests/test_memory_jobs_integration.py) 在独立 PostgreSQL 验证转换和保守恢复。
+`kestri_memory_jobs_pending(chat_id,status,available_at)` 支持维护扫描。主人对话锁串行控制/领取/提交，模型 HTTP 不在这些事务中执行。提取用量类型为 `memory_extract`，复用 USD 账本。备份包含 17 张业务表，不含迁移元数据。重复启动迁移保留候选状态。仍无向量列或 pgvector 扩展。[作业测试](../../tests/memory/test_memory_jobs_integration.py) 在独立 PostgreSQL 验证转换和保守恢复。
 
 ## 语义记忆迁移 6
 
-[006_semantic_memory.sql](../../src/kestri/sql/006_semantic_memory.sql) 增加对话 `memory_use_enabled`（普通升级 true）、`memory_semantic_enabled`（false）、`memory_retrieval_generation`、`memory_embedding_space`。`memory_index_jobs` 包含 UUID ID、主人/记忆引用、版本/内容指纹/空间/代次、状态/run/租约/尝试/可用时间/安全错误/时间，记忆/版本/空间/代次唯一。服务器提供 pgvector 时，`memory_embeddings` 包含记忆引用、版本/hash/空间、`public.vector(1024)` 和时间，记忆/空间为主键，删除记忆级联删除向量。不创建近似索引。
+[006_semantic_memory.sql](../../src/kestri/storage/sql/006_semantic_memory.sql) 增加对话 `memory_use_enabled`（普通升级 true）、`memory_semantic_enabled`（false）、`memory_retrieval_generation`、`memory_embedding_space`。`memory_index_jobs` 包含 UUID ID、主人/记忆引用、版本/内容指纹/空间/代次、状态/run/租约/尝试/可用时间/安全错误/时间，记忆/版本/空间/代次唯一。服务器提供 pgvector 时，`memory_embeddings` 包含记忆引用、版本/hash/空间、`public.vector(1024)` 和时间，记忆/空间为主键，删除记忆级联删除向量。不创建近似索引。
 
 `sync_memory_index` 与记忆 INSERT/UPDATE trigger 将事实入队同事务提交，删除失效向量，取消失效作业/run/预留。发布/查询重查开关、归属、时效、内容版本和租约。提供向量时 Kestri 有 19 张表，无向量时 18 张；备份包含 17 张，不含迁移元数据/派生向量。普通 PostgreSQL 继续支持，全部六份迁移幂等执行，安装服务器扩展后，迁移 6 可补建可选向量表。部署权限和生命周期见[语义运行参考](semantic-memory.zh-CN.md)。

@@ -2,7 +2,7 @@
 
 [简体中文](data-maintenance.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Source: [data.py](../../src/kestri/data.py), [workspace.py](../../src/kestri/workspace.py), and migration 4. Commands and retention defaults remain in [data lifecycle](../reference/data-lifecycle.md); operational steps are in [backup and restore](../how-to/backup-and-restore.md).
+Updated: 2026-10-02. Source: [data.py](../../src/kestri/storage/lifecycle.py), [workspace.py](../../src/kestri/storage/workspace.py), and migration 4. Commands and retention defaults remain in [data lifecycle](../reference/data-lifecycle.md); operational steps are in [backup and restore](../how-to/backup-and-restore.md).
 
 ## Operator service and locks
 
@@ -99,4 +99,4 @@ After database commit, cleanup lists pending evidence, removes each UUID-scoped 
 
 ## Verification and operator limits
 
-[Data lifecycle integration tests](../../tests/test_data_lifecycle_integration.py) cover empty-target validation, corruption/permissions/owner rejection, quarantine, transaction/file failures, sequence behavior, busy deferral, erasure/retention, no-follow cleanup, and cancellation/lease handling. They establish controlled boundaries, not every abrupt crash point or external-copy deletion. A backup-schema change needs an explicit compatibility decision; older bundles are not auto-upgraded by a version-neutral importer.
+[Data lifecycle integration tests](../../tests/storage/test_data_lifecycle_integration.py) cover empty-target validation, corruption/permissions/owner rejection, quarantine, transaction/file failures, sequence behavior, busy deferral, erasure/retention, no-follow cleanup, and cancellation/lease handling. They establish controlled boundaries, not every abrupt crash point or external-copy deletion. A backup-schema change needs an explicit compatibility decision; older bundles are not auto-upgraded by a version-neutral importer.

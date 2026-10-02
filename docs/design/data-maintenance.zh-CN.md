@@ -2,7 +2,7 @@
 
 [English](data-maintenance.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。源码：[data.py](../../src/kestri/data.py)、[workspace.py](../../src/kestri/workspace.py) 与迁移 4。命令/默认保留值见[数据生命周期](../reference/data-lifecycle.zh-CN.md)，操作见[备份恢复](../how-to/backup-and-restore.zh-CN.md)。
+更新：2026-10-02。源码：[data.py](../../src/kestri/storage/lifecycle.py)、[workspace.py](../../src/kestri/storage/workspace.py) 与迁移 4。命令/默认保留值见[数据生命周期](../reference/data-lifecycle.zh-CN.md)，操作见[备份恢复](../how-to/backup-and-restore.zh-CN.md)。
 
 ## 操作员服务与锁
 
@@ -99,4 +99,4 @@ Apply 删除过期归档，清空旧 run 请求/结果并标记 history expired�
 
 ## 验证与操作边界
 
-[数据生命周期集成测试](../../tests/test_data_lifecycle_integration.py)覆盖空目标、损坏/权限/主人拒绝、隔离、事务/文件失败、序列、忙时推迟、清除/保留、no-follow 清理、取消/租约。它们证明受控边界，不证明全部突然崩溃点或外部副本删除。备份 schema 修改需明确兼容性决策，旧格式不会由无版本差异 importer 自动升级。
+[数据生命周期集成测试](../../tests/storage/test_data_lifecycle_integration.py)覆盖空目标、损坏/权限/主人拒绝、隔离、事务/文件失败、序列、忙时推迟、清除/保留、no-follow 清理、取消/租约。它们证明受控边界，不证明全部突然崩溃点或外部副本删除。备份 schema 修改需明确兼容性决策，旧格式不会由无版本差异 importer 自动升级。

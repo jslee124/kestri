@@ -2,7 +2,7 @@
 
 [English](model-and-accounting.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。源码：[models.py](../../src/kestri/models.py)、[runtime.py](../../src/kestri/runtime.py)、[budget.py](../../src/kestri/budget.py)、[research.py](../../src/kestri/research.py)、[smoke.py](../../src/kestri/smoke.py)、[redaction.py](../../src/kestri/redaction.py) 与 [errors.py](../../src/kestri/errors.py)。这里是已实现适配/计费规则，不宣称当前服务商容量/价格。
+更新：2026-10-02。源码：[models.py](../../src/kestri/agent/models.py)、[runtime.py](../../src/kestri/agent/runtime.py)、[budget.py](../../src/kestri/agent/budget.py)、[research.py](../../src/kestri/agent/research.py)、[smoke.py](../../src/kestri/agent/smoke.py)、[redaction.py](../../src/kestri/redaction.py) 与 [errors.py](../../src/kestri/errors.py)。这里是已实现适配/计费规则，不宣称当前服务商容量/价格。
 
 ## 模型构造与序列化
 
@@ -10,7 +10,7 @@
 
 `DeepSeekChatModel._get_request_payload()` 调用锁定版本的父序列化器，把原输入转成消息，用 `strict=True` 将原消息和载荷逐项配对。每个原 `AIMessage` 的字符串 `additional_kwargs['reasoning_content']` 复制到出站 assistant 消息，`content=None` 改为 `''`。其他字段仍由父序列化器处理。没有或非字符串的 reasoning 不会虚构。
 
-这是补偿集成出站推理重放的受保护 SDK 接口，不是另一个推理生成器或通用服务抽象。[Runtime 测试](../../tests/test_runtime.py)检查两种 thinking 模式的实际序列化请求、端点、工具结果和追问。适配器和锁定依赖一起升级，不能把 import 成功当兼容证明。
+这是补偿集成出站推理重放的受保护 SDK 接口，不是另一个推理生成器或通用服务抽象。[Runtime 测试](../../tests/agent/test_runtime.py)检查两种 thinking 模式的实际序列化请求、端点、工具结果和追问。适配器和锁定依赖一起升级，不能把 import 成功当兼容证明。
 
 ## 最小会话与 Smoke 验证
 
@@ -82,4 +82,4 @@
 
 ## 验证与维护
 
-[Runtime 测试](../../tests/test_runtime.py)覆盖模型载荷和失败会话；[证据测试](../../tests/test_evidence.py)覆盖不含推理/key 和必需工具证明；[研究集成测试](../../tests/test_research_integration.py)覆盖并发预留、超额拒绝、未知用量和最终结果。这验证配置算术/控制，不验证服务账单。更换 SDK/模型时一起审查载荷、thinking mode、usage metadata、上下文估计、timeout/retry 和中间件受保护接口。
+[Runtime 测试](../../tests/agent/test_runtime.py)覆盖模型载荷和失败会话；[证据测试](../../tests/agent/test_evidence.py)覆盖不含推理/key 和必需工具证明；[研究集成测试](../../tests/agent/test_research_integration.py)覆盖并发预留、超额拒绝、未知用量和最终结果。这验证配置算术/控制，不验证服务账单。更换 SDK/模型时一起审查载荷、thinking mode、usage metadata、上下文估计、timeout/retry 和中间件受保护接口。

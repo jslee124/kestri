@@ -27,10 +27,10 @@ Tests are named by behavior, rather than by the milestone that introduced them:
 
 | Test module | Coverage | Original milestone |
 | --- | --- | --- |
-| `tests/test_research_integration.py` | Telegram research, persistence, budgets, delivery, and recovery | M1 |
-| `tests/test_tasks_integration.py` | Recurring task agreements, scheduling, and background execution | M2 |
-| `tests/test_memory_context_integration.py` | Explicit memory, revocation, and conversation compression | M3 |
-| `tests/test_data_lifecycle_integration.py` | Export, backup, restore, retention, and purge | M4 |
+| `tests/agent/test_research_integration.py` | Telegram research, persistence, budgets, delivery, and recovery | M1 |
+| `tests/tasks/test_tasks_integration.py` | Recurring task agreements, scheduling, and background execution | M2 |
+| `tests/memory/test_memory_context_integration.py` | Explicit memory, revocation, and conversation compression | M3 |
+| `tests/storage/test_data_lifecycle_integration.py` | Export, backup, restore, retention, and purge | M4 |
 
 `tests/helpers.py` contains shared mock transports and scenario builders. `tests/conftest.py` provides environment isolation and the disposable database fixture. Test modules do not import other test modules. Milestone names remain in development records to identify historical acceptance evidence.
 
@@ -77,8 +77,8 @@ The [GitHub Checks workflow](../../.github/workflows/checks.yml) runs these comm
 
 ## Automatic-memory checks
 
-The same disposable PostgreSQL suite now includes [test_memory_jobs_integration.py](../../tests/test_memory_jobs_integration.py). Check that the wheel also contains `kestri/sql/005_automatic_memory.sql`. No test in this increment opts in the owner's running installation or uses real private chat with a provider.
+The same disposable PostgreSQL suite now includes [test_memory_jobs_integration.py](../../tests/memory/test_memory_jobs_integration.py). Check that the wheel also contains `kestri/sql/005_automatic_memory.sql`. No test in this increment opts in the owner's running installation or uses real private chat with a provider.
 
 ## Semantic-memory checks
 
-[Semantic unit](../../tests/test_semantic_memory.py) and [integration tests](../../tests/test_semantic_memory_integration.py) add a required vector-capable CI leg beside plain PostgreSQL. Build the checksummed optional extension image with `docker build -f docker/postgres-vector.Dockerfile -t kestri-postgres-vector:17-pgvector-0.8.7 .`, then run it as a disposable `kestri_test` server using the same isolated port/credentials pattern above. Vector tests skip in the plain leg; they must run without skips in the vector leg. Neither image should reuse personal data. The wheel must include `006_semantic_memory.sql`, `memory_embedding.py`, `memory_index.py` and `memory_retriever.py`. [Semantic runtime reference](../reference/semantic-memory.md) separates deployment/quality evidence from these checks.
+[Semantic unit](../../tests/memory/test_semantic_memory.py) and [integration tests](../../tests/memory/test_semantic_memory_integration.py) add a required vector-capable CI leg beside plain PostgreSQL. Build the checksummed optional extension image with `docker build -f docker/postgres-vector.Dockerfile -t kestri-postgres-vector:17-pgvector-0.8.7 .`, then run it as a disposable `kestri_test` server using the same isolated port/credentials pattern above. Vector tests skip in the plain leg; they must run without skips in the vector leg. Neither image should reuse personal data. The wheel must include `006_semantic_memory.sql`, `memory_embedding.py`, `memory_index.py` and `memory_retriever.py`. [Semantic runtime reference](../reference/semantic-memory.md) separates deployment/quality evidence from these checks.

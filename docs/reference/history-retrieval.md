@@ -26,6 +26,6 @@ No tables, migrations, derived text copies, or backup schema changes are added. 
 
 ## Validation and remaining work
 
-[History tests](../../tests/test_history_integration.py) cover schemas/time/turn bounds, default-off consent, activation cutoff, zero matches, search limits, source hashes/removal, foreign/forwarded source denial, expired runs, use/auto revocation, races, oversized/credential turns, output rejection, role attribution, and actual framework tool routing with HTTP mocks. These are controlled checks, not live chat quality acceptance.
+[History tests](../../tests/history/test_history_integration.py) cover schemas/time/turn bounds, default-off consent, activation cutoff, zero matches, search limits, source hashes/removal, foreign/forwarded source denial, expired runs, use/auto revocation, races, oversized/credential turns, output rejection, role attribution, and actual framework tool routing with HTTP mocks. These are controlled checks, not live chat quality acceptance.
 
 Remaining Memory v2 history work: persistent eligible segment indexing and hybrid retrieval, Chinese labeled evaluation including paraphrases and historical decisions, and isolated live provider/Telegram restart/forget/restore acceptance. The lexical tools do not satisfy the complete hybrid-history specification. See [progress](../development/memory-v2-progress.md) and [design](../design/memory-v2.md).

@@ -2,8 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from kestri.settings import Settings
-
-from .conftest import test_settings
+from tests.conftest import test_settings
 
 
 def test_missing_or_empty_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:

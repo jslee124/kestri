@@ -51,17 +51,17 @@ Start reading [cli.py](../../src/kestri/cli.py), then follow the appropriate rou
 | --- | --- | --- |
 | [cli.py](../../src/kestri/cli.py) | `main`, `run_data` | Parse `smoke`, `telegram`, `telegram-id`, and local `data` commands; select required settings |
 | [settings.py](../../src/kestri/settings.py) | `Settings`, `ResearchSettings`, `DataSettings`, `TelegramCredentials` | Validate separate configurations for runtime, product, maintenance, and onboarding |
-| [runtime.py](../../src/kestri/runtime.py), [models.py](../../src/kestri/models.py) | `build_model`, `AgentSession`, `DeepSeekChatModel` | Official-endpoint model construction; in-memory smoke graph; provider reasoning serialization adapter |
-| [telegram.py](../../src/kestri/telegram.py) | `TelegramClient`, `authorized_message`, `command_for` | Bot API transport/menu, owner/private-chat checks, command recognition, send uncertainty |
+| [runtime.py](../../src/kestri/agent/runtime.py), [models.py](../../src/kestri/agent/models.py) | `build_model`, `AgentSession`, `DeepSeekChatModel` | Official-endpoint model construction; in-memory smoke graph; provider reasoning serialization adapter |
+| [telegram.py](../../src/kestri/integrations/telegram.py) | `TelegramClient`, `authorized_message`, `command_for` | Bot API transport/menu, owner/private-chat checks, command recognition, send uncertainty |
 | [application.py](../../src/kestri/application.py) | `run_telegram`, `Application` | Construct dependencies; run polling, execution, scheduling, delivery, and maintenance |
-| [research.py](../../src/kestri/research.py) | `ResearchAgent.run`, `BoundsMiddleware` | Route memory/task controls; otherwise build and execute research graph, enforce bounds, finalize result |
-| [context.py](../../src/kestri/context.py), [memory.py](../../src/kestri/memory.py) | `ContextSummary`, `MemoryContext`, `MemoryService` | Explicit facts, retrieval, epoch invalidation, temporary model injection, bounded compression |
-| [task_intent.py](../../src/kestri/task_intent.py), [task_agent.py](../../src/kestri/task_agent.py) | `task_intent`, `TaskAgent.run` | Recognize direct recurring-task intent; extract one structured proposal without research tools |
-| [tasks.py](../../src/kestri/tasks.py), [schedule.py](../../src/kestri/schedule.py) | `TaskService.apply`, `tick`, occurrence functions | Validate/persist agreements; daily/weekly timezone scheduling; missed-run policy and revisions |
-| [web.py](../../src/kestri/web.py), [url_policy.py](../../src/kestri/url_policy.py) | `WebTools`, `PublicURLPolicy` | Public information tools, source records, URL checks, bounded model output |
-| [workspace.py](../../src/kestri/workspace.py), [http.py](../../src/kestri/http.py) | `Workspace`, `post_json` | Identifier-scoped evidence files and bounded HTTP JSON reads |
-| [budget.py](../../src/kestri/budget.py), [store.py](../../src/kestri/store.py) | `RunControl`, `Budget`, `Store` | Revocation checks, conservative accounting, transaction-backed business state |
-| [data.py](../../src/kestri/data.py), [redaction.py](../../src/kestri/redaction.py) | `DataService`, `Redactor` | Operator backup/restore/retention; local content redaction |
+| [research.py](../../src/kestri/agent/research.py) | `ResearchAgent.run`, `BoundsMiddleware` | Route memory/task controls; otherwise build and execute research graph, enforce bounds, finalize result |
+| [context.py](../../src/kestri/agent/context.py), [memory.py](../../src/kestri/memory/service.py) | `ContextSummary`, `MemoryContext`, `MemoryService` | Explicit facts, retrieval, epoch invalidation, temporary model injection, bounded compression |
+| [task_intent.py](../../src/kestri/tasks/intent.py), [task_agent.py](../../src/kestri/tasks/agent.py) | `task_intent`, `TaskAgent.run` | Recognize direct recurring-task intent; extract one structured proposal without research tools |
+| [tasks.py](../../src/kestri/tasks/service.py), [schedule.py](../../src/kestri/tasks/schedule.py) | `TaskService.apply`, `tick`, occurrence functions | Validate/persist agreements; daily/weekly timezone scheduling; missed-run policy and revisions |
+| [web.py](../../src/kestri/integrations/web.py), [url_policy.py](../../src/kestri/integrations/url_policy.py) | `WebTools`, `PublicURLPolicy` | Public information tools, source records, URL checks, bounded model output |
+| [workspace.py](../../src/kestri/storage/workspace.py), [http.py](../../src/kestri/integrations/http.py) | `Workspace`, `post_json` | Identifier-scoped evidence files and bounded HTTP JSON reads |
+| [budget.py](../../src/kestri/agent/budget.py), [store.py](../../src/kestri/storage/store.py) | `RunControl`, `Budget`, `Store` | Revocation checks, conservative accounting, transaction-backed business state |
+| [data.py](../../src/kestri/storage/lifecycle.py), [redaction.py](../../src/kestri/redaction.py) | `DataService`, `Redactor` | Operator backup/restore/retention; local content redaction |
 
 Dependencies are explicit constructor arguments: model, saver, HTTP clients, store, workspace, and optional URL resolver. Tests inject mock transports and deterministic responses while exercising the real graph. `Store` owns SQL transactions; business services apply domain policy. This is a modular monolith, without an ORM or an additional generic repository interface.
 
@@ -150,6 +150,6 @@ Read [database](../reference/database.md) for fields and transactions, [context 
 
 ## Verification and extension points
 
-[Research integration tests](../../tests/test_research_integration.py) cover acceptance, budgeting, checkpoints, cancellation, delivery, and recovery; [task tests](../../tests/test_tasks_integration.py) cover agreements/scheduling; [memory/context tests](../../tests/test_memory_context_integration.py) cover compression/revocation; [data lifecycle tests](../../tests/test_data_lifecycle_integration.py) cover backup/restore/cleanup. [Run checks](../how-to/run-checks.md) distinguishes offline/database checks from live services and remote CI.
+[Research integration tests](../../tests/agent/test_research_integration.py) cover acceptance, budgeting, checkpoints, cancellation, delivery, and recovery; [task tests](../../tests/tasks/test_tasks_integration.py) cover agreements/scheduling; [memory/context tests](../../tests/memory/test_memory_context_integration.py) cover compression/revocation; [data lifecycle tests](../../tests/storage/test_data_lifecycle_integration.py) cover backup/restore/cleanup. [Run checks](../how-to/run-checks.md) distinguishes offline/database checks from live services and remote CI.
 
 To change a provider, inspect `build_model()` or the fixed endpoints in `WebTools`; a protocol alone does not establish equivalent provider behavior. To add a tool, follow the schema/policy/accounting/evidence rules in tool design. To change state, add migration and backup-compatibility decisions together. A future transport should authorize input before invoking the shared application services rather than bypassing their business policy. These are maintenance directions, not implemented plugin or multi-channel APIs.

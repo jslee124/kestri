@@ -2,7 +2,7 @@
 
 [English](task-scheduling.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。实现：[task_intent.py](../../src/kestri/task_intent.py)、[task_agent.py](../../src/kestri/task_agent.py)、[tasks.py](../../src/kestri/tasks.py)、[schedule.py](../../src/kestri/schedule.py)，以及 [store.py](../../src/kestri/store.py) 领取/完成路径。命令/默认值见[任务参考](../reference/tasks.zh-CN.md)与 [CLI 参考](../reference/cli.zh-CN.md)。
+更新：2026-10-02。实现：[task_intent.py](../../src/kestri/tasks/intent.py)、[task_agent.py](../../src/kestri/tasks/agent.py)、[tasks.py](../../src/kestri/tasks/service.py)、[schedule.py](../../src/kestri/tasks/schedule.py)，以及 [store.py](../../src/kestri/storage/store.py) 领取/完成路径。命令/默认值见[任务参考](../reference/tasks.zh-CN.md)与 [CLI 参考](../reference/cli.zh-CN.md)。
 
 ## 确定性意图路由
 
@@ -91,4 +91,4 @@
 
 ## 验证与修改规则
 
-[调度测试](../../tests/test_schedule.py)覆盖确定性时刻/DST 解析；[任务集成测试](../../tests/test_tasks_integration.py)覆盖重复变更、补跑/容量、目标解析、取消竞态、暂停恢复、版本变化和前后台独立。修改识别器/解析器需保留负面授权案例，不只新增成功例子。新调度类型要一起修改 schema、提案策略、确定性解析、occurrence 标识、恢复与双语命令文档。
+[调度测试](../../tests/tasks/test_schedule.py)覆盖确定性时刻/DST 解析；[任务集成测试](../../tests/tasks/test_tasks_integration.py)覆盖重复变更、补跑/容量、目标解析、取消竞态、暂停恢复、版本变化和前后台独立。修改识别器/解析器需保留负面授权案例，不只新增成功例子。新调度类型要一起修改 schema、提案策略、确定性解析、occurrence 标识、恢复与双语命令文档。

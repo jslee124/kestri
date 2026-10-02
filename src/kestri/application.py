@@ -10,25 +10,25 @@ import httpx
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from psycopg.types.json import Jsonb
 
-from kestri.budget import RunControl
-from kestri.data import DataService
+from kestri.agent.budget import RunControl
+from kestri.agent.research import ResearchAgent
+from kestri.agent.runtime import build_model
 from kestri.errors import PolicyDenied, ProviderFailure
-from kestri.memory import MemoryService, memory_instruction
-from kestri.redaction import Redactor
-from kestri.research import ResearchAgent
-from kestri.runtime import build_model
-from kestri.settings import ResearchSettings, TelegramCredentials
-from kestri.store import Store
-from kestri.task_intent import task_intent
-from kestri.tasks import TaskService
-from kestri.telegram import (
+from kestri.integrations.telegram import (
     DeliveryProblem,
     TelegramClient,
     authorized_message,
     command_for,
 )
-from kestri.url_policy import CloudflareResolver, PublicURLPolicy
-from kestri.workspace import Workspace
+from kestri.integrations.url_policy import CloudflareResolver, PublicURLPolicy
+from kestri.memory.service import MemoryService, memory_instruction
+from kestri.redaction import Redactor
+from kestri.settings import ResearchSettings, TelegramCredentials
+from kestri.storage.lifecycle import DataService
+from kestri.storage.store import Store
+from kestri.storage.workspace import Workspace
+from kestri.tasks.intent import task_intent
+from kestri.tasks.service import TaskService
 
 
 class Application:
@@ -168,9 +168,9 @@ class Application:
                     pass
 
     async def memory_maintaining(self) -> None:
-        from kestri.embedding import EmbeddingClient
-        from kestri.memory_index import MemoryIndexWorker
-        from kestri.memory_worker import MemoryWorker
+        from kestri.integrations.embedding import EmbeddingClient
+        from kestri.memory.index import MemoryIndexWorker
+        from kestri.memory.worker import MemoryWorker
 
         worker = MemoryWorker(self.store, self.settings, self.researcher.model)
         config = self.settings.embedding_config()

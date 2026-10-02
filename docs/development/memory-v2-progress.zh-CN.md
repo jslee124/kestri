@@ -6,7 +6,7 @@
 
 ## 提案提取
 
-[MemoryExtractor](../../src/kestri/memory_extractor.py) 校验不可变来源/批次/提案结构、主人与范围、开启水位、消息数量、逐字 Unicode 引用和偏移、目标版本、时序、秘密与时间边界。仅新鲜的主人直接陈述可支持事实，推断留在候选区。强化不能改写内容；近期状态默认 30 天复核。
+[MemoryExtractor](../../src/kestri/memory/extractor.py) 校验不可变来源/批次/提案结构、主人与范围、开启水位、消息数量、逐字 Unicode 引用和偏移、目标版本、时序、秘密与时间边界。仅新鲜的主人直接陈述可支持事实，推断留在候选区。强化不能改写内容；近期状态默认 30 天复核。
 
 复用 DeepSeek/LangChain 适配器生成 `MemoryProposal`，只提供结构化响应工具，无研究工具/checkpoint，最多一次模型请求，并复用准入、费用、活动检查、超时和禁用追踪。精确引用证明可追溯来源，不证明语义正确或完美识别敏感内容。
 
@@ -14,9 +14,9 @@
 
 迁移 5 增加主人开关/版本/代次/水位、接收来源、记忆元数据、`memory_jobs`、`memory_sources`、`memory_events`。默认关闭。`/memory auto on` 保存新归档水位，不回填旧历史。普通主人直接消息的归档和提取作业在同一事务创建；转发/外部回复和显式任务/记忆控制不入队。前台回答失败不会丢弃合法作业。
 
-[MemoryRepository](../../src/kestri/memory_repository.py) 等前台空闲，按主人单通道和来源顺序领取。每个作业提供 1 条新消息、最多 12 条邻近上下文 / 24000 UTF-8 字节，以及最近 20 条合法记忆 / 12000 字节。租约 120 秒，同一维护 run 最多 3 次尝试，重试间隔 5/30 秒。每次重建当前版本，提交时在主人事务锁内复核提案、开关/版本/epoch/租约；事实、引用、事件和成功状态一起提交。新增/强化保留 head，替代重置 head/epoch。容量拒绝终止作业，可通过 `/memory changes` 查看。
+[MemoryRepository](../../src/kestri/memory/repository.py) 等前台空闲，按主人单通道和来源顺序领取。每个作业提供 1 条新消息、最多 12 条邻近上下文 / 24000 UTF-8 字节，以及最近 20 条合法记忆 / 12000 字节。租约 120 秒，同一维护 run 最多 3 次尝试，重试间隔 5/30 秒。每次重建当前版本，提交时在主人事务锁内复核提案、开关/版本/epoch/租约；事实、引用、事件和成功状态一起提交。新增/强化保留 head，替代重置 head/epoch。容量拒绝终止作业，可通过 `/memory changes` 查看。
 
-[MemoryWorker](../../src/kestri/memory_worker.py) 将提取限制为 60 秒、2048 输出 token，配置更小时从小值。现有 micro-USD 账本记录 `memory_extract`：默认每作业全部尝试合计 0.15 USD、UTC 月提取合计 1.50 USD，并受主人总月预算限制。未知请求保留预留。本增量只调用 DeepSeek 提取，CNY embedding 换算留待向量集成。
+[MemoryWorker](../../src/kestri/memory/worker.py) 将提取限制为 60 秒、2048 输出 token，配置更小时从小值。现有 micro-USD 账本记录 `memory_extract`：默认每作业全部尝试合计 0.15 USD、UTC 月提取合计 1.50 USD，并受主人总月预算限制。未知请求保留预留。本增量只调用 DeepSeek 提取，CNY embedding 换算留待向量集成。
 
 `/memory pending` 查看候选；`/correct ID 完整内容` 显式确认或纠正，`/forget ID` 丢弃候选。`/memory changes` 查看最近自动事件、作业状态和固定失败类别。不会主动发送自动变更提示。`/memory auto off` 取消排队/在途作业，已有记忆仍可使用。忘记会推进较广的旧历史截止位置。备份 schema 5 包含新表，接受 schema 4 并补保守默认值。恢复关闭自动提取、取消作业、隔离 active/candidate 记忆。来源保留清理删除引用并使依赖的自动事实到期；清空数据关闭提取。
 
@@ -32,7 +32,7 @@
 
 ## 有界历史工具
 
-[HistoryRetriever](../../src/kestri/history.py) 已接入前台图。auto/use 同时开启时才可使用，auto 改变重置 head/epoch。主人/任务身份由应用固定；搜索仅最新最多 200 个合格轮次、最多 5 个正匹配节选，读取同 run 句柄后重新检查权限和完整来源 hash。每轮最多 12 条消息/8000 字符，超限整轮跳过；无相关结果不填充最近聊天。未新增表/迁移，历史向量索引仍未实现，详见[契约](../reference/history-retrieval.zh-CN.md)。
+[HistoryRetriever](../../src/kestri/history/retriever.py) 已接入前台图。auto/use 同时开启时才可使用，auto 改变重置 head/epoch。主人/任务身份由应用固定；搜索仅最新最多 200 个合格轮次、最多 5 个正匹配节选，读取同 run 句柄后重新检查权限和完整来源 hash。每轮最多 12 条消息/8000 字符，超限整轮跳过；无相关结果不填充最近聊天。未新增表/迁移，历史向量索引仍未实现，详见[契约](../reference/history-retrieval.zh-CN.md)。
 
 历史增量有 9 项受控测试，含真实框架 HTTP mock、任务范围和 200 轮窗口检查。完整本地 pgvector 测试 **217 项通过**；普通 PostgreSQL **204 项通过、13 项向量测试跳过**。Ruff、mypy（33 模块）、92 份文档和打包检查通过。前述 208 项属于上一批语义事实增量。本批没有私人聊天服务调用或部署验收，完整 Memory v2 仍待评测。
 

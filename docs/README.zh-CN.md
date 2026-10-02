@@ -106,3 +106,5 @@ ADR 使用带编号的文件名，记录状态、背景、决策、备选方案�
 - [语义记忆运行参考](reference/semantic-memory.zh-CN.md)：已实现向量索引/混合召回、主人开关、币种记账和可选部署；真实质量未验收。
 
 - [有界聊天历史工具](reference/history-retrieval.zh-CN.md)
+
+- [仓库目录结构](development/repository-layout.zh-CN.md)

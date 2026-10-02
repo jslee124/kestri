@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 33 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: all 39 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -37,7 +37,7 @@ Application coordination · [Detailed mechanism](../design/execution-and-deliver
 
 ## budget.py
 
-[Source](../../src/kestri/budget.py)
+[Source](../../src/kestri/agent/budget.py)
 
 Control and accounting · [Detailed mechanism](../design/model-and-accounting.md)
 
@@ -65,7 +65,7 @@ CLI routing · [Detailed mechanism](../reference/cli.md)
 
 ## context.py
 
-[Source](../../src/kestri/context.py)
+[Source](../../src/kestri/agent/context.py)
 
 Request context middleware · [Detailed mechanism](../design/context-management.md)
 
@@ -79,7 +79,7 @@ Request context middleware · [Detailed mechanism](../design/context-management.
 
 ## data.py
 
-[Source](../../src/kestri/data.py)
+[Source](../../src/kestri/storage/lifecycle.py)
 
 Operator data lifecycle · [Detailed mechanism](../design/data-maintenance.md)
 
@@ -100,7 +100,7 @@ Operator data lifecycle · [Detailed mechanism](../design/data-maintenance.md)
 
 ## embedding.py
 
-[Source](../../src/kestri/embedding.py) · [Interface/configuration](../reference/embedding.md)
+[Source](../../src/kestri/integrations/embedding.py) · [Interface/configuration](../reference/embedding.md)
 
 `EmbeddingBatch` holds validated immutable vectors/usage; `EmbeddingClient.__init__` captures settings/HTTP client, and `embed` performs bounded requests and validation; `cosine_similarity` supports the fixed comparison; `run_embedding_smoke` sends only non-private test texts; `save_embedding_evidence` writes sanitized JSON. `EmbeddingSettings` validates key, numeric dimensions and Beijing endpoint. Automatic extraction is implemented separately; vector recall in [Memory v2](../design/memory-v2.md) remains pending.
 
@@ -119,7 +119,7 @@ Failure categories · [Detailed mechanism](../design/model-and-accounting.md)
 
 ## http.py
 
-[Source](../../src/kestri/http.py)
+[Source](../../src/kestri/integrations/http.py)
 
 Bounded HTTP · [Detailed mechanism](../design/tools.md)
 
@@ -129,7 +129,7 @@ Bounded HTTP · [Detailed mechanism](../design/tools.md)
 
 ## memory.py
 
-[Source](../../src/kestri/memory.py)
+[Source](../../src/kestri/memory/service.py)
 
 Explicit memory service · [Detailed mechanism](../design/context-management.md)
 
@@ -146,13 +146,13 @@ Explicit memory service · [Detailed mechanism](../design/context-management.md)
 
 ## memory_extractor.py
 
-[Source](../../src/kestri/memory_extractor.py) · [Delivery boundary](memory-v2-progress.md)
+[Source](../../src/kestri/memory/extractor.py) · [Delivery boundary](memory-v2-progress.md)
 
 `MemorySource`, `ExistingMemory`, and `ExtractionBatch` define trusted input; `ExtractionBatch.validate_batch` checks eligibility/limits. `SourceReference`, `MemoryOperation`, and `MemoryProposal` define model schemas; `validate_proposal` validates and returns immutable `ValidatedExtraction`; `MemoryExtractor.__init__` captures model/redactor, and `extract` generates a bounded, charged proposal. `Record` is the immutable extra-field-forbidding base. This module does not write the database.
 
 ## models.py
 
-[Source](../../src/kestri/models.py)
+[Source](../../src/kestri/agent/models.py)
 
 Provider serialization adapter · [Detailed mechanism](../design/model-and-accounting.md)
 
@@ -174,7 +174,7 @@ Configured-secret redaction · [Detailed mechanism](../design/model-and-accounti
 
 ## research.py
 
-[Source](../../src/kestri/research.py)
+[Source](../../src/kestri/agent/research.py)
 
 Product agent execution · [Detailed mechanism](../design/architecture.md)
 
@@ -189,7 +189,7 @@ Product agent execution · [Detailed mechanism](../design/architecture.md)
 
 ## runtime.py
 
-[Source](../../src/kestri/runtime.py)
+[Source](../../src/kestri/agent/runtime.py)
 
 Minimal model integration session · [Detailed mechanism](../design/model-and-accounting.md)
 
@@ -204,7 +204,7 @@ Minimal model integration session · [Detailed mechanism](../design/model-and-ac
 
 ## schedule.py
 
-[Source](../../src/kestri/schedule.py)
+[Source](../../src/kestri/tasks/schedule.py)
 
 Wall-clock algorithms · [Detailed mechanism](../design/task-scheduling.md)
 
@@ -236,7 +236,7 @@ Validated configuration models · [Detailed mechanism](../reference/cli.md)
 
 ## smoke.py
 
-[Source](../../src/kestri/smoke.py)
+[Source](../../src/kestri/agent/smoke.py)
 
 Live smoke and evidence · [Detailed mechanism](../design/model-and-accounting.md)
 
@@ -249,7 +249,7 @@ Live smoke and evidence · [Detailed mechanism](../design/model-and-accounting.m
 
 ## store.py
 
-[Source](../../src/kestri/store.py)
+[Source](../../src/kestri/storage/store.py)
 
 Business transactions · [Detailed mechanism](../reference/database.md)
 
@@ -282,7 +282,7 @@ Business transactions · [Detailed mechanism](../reference/database.md)
 
 ## task_agent.py
 
-[Source](../../src/kestri/task_agent.py)
+[Source](../../src/kestri/tasks/agent.py)
 
 Task proposal execution · [Detailed mechanism](../design/task-scheduling.md)
 
@@ -293,7 +293,7 @@ Task proposal execution · [Detailed mechanism](../design/task-scheduling.md)
 
 ## task_intent.py
 
-[Source](../../src/kestri/task_intent.py)
+[Source](../../src/kestri/tasks/intent.py)
 
 Delegation recognizer · [Detailed mechanism](../design/task-scheduling.md)
 
@@ -303,7 +303,7 @@ Delegation recognizer · [Detailed mechanism](../design/task-scheduling.md)
 
 ## tasks.py
 
-[Source](../../src/kestri/tasks.py)
+[Source](../../src/kestri/tasks/service.py)
 
 Agreement service · [Detailed mechanism](../design/task-scheduling.md)
 
@@ -320,7 +320,7 @@ Agreement service · [Detailed mechanism](../design/task-scheduling.md)
 
 ## telegram.py
 
-[Source](../../src/kestri/telegram.py)
+[Source](../../src/kestri/integrations/telegram.py)
 
 Bot transport and routing · [Detailed mechanism](../design/execution-and-delivery.md)
 
@@ -338,7 +338,7 @@ Bot transport and routing · [Detailed mechanism](../design/execution-and-delive
 
 ## tools.py
 
-[Source](../../src/kestri/tools.py)
+[Source](../../src/kestri/agent/tools.py)
 
 Smoke tool · [Detailed mechanism](../design/tools.md)
 
@@ -349,7 +349,7 @@ Smoke tool · [Detailed mechanism](../design/tools.md)
 
 ## url_policy.py
 
-[Source](../../src/kestri/url_policy.py)
+[Source](../../src/kestri/integrations/url_policy.py)
 
 Public target policy · [Detailed mechanism](../design/tools.md)
 
@@ -363,7 +363,7 @@ Public target policy · [Detailed mechanism](../design/tools.md)
 
 ## web.py
 
-[Source](../../src/kestri/web.py)
+[Source](../../src/kestri/integrations/web.py)
 
 Information tool adapters · [Detailed mechanism](../design/tools.md)
 
@@ -382,7 +382,7 @@ Information tool adapters · [Detailed mechanism](../design/tools.md)
 
 ## workspace.py
 
-[Source](../../src/kestri/workspace.py)
+[Source](../../src/kestri/storage/workspace.py)
 
 Scoped evidence filesystem · [Detailed mechanism](../design/tools.md)
 
@@ -419,15 +419,15 @@ Tests use real libraries with mock transport; they are not live-service proof. D
 | File | Verification boundary |
 | --- | --- |
 | [test_settings.py](../../tests/test_settings.py) | Configuration key/mode/range validation. |
-| [test_tools.py](../../tests/test_tools.py) | Strict bounded addition. |
-| [test_evidence.py](../../tests/test_evidence.py) | Observable tool proof, key/reasoning exclusion, file mode. |
-| [test_runtime.py](../../tests/test_runtime.py) | Actual graph/SDK payload, follow-up, limits, cancellation. |
-| [test_boundaries.py](../../tests/test_boundaries.py) | Public URL/DNS, workspace, HTTP/Telegram contracts/menu. |
-| [test_schedule.py](../../tests/test_schedule.py) | Clock parsing and DST recurrence. |
-| [test_research_integration.py](../../tests/test_research_integration.py) | Acceptance, persistence, budgets, sources, workers, delivery/recovery. |
-| [test_tasks_integration.py](../../tests/test_tasks_integration.py) | Authorization, agreements, coalescing, retries, controls. |
-| [test_memory_context_integration.py](../../tests/test_memory_context_integration.py) | Explicit memory, scope/revocation/expiry, compression. |
-| [test_data_lifecycle_integration.py](../../tests/test_data_lifecycle_integration.py) | Private backups, quarantine, retention, failed disk operations/leases. |
+| [test_tools.py](../../tests/agent/test_tools.py) | Strict bounded addition. |
+| [test_evidence.py](../../tests/agent/test_evidence.py) | Observable tool proof, key/reasoning exclusion, file mode. |
+| [test_runtime.py](../../tests/agent/test_runtime.py) | Actual graph/SDK payload, follow-up, limits, cancellation. |
+| [test_boundaries.py](../../tests/integrations/test_boundaries.py) | Public URL/DNS, workspace, HTTP/Telegram contracts/menu. |
+| [test_schedule.py](../../tests/tasks/test_schedule.py) | Clock parsing and DST recurrence. |
+| [test_research_integration.py](../../tests/agent/test_research_integration.py) | Acceptance, persistence, budgets, sources, workers, delivery/recovery. |
+| [test_tasks_integration.py](../../tests/tasks/test_tasks_integration.py) | Authorization, agreements, coalescing, retries, controls. |
+| [test_memory_context_integration.py](../../tests/memory/test_memory_context_integration.py) | Explicit memory, scope/revocation/expiry, compression. |
+| [test_data_lifecycle_integration.py](../../tests/storage/test_data_lifecycle_integration.py) | Private backups, quarantine, retention, failed disk operations/leases. |
 | [conftest.py](../../tests/conftest.py) | Environment isolation, noncollectable settings helper, disposable store fixture. |
 | [helpers.py](../../tests/helpers.py) | Shared offline transports and owner/task/memory scenario setup. |
 | [__init__.py](../../tests/__init__.py) | Empty package marker enabling relative helper imports. |
@@ -440,24 +440,26 @@ Coverage is traceable implementation documentation, not a formal correctness pro
 
 ## memory_repository.py
 
-[Source](../../src/kestri/memory_repository.py). `memory_command` implements deterministic opt-in/list/candidate/change views. `MemoryRepository.claim` owns ordering, foreground priority, lease/run recovery and captured versions; `snapshot` admits bounded archive/current-memory context; `ensure_active` validates generation/revision/epoch/lease; `publish` revalidates proposals and atomically writes facts/sources/events/job completion; `fail` records safe errors, retry scheduling and unresolved usage. See [runtime progress](memory-v2-progress.md).
+[Source](../../src/kestri/memory/repository.py). `memory_command` implements deterministic opt-in/list/candidate/change views. `MemoryRepository.claim` owns ordering, foreground priority, lease/run recovery and captured versions; `snapshot` admits bounded archive/current-memory context; `ensure_active` validates generation/revision/epoch/lease; `publish` revalidates proposals and atomically writes facts/sources/events/job completion; `fail` records safe errors, retry scheduling and unresolved usage. See [runtime progress](memory-v2-progress.md).
 
 ## memory_worker.py
 
-[Source](../../src/kestri/memory_worker.py). `MemoryJobControl.ensure_active` extends run activity with job authorization; `MemoryBudget.reserve` applies owner and independent maintenance caps; `MemoryWorker.work_once` claims, extracts, publishes or records bounded failure/retry. `Application.memory_maintaining` runs independently of foreground work and delivery. Migration [005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) and [persistent-job tests](../../tests/test_memory_jobs_integration.py) cover this increment. Logical backup advances to schema 5 with schema 4 compatibility.
+[Source](../../src/kestri/memory/worker.py). `MemoryJobControl.ensure_active` extends run activity with job authorization; `MemoryBudget.reserve` applies owner and independent maintenance caps; `MemoryWorker.work_once` claims, extracts, publishes or records bounded failure/retry. `Application.memory_maintaining` runs independently of foreground work and delivery. Migration [005_automatic_memory.sql](../../src/kestri/storage/sql/005_automatic_memory.sql) and [persistent-job tests](../../tests/memory/test_memory_jobs_integration.py) cover this increment. Logical backup advances to schema 5 with schema 4 compatibility.
 
 ## memory_embedding.py
 
-[Source](../../src/kestri/memory_embedding.py). `embedding_space` fingerprints encoding/configuration; `content_hash` mirrors SQL's MD5 content fingerprint; `vector_literal` validates/normalizes vector literals; `charged_embedding` gates source/size, reserves converted CNY estimates, settles validated usage and preserves unknown calls. No private text/vector enters ledger metadata.
+[Source](../../src/kestri/memory/embedding.py). `embedding_space` fingerprints encoding/configuration; `content_hash` mirrors SQL's MD5 content fingerprint; `vector_literal` validates/normalizes vector literals; `charged_embedding` gates source/size, reserves converted CNY estimates, settles validated usage and preserves unknown calls. No private text/vector enters ledger metadata.
 
 ## memory_index.py
 
-[Source](../../src/kestri/memory_index.py). `IndexControl` extends run activity with source/job/settings/lease checks; `IndexBudget` applies shared maintenance limits; `MemoryIndexWorker.claim`, `ensure_active`, `publish`, `fail` and `work_once` implement the durable vector lane. Schema 6's trigger owns transactional enqueue/invalidation.
+[Source](../../src/kestri/memory/index.py). `IndexControl` extends run activity with source/job/settings/lease checks; `IndexBudget` applies shared maintenance limits; `MemoryIndexWorker.claim`, `ensure_active`, `publish`, `fail` and `work_once` implement the durable vector lane. Schema 6's trigger owns transactional enqueue/invalidation.
 
 ## memory_retriever.py
 
-[Source](../../src/kestri/memory_retriever.py). `lexical_terms`, `lexical_rank`, `reciprocal_rank_fusion` and `bounded_query` define local ranking contracts; `MemorySelection` permits only bounded unique UUIDs; `SelectionBudget` labels foreground selection cost. `MemoryRetriever.snapshot`, `assemble`, `dense`, `select` and `retrieve` implement consistent filtering, transient profile, exact search, ID selection, fallback/cache and final version gates. `ResearchAgent` wires it into `MemoryContext`; see [semantic reference](../reference/semantic-memory.md) for limits, provisional policy and tests.
+[Source](../../src/kestri/memory/retriever.py). `lexical_terms`, `lexical_rank`, `reciprocal_rank_fusion` and `bounded_query` define local ranking contracts; `MemorySelection` permits only bounded unique UUIDs; `SelectionBudget` labels foreground selection cost. `MemoryRetriever.snapshot`, `assemble`, `dense`, `select` and `retrieve` implement consistent filtering, transient profile, exact search, ID selection, fallback/cache and final version gates. `ResearchAgent` wires it into `MemoryContext`; see [semantic reference](../reference/semantic-memory.md) for limits, provisional policy and tests.
 
 ## History tool entry points
 
-[HistoryRetriever](../../src/kestri/history.py) provides `state`/`version` authorization and generation, `turns` bounded source loading, `search` positive ranking/handles, `read` source revalidation, `recheck` final guard, `output` complete JSON bounds, and `tools` framework registration. `HistorySearchInput`/`HistoryReadInput` provide strict schemas; `instant` checks timezones and `segment` validates complete turns and fingerprints sources. See the [contract](../reference/history-retrieval.md).
+[HistoryRetriever](../../src/kestri/history/retriever.py) provides `state`/`version` authorization and generation, `turns` bounded source loading, `search` positive ranking/handles, `read` source revalidation, `recheck` final guard, `output` complete JSON bounds, and `tools` framework registration. `HistorySearchInput`/`HistoryReadInput` provide strict schemas; `instant` checks timezones and `segment` validates complete turns and fingerprints sources. See the [contract](../reference/history-retrieval.md).
+
+The [layout guide](repository-layout.md) describes six domain packages, corresponding tests, and SQL resources. Six new package initializers organize modules without re-exporting implementations.

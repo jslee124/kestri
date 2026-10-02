@@ -9,9 +9,9 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
+from kestri.agent.smoke import run_smoke, save_evidence
 from kestri.application import run_telegram, show_telegram_ids
-from kestri.data import DataService
-from kestri.embedding import run_embedding_smoke, save_embedding_evidence
+from kestri.integrations.embedding import run_embedding_smoke, save_embedding_evidence
 from kestri.redaction import Redactor
 from kestri.settings import (
     DataSettings,
@@ -20,9 +20,9 @@ from kestri.settings import (
     Settings,
     TelegramCredentials,
 )
-from kestri.smoke import run_smoke, save_evidence
-from kestri.store import Store
-from kestri.workspace import Workspace
+from kestri.storage.lifecycle import DataService
+from kestri.storage.store import Store
+from kestri.storage.workspace import Workspace
 
 
 async def run_data(settings: DataSettings, arguments: argparse.Namespace) -> None:

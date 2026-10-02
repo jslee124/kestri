@@ -2,7 +2,7 @@
 
 [简体中文](task-scheduling.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Implementation: [task_intent.py](../../src/kestri/task_intent.py), [task_agent.py](../../src/kestri/task_agent.py), [tasks.py](../../src/kestri/tasks.py), [schedule.py](../../src/kestri/schedule.py), and claim/finish paths in [store.py](../../src/kestri/store.py). Commands/defaults are maintained in the [task reference](../reference/tasks.md) and [CLI reference](../reference/cli.md).
+Updated: 2026-10-02. Implementation: [task_intent.py](../../src/kestri/tasks/intent.py), [task_agent.py](../../src/kestri/tasks/agent.py), [tasks.py](../../src/kestri/tasks/service.py), [schedule.py](../../src/kestri/tasks/schedule.py), and claim/finish paths in [store.py](../../src/kestri/storage/store.py). Commands/defaults are maintained in the [task reference](../reference/tasks.md) and [CLI reference](../reference/cli.md).
 
 ## Deterministic intent routing
 
@@ -91,4 +91,4 @@ The exact retry allowlist is `APIConnectionError`, `APITimeoutError`, `RateLimit
 
 ## Verification and change rules
 
-[Schedule tests](../../tests/test_schedule.py) cover deterministic clock/DST parsing; [task integration tests](../../tests/test_tasks_integration.py) cover duplicate mutation, catch-up/capacity, task targeting, cancellation races, pause/resume, revision changes, and background independence. A changed recognizer/parser must retain negative authorization cases, not merely add successful examples. New schedule types require changes to schema, proposal policy, deterministic parsing, occurrence identity, recovery, and bilingual command documentation together.
+[Schedule tests](../../tests/tasks/test_schedule.py) cover deterministic clock/DST parsing; [task integration tests](../../tests/tasks/test_tasks_integration.py) cover duplicate mutation, catch-up/capacity, task targeting, cancellation races, pause/resume, revision changes, and background independence. A changed recognizer/parser must retain negative authorization cases, not merely add successful examples. New schedule types require changes to schema, proposal policy, deterministic parsing, occurrence identity, recovery, and bilingual command documentation together.

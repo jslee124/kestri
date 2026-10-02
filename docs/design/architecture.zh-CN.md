@@ -51,17 +51,17 @@ flowchart LR
 | --- | --- | --- |
 | [cli.py](../../src/kestri/cli.py) | `main`、`run_data` | 解析 `smoke`、`telegram`、`telegram-id` 和本地 `data` 命令；选择所需配置 |
 | [settings.py](../../src/kestri/settings.py) | `Settings`、`ResearchSettings`、`DataSettings`、`TelegramCredentials` | 分别校验运行、产品、维护和引导配置 |
-| [runtime.py](../../src/kestri/runtime.py)、[models.py](../../src/kestri/models.py) | `build_model`、`AgentSession`、`DeepSeekChatModel` | 官方端点模型构造、内存 smoke 图、推理字段序列化适配 |
-| [telegram.py](../../src/kestri/telegram.py) | `TelegramClient`、`authorized_message`、`command_for` | Bot API/菜单、主人与私聊检查、命令识别、发送不确定性 |
+| [runtime.py](../../src/kestri/agent/runtime.py)、[models.py](../../src/kestri/agent/models.py) | `build_model`、`AgentSession`、`DeepSeekChatModel` | 官方端点模型构造、内存 smoke 图、推理字段序列化适配 |
+| [telegram.py](../../src/kestri/integrations/telegram.py) | `TelegramClient`、`authorized_message`、`command_for` | Bot API/菜单、主人与私聊检查、命令识别、发送不确定性 |
 | [application.py](../../src/kestri/application.py) | `run_telegram`、`Application` | 构造依赖；运行轮询、执行、调度、投递与维护 |
-| [research.py](../../src/kestri/research.py) | `ResearchAgent.run`、`BoundsMiddleware` | 路由记忆/任务控制；否则构建研究图、执行限制并保存结果 |
-| [context.py](../../src/kestri/context.py)、[memory.py](../../src/kestri/memory.py) | `ContextSummary`、`MemoryContext`、`MemoryService` | 显式事实、检索、代次失效、临时模型注入、有界压缩 |
-| [task_intent.py](../../src/kestri/task_intent.py)、[task_agent.py](../../src/kestri/task_agent.py) | `task_intent`、`TaskAgent.run` | 识别直接持续任务意图；无研究工具地提取一个结构化提案 |
-| [tasks.py](../../src/kestri/tasks.py)、[schedule.py](../../src/kestri/schedule.py) | `TaskService.apply`、`tick`、occurrence 函数 | 校验/保存约定；每日/每周时区调度、错过策略与版本 |
-| [web.py](../../src/kestri/web.py)、[url_policy.py](../../src/kestri/url_policy.py) | `WebTools`、`PublicURLPolicy` | 公共信息工具、来源记录、URL 检查、有界模型输出 |
-| [workspace.py](../../src/kestri/workspace.py)、[http.py](../../src/kestri/http.py) | `Workspace`、`post_json` | 标识限定的证据文件与有界 HTTP JSON 读取 |
-| [budget.py](../../src/kestri/budget.py)、[store.py](../../src/kestri/store.py) | `RunControl`、`Budget`、`Store` | 撤销检查、保守计费、事务化业务状态 |
-| [data.py](../../src/kestri/data.py)、[redaction.py](../../src/kestri/redaction.py) | `DataService`、`Redactor` | 操作员备份/恢复/保留与本地内容脱敏 |
+| [research.py](../../src/kestri/agent/research.py) | `ResearchAgent.run`、`BoundsMiddleware` | 路由记忆/任务控制；否则构建研究图、执行限制并保存结果 |
+| [context.py](../../src/kestri/agent/context.py)、[memory.py](../../src/kestri/memory/service.py) | `ContextSummary`、`MemoryContext`、`MemoryService` | 显式事实、检索、代次失效、临时模型注入、有界压缩 |
+| [task_intent.py](../../src/kestri/tasks/intent.py)、[task_agent.py](../../src/kestri/tasks/agent.py) | `task_intent`、`TaskAgent.run` | 识别直接持续任务意图；无研究工具地提取一个结构化提案 |
+| [tasks.py](../../src/kestri/tasks/service.py)、[schedule.py](../../src/kestri/tasks/schedule.py) | `TaskService.apply`、`tick`、occurrence 函数 | 校验/保存约定；每日/每周时区调度、错过策略与版本 |
+| [web.py](../../src/kestri/integrations/web.py)、[url_policy.py](../../src/kestri/integrations/url_policy.py) | `WebTools`、`PublicURLPolicy` | 公共信息工具、来源记录、URL 检查、有界模型输出 |
+| [workspace.py](../../src/kestri/storage/workspace.py)、[http.py](../../src/kestri/integrations/http.py) | `Workspace`、`post_json` | 标识限定的证据文件与有界 HTTP JSON 读取 |
+| [budget.py](../../src/kestri/agent/budget.py)、[store.py](../../src/kestri/storage/store.py) | `RunControl`、`Budget`、`Store` | 撤销检查、保守计费、事务化业务状态 |
+| [data.py](../../src/kestri/storage/lifecycle.py)、[redaction.py](../../src/kestri/redaction.py) | `DataService`、`Redactor` | 操作员备份/恢复/保留与本地内容脱敏 |
 
 model、saver、HTTP client、store、workspace 和可选 URL resolver 都通过构造参数传入。测试注入模拟传输和确定性响应，同时执行真实图。`Store` 维护 SQL 事务，业务服务实施领域策略。当前是模块化单体，没有 ORM 或额外的通用 repository 接口。
 
@@ -150,6 +150,6 @@ PostgreSQL、Telegram、模型 API、Tavily 和磁盘之间没有统一事务。
 
 ## 验证与扩展位置
 
-[研究集成测试](../../tests/test_research_integration.py)覆盖接收、预算、checkpoint、取消、投递和恢复；[任务测试](../../tests/test_tasks_integration.py)覆盖约定/调度；[记忆/上下文测试](../../tests/test_memory_context_integration.py)覆盖压缩/撤销；[数据生命周期测试](../../tests/test_data_lifecycle_integration.py)覆盖备份/恢复/清理。[运行检查](../how-to/run-checks.zh-CN.md)区分离线/数据库检查、真实服务与远端 CI。
+[研究集成测试](../../tests/agent/test_research_integration.py)覆盖接收、预算、checkpoint、取消、投递和恢复；[任务测试](../../tests/tasks/test_tasks_integration.py)覆盖约定/调度；[记忆/上下文测试](../../tests/memory/test_memory_context_integration.py)覆盖压缩/撤销；[数据生命周期测试](../../tests/storage/test_data_lifecycle_integration.py)覆盖备份/恢复/清理。[运行检查](../how-to/run-checks.zh-CN.md)区分离线/数据库检查、真实服务与远端 CI。
 
 替换服务商从 `build_model()` 或 `WebTools` 的固定端点入手；协议兼容本身不证明行为等价。添加工具遵循工具设计的 schema/策略/计费/证据规则。修改状态需同时添加迁移和备份兼容性决策。未来渠道应先授权输入，再调用共享业务服务，不能绕过业务策略。这些是维护方向，不是已实现的插件或多渠道 API。

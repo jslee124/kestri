@@ -2,7 +2,7 @@
 
 [English](execution-and-delivery.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。源码：[application.py](../../src/kestri/application.py)、[telegram.py](../../src/kestri/telegram.py)、[store.py](../../src/kestri/store.py) 与 [research.py](../../src/kestri/research.py)。模块地图见[架构](architecture.zh-CN.md)，字段和锁见[数据库](../reference/database.zh-CN.md)。
+更新：2026-10-02。源码：[application.py](../../src/kestri/application.py)、[telegram.py](../../src/kestri/integrations/telegram.py)、[store.py](../../src/kestri/storage/store.py) 与 [research.py](../../src/kestri/agent/research.py)。模块地图见[架构](architecture.zh-CN.md)，字段和锁见[数据库](../reference/database.zh-CN.md)。
 
 ## Telegram 传输契约
 
@@ -103,4 +103,4 @@ stateDiagram-v2
 
 Polling 对 RateLimited 等待 1–120 秒，对 HTTP/服务错误等待 3 秒；其他明确 Telegram 拒绝传播，不永久重试，需要维护修复。投递使用上方独立分类。合法但未授权消息不是轮询错误。
 
-`/runs` 统计有问题的投递行，不证明服务端确定收件。`data status` 检查数据库数量/维护，不证明循环活跃或模型可达。没有完整 prompt logger 或分布式 trace dashboard。查看安全状态、退出与专用证据时，不暴露 Bot API URL 中的 token。[研究集成测试](../../tests/test_research_integration.py)覆盖接收、关闭、对话头隔离、已存重试和不确定；[边界测试](../../tests/test_boundaries.py)覆盖传输/菜单/授权；[任务测试](../../tests/test_tasks_integration.py)覆盖前后台/控制交互。
+`/runs` 统计有问题的投递行，不证明服务端确定收件。`data status` 检查数据库数量/维护，不证明循环活跃或模型可达。没有完整 prompt logger 或分布式 trace dashboard。查看安全状态、退出与专用证据时，不暴露 Bot API URL 中的 token。[研究集成测试](../../tests/agent/test_research_integration.py)覆盖接收、关闭、对话头隔离、已存重试和不确定；[边界测试](../../tests/integrations/test_boundaries.py)覆盖传输/菜单/授权；[任务测试](../../tests/tasks/test_tasks_integration.py)覆盖前后台/控制交互。

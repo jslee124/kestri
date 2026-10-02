@@ -36,7 +36,7 @@ KESTRI_EMBEDDING_EVIDENCE_DIR=.kestri/evidence
 
 ## 适配器契约
 
-[EmbeddingClient](../../src/kestri/embedding.py)向 `<base_url>/embeddings` POST，包含 bearer 鉴权、模型、字符串列表、维度与 `encoding_format=float`。不重定向、不隐式重试。调用方提供并负责关闭配置适当超时的 AsyncClient；smoke 明确设置超时。HTTP 前检查最多 10 条非空白输入，每条最多 8192 UTF-8 字节。这是保守本地字节限制，不是服务商 8192 Token 限制。包含配置的 embedding key 的输入被拒绝。未来自动记忆调用方仍需更广的来源/秘密准入。
+[EmbeddingClient](../../src/kestri/integrations/embedding.py)向 `<base_url>/embeddings` POST，包含 bearer 鉴权、模型、字符串列表、维度与 `encoding_format=float`。不重定向、不隐式重试。调用方提供并负责关闭配置适当超时的 AsyncClient；smoke 明确设置超时。HTTP 前检查最多 10 条非空白输入，每条最多 8192 UTF-8 字节。这是保守本地字节限制，不是服务商 8192 Token 限制。包含配置的 embedding key 的输入被拒绝。未来自动记忆调用方仍需更广的来源/秘密准入。
 
 响应最多 2000000 字节。要求模型匹配、每输入一项、索引唯一且覆盖批次、维度匹配、数字有限且不是布尔值、范数有限非零，用量是非负整数且 total ≥ input。按输入索引重排，返回不可变向量 tuple 与 input/total Token。错误使用安全类别，CLI 不输出 HTTP 错误正文或传输详情。向量使用/保存前完成校验。
 

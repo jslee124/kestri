@@ -2,7 +2,7 @@
 
 [简体中文](execution-and-delivery.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Sources: [application.py](../../src/kestri/application.py), [telegram.py](../../src/kestri/telegram.py), [store.py](../../src/kestri/store.py), and [research.py](../../src/kestri/research.py). [Architecture](architecture.md) supplies the module map; [database](../reference/database.md) supplies fields and locks.
+Updated: 2026-10-02. Sources: [application.py](../../src/kestri/application.py), [telegram.py](../../src/kestri/integrations/telegram.py), [store.py](../../src/kestri/storage/store.py), and [research.py](../../src/kestri/agent/research.py). [Architecture](architecture.md) supplies the module map; [database](../reference/database.md) supplies fields and locks.
 
 ## Telegram transport contract
 
@@ -103,4 +103,4 @@ After restore, `prepare_restore()` handles `restore_quarantine.pending_updates`:
 
 Polling waits 1–120 seconds on RateLimited, or 3 seconds on HTTP/provider failures. Other explicit Telegram rejections propagate rather than being retried forever; operational repair is required. Delivery failures use the separate classification above. A valid but unauthorized message is not a polling error.
 
-`/runs` counts problematic saved delivery rows, not provider-side definitive receipt. `data status` checks database counts/maintenance, not loop liveness or model reachability. No complete prompt logger or distributed tracing dashboard exists. Inspect safe status, application exit, and dedicated evidence without exposing tokens embedded in Bot API URLs. [Research integration tests](../../tests/test_research_integration.py) cover acceptance, shutdown, head isolation, saved retries and uncertainty; [boundary tests](../../tests/test_boundaries.py) cover transport/menu/auth contracts; [task tests](../../tests/test_tasks_integration.py) cover background/control interactions.
+`/runs` counts problematic saved delivery rows, not provider-side definitive receipt. `data status` checks database counts/maintenance, not loop liveness or model reachability. No complete prompt logger or distributed tracing dashboard exists. Inspect safe status, application exit, and dedicated evidence without exposing tokens embedded in Bot API URLs. [Research integration tests](../../tests/agent/test_research_integration.py) cover acceptance, shutdown, head isolation, saved retries and uncertainty; [boundary tests](../../tests/integrations/test_boundaries.py) cover transport/menu/auth contracts; [task tests](../../tests/tasks/test_tasks_integration.py) cover background/control interactions.

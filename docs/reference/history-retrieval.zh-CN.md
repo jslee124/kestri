@@ -26,6 +26,6 @@ Memory v2 功能分支仅在 `/memory auto on` 和 `/memory use on` 都有效时
 
 ## 验证与剩余工作
 
-[历史测试](../../tests/test_history_integration.py)覆盖 schema/日期/轮次限制、默认关闭、开启水位、零匹配、搜索数量限制、来源 hash/删除、其他主人/转发来源隔离、过期 run、use/auto 撤销、竞态、超大/凭据轮次、输出拒绝、角色标注，以及 HTTP mock 下的真实框架工具路由。这些是受控检查，不代表真实聊天质量验收。
+[历史测试](../../tests/history/test_history_integration.py)覆盖 schema/日期/轮次限制、默认关闭、开启水位、零匹配、搜索数量限制、来源 hash/删除、其他主人/转发来源隔离、过期 run、use/auto 撤销、竞态、超大/凭据轮次、输出拒绝、角色标注，以及 HTTP mock 下的真实框架工具路由。这些是受控检查，不代表真实聊天质量验收。
 
 Memory v2 历史部分仍待完成：合格片段持久索引与混合检索、包含语义改写及历史决定的中文标注评测、隔离真实服务商/Telegram 的重启/忘记/恢复验收。词项工具没有满足完整混合历史规格。参见[进度](../development/memory-v2-progress.zh-CN.md)和[设计](../design/memory-v2.zh-CN.md)。

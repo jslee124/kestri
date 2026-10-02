@@ -6,7 +6,7 @@ import pytest
 
 from kestri.redaction import Redactor
 from kestri.settings import Settings
-from kestri.store import Store
+from kestri.storage.store import Store
 
 TEST_DSN = os.environ.get("KESTRI_TEST_DATABASE_URL")
 

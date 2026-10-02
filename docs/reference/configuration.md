@@ -2,7 +2,7 @@
 
 [简体中文](configuration.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: `kestri smoke`, implemented in `src/kestri/settings.py` and `src/kestri/runtime.py`.
+Updated: 2026-10-02. Scope: `kestri smoke`, implemented in `src/kestri/settings.py` and `src/kestri/agent/runtime.py`.
 
 ## Configuration sources
 

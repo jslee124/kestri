@@ -27,10 +27,10 @@ uv run python scripts/check_docs.py
 
 | 测试模块 | 覆盖内容 | 原里程碑 |
 | --- | --- | --- |
-| `tests/test_research_integration.py` | Telegram 研究、持久化、预算、发送与恢复 | M1 |
-| `tests/test_tasks_integration.py` | 持续任务约定、调度与后台执行 | M2 |
-| `tests/test_memory_context_integration.py` | 显式记忆、撤销与对话压缩 | M3 |
-| `tests/test_data_lifecycle_integration.py` | 导出、备份、恢复、保留与清理 | M4 |
+| `tests/agent/test_research_integration.py` | Telegram 研究、持久化、预算、发送与恢复 | M1 |
+| `tests/tasks/test_tasks_integration.py` | 持续任务约定、调度与后台执行 | M2 |
+| `tests/memory/test_memory_context_integration.py` | 显式记忆、撤销与对话压缩 | M3 |
+| `tests/storage/test_data_lifecycle_integration.py` | 导出、备份、恢复、保留与清理 | M4 |
 
 `tests/helpers.py` 存放公共模拟传输和场景构建函数。`tests/conftest.py` 提供环境隔离与临时数据库 fixture。测试模块之间不互相导入。开发记录保留里程碑名称，用于定位历史验收证据。
 
@@ -77,8 +77,8 @@ uv build
 
 ## 自动记忆检查
 
-同一独立 PostgreSQL 测试还包含 [test_memory_jobs_integration.py](../../tests/test_memory_jobs_integration.py)。确认 wheel 包含 `kestri/sql/005_automatic_memory.sql`。本增量测试不会开启主人的运行实例，也不向服务商发送真实私人聊天。
+同一独立 PostgreSQL 测试还包含 [test_memory_jobs_integration.py](../../tests/memory/test_memory_jobs_integration.py)。确认 wheel 包含 `kestri/sql/005_automatic_memory.sql`。本增量测试不会开启主人的运行实例，也不向服务商发送真实私人聊天。
 
 ## 语义记忆检查
 
-[语义单元](../../tests/test_semantic_memory.py)与[集成测试](../../tests/test_semantic_memory_integration.py)增加必跑向量 CI 组，并保留普通 PostgreSQL 组。用 `docker build -f docker/postgres-vector.Dockerfile -t kestri-postgres-vector:17-pgvector-0.8.7 .` 构建 checksum 固定扩展镜像，再按上文隔离端口/凭据模式启动独立 `kestri_test`。普通组跳过向量测试，向量组必须无跳过运行。两种镜像都不复用个人数据。wheel 需包含 `006_semantic_memory.sql`、`memory_embedding.py`、`memory_index.py`、`memory_retriever.py`。[语义运行参考](../reference/semantic-memory.zh-CN.md)区分部署/质量证据和受控检查。
+[语义单元](../../tests/memory/test_semantic_memory.py)与[集成测试](../../tests/memory/test_semantic_memory_integration.py)增加必跑向量 CI 组，并保留普通 PostgreSQL 组。用 `docker build -f docker/postgres-vector.Dockerfile -t kestri-postgres-vector:17-pgvector-0.8.7 .` 构建 checksum 固定扩展镜像，再按上文隔离端口/凭据模式启动独立 `kestri_test`。普通组跳过向量测试，向量组必须无跳过运行。两种镜像都不复用个人数据。wheel 需包含 `006_semantic_memory.sql`、`memory_embedding.py`、`memory_index.py`、`memory_retriever.py`。[语义运行参考](../reference/semantic-memory.zh-CN.md)区分部署/质量证据和受控检查。

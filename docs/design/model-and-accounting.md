@@ -2,7 +2,7 @@
 
 [简体中文](model-and-accounting.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Sources: [models.py](../../src/kestri/models.py), [runtime.py](../../src/kestri/runtime.py), [budget.py](../../src/kestri/budget.py), [research.py](../../src/kestri/research.py), [smoke.py](../../src/kestri/smoke.py), [redaction.py](../../src/kestri/redaction.py), and [errors.py](../../src/kestri/errors.py). These are implemented adapter/accounting rules, not claims about current provider capacity/prices.
+Updated: 2026-10-02. Sources: [models.py](../../src/kestri/agent/models.py), [runtime.py](../../src/kestri/agent/runtime.py), [budget.py](../../src/kestri/agent/budget.py), [research.py](../../src/kestri/agent/research.py), [smoke.py](../../src/kestri/agent/smoke.py), [redaction.py](../../src/kestri/redaction.py), and [errors.py](../../src/kestri/errors.py). These are implemented adapter/accounting rules, not claims about current provider capacity/prices.
 
 ## Model construction and serialization
 
@@ -10,7 +10,7 @@ Updated: 2026-10-02. Sources: [models.py](../../src/kestri/models.py), [runtime.
 
 `DeepSeekChatModel._get_request_payload()` calls the locked parent serializer, converts the original input to messages, and zips originals with payload messages using `strict=True`. For every original `AIMessage`, a string `additional_kwargs['reasoning_content']` is copied into the outbound assistant message, and `content=None` becomes `''`. Other message fields stay with the parent serializer. Missing/nonstring reasoning is not manufactured.
 
-This isolates a protected SDK hook compensating for the integration's outbound reasoning replay. It is not an alternate reasoning generator or a universal provider abstraction. [Runtime tests](../../tests/test_runtime.py) inspect actual serialized requests in both thinking modes, endpoint selection, tool results, and follow-up. Upgrade the adapter and locked dependency together; do not infer continued compatibility from an import succeeding.
+This isolates a protected SDK hook compensating for the integration's outbound reasoning replay. It is not an alternate reasoning generator or a universal provider abstraction. [Runtime tests](../../tests/agent/test_runtime.py) inspect actual serialized requests in both thinking modes, endpoint selection, tool results, and follow-up. Upgrade the adapter and locked dependency together; do not infer continued compatibility from an import succeeding.
 
 ## Minimal session and smoke verification
 
@@ -82,4 +82,4 @@ Checkpoints may contain raw dialogue, tool material, and provider reasoning desp
 
 ## Verification and maintenance
 
-[Runtime tests](../../tests/test_runtime.py) exercise model payloads and failed-session behavior; [evidence tests](../../tests/test_evidence.py) cover absence of reasoning/key text and required tool proof; [research integration tests](../../tests/test_research_integration.py) cover concurrent reservations, spending rejection, unresolved usage, and terminal outcomes. These verify configured arithmetic/control, not provider invoices. For SDK/model changes, review serialized payload, thinking mode, usage metadata, context estimates, timeout/retry behavior, and protected middleware hooks together.
+[Runtime tests](../../tests/agent/test_runtime.py) exercise model payloads and failed-session behavior; [evidence tests](../../tests/agent/test_evidence.py) cover absence of reasoning/key text and required tool proof; [research integration tests](../../tests/agent/test_research_integration.py) cover concurrent reservations, spending rejection, unresolved usage, and terminal outcomes. These verify configured arithmetic/control, not provider invoices. For SDK/model changes, review serialized payload, thinking mode, usage metadata, context estimates, timeout/retry behavior, and protected middleware hooks together.

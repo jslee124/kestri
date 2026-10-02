@@ -9,16 +9,15 @@ from typing import Any
 import httpx
 from langchain_deepseek import ChatDeepSeek
 
+from kestri.agent.budget import RunControl
+from kestri.agent.models import DeepSeekChatModel
 from kestri.application import Application
-from kestri.budget import RunControl
-from kestri.memory import MemoryService
-from kestri.models import DeepSeekChatModel
+from kestri.integrations.telegram import TelegramClient
+from kestri.memory.service import MemoryService
 from kestri.settings import ResearchSettings
-from kestri.store import Store
-from kestri.tasks import TaskPlan, TaskService
-from kestri.telegram import TelegramClient
-
-from .conftest import test_settings
+from kestri.storage.store import Store
+from kestri.tasks.service import TaskPlan, TaskService
+from tests.conftest import test_settings
 
 TEST_DSN = os.environ.get("KESTRI_TEST_DATABASE_URL")
 NOW = datetime.now(UTC).replace(second=0, microsecond=0)

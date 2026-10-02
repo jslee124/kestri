@@ -106,3 +106,5 @@ Before accepting a documentation change, check local links, English/Chinese pair
 - [Semantic memory runtime](reference/semantic-memory.md): implemented vector indexing/hybrid recall, owner switches, currency accounting and optional deployment; live quality remains unverified.
 
 - [Bounded chat history tools](reference/history-retrieval.md)
+
+- [Repository layout](development/repository-layout.md)

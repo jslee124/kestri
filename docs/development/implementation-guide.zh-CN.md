@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 33 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：全部 39 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -37,7 +37,7 @@
 
 ## budget.py
 
-[源码](../../src/kestri/budget.py)
+[源码](../../src/kestri/agent/budget.py)
 
 控制与计费 · [详细机制](../design/model-and-accounting.zh-CN.md)
 
@@ -65,7 +65,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## context.py
 
-[源码](../../src/kestri/context.py)
+[源码](../../src/kestri/agent/context.py)
 
 请求上下文中间件 · [详细机制](../design/context-management.zh-CN.md)
 
@@ -79,7 +79,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## data.py
 
-[源码](../../src/kestri/data.py)
+[源码](../../src/kestri/storage/lifecycle.py)
 
 操作员数据生命周期 · [详细机制](../design/data-maintenance.zh-CN.md)
 
@@ -100,7 +100,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## embedding.py
 
-[源码](../../src/kestri/embedding.py) · [接口与配置](../reference/embedding.zh-CN.md)
+[源码](../../src/kestri/integrations/embedding.py) · [接口与配置](../reference/embedding.zh-CN.md)
 
 `EmbeddingBatch` 保存校验后的不可变向量/用量；`EmbeddingClient.__init__` 捕获配置/HTTP client，`embed` 执行有界请求及校验；`cosine_similarity` 用于固定比较；`run_embedding_smoke` 只发送非个人测试文本；`save_embedding_evidence` 写脱敏 JSON。`EmbeddingSettings` 校验 key、数字维度和北京接口。自动提取已单独实现；[Memory v2](../design/memory-v2.zh-CN.md) 的向量召回仍待完成。
 
@@ -119,7 +119,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## http.py
 
-[源码](../../src/kestri/http.py)
+[源码](../../src/kestri/integrations/http.py)
 
 有界 HTTP · [详细机制](../design/tools.zh-CN.md)
 
@@ -129,7 +129,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## memory.py
 
-[源码](../../src/kestri/memory.py)
+[源码](../../src/kestri/memory/service.py)
 
 显式记忆服务 · [详细机制](../design/context-management.zh-CN.md)
 
@@ -146,13 +146,13 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## memory_extractor.py
 
-[源码](../../src/kestri/memory_extractor.py) · [实施边界](memory-v2-progress.zh-CN.md)
+[源码](../../src/kestri/memory/extractor.py) · [实施边界](memory-v2-progress.zh-CN.md)
 
 `MemorySource`、`ExistingMemory`、`ExtractionBatch` 定义可信输入，`ExtractionBatch.validate_batch` 检查资格/上限；`SourceReference`、`MemoryOperation`、`MemoryProposal` 定义模型 schema；`validate_proposal` 校验并返回不可变 `ValidatedExtraction`；`MemoryExtractor.__init__` 捕获模型与脱敏器，`extract` 执行有界、计费的提案生成。`Record` 是不可变、拒绝额外字段的公共基类。本模块不写数据库。
 
 ## models.py
 
-[源码](../../src/kestri/models.py)
+[源码](../../src/kestri/agent/models.py)
 
 服务序列化适配 · [详细机制](../design/model-and-accounting.zh-CN.md)
 
@@ -174,7 +174,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## research.py
 
-[源码](../../src/kestri/research.py)
+[源码](../../src/kestri/agent/research.py)
 
 产品 agent 执行 · [详细机制](../design/architecture.zh-CN.md)
 
@@ -189,7 +189,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## runtime.py
 
-[源码](../../src/kestri/runtime.py)
+[源码](../../src/kestri/agent/runtime.py)
 
 最小模型集成会话 · [详细机制](../design/model-and-accounting.zh-CN.md)
 
@@ -204,7 +204,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## schedule.py
 
-[源码](../../src/kestri/schedule.py)
+[源码](../../src/kestri/tasks/schedule.py)
 
 当地时刻算法 · [详细机制](../design/task-scheduling.zh-CN.md)
 
@@ -236,7 +236,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## smoke.py
 
-[源码](../../src/kestri/smoke.py)
+[源码](../../src/kestri/agent/smoke.py)
 
 真实 Smoke 与证据 · [详细机制](../design/model-and-accounting.zh-CN.md)
 
@@ -249,7 +249,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## store.py
 
-[源码](../../src/kestri/store.py)
+[源码](../../src/kestri/storage/store.py)
 
 业务事务 · [详细机制](../reference/database.zh-CN.md)
 
@@ -282,7 +282,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## task_agent.py
 
-[源码](../../src/kestri/task_agent.py)
+[源码](../../src/kestri/tasks/agent.py)
 
 任务提案执行 · [详细机制](../design/task-scheduling.zh-CN.md)
 
@@ -293,7 +293,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## task_intent.py
 
-[源码](../../src/kestri/task_intent.py)
+[源码](../../src/kestri/tasks/intent.py)
 
 委托识别 · [详细机制](../design/task-scheduling.zh-CN.md)
 
@@ -303,7 +303,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## tasks.py
 
-[源码](../../src/kestri/tasks.py)
+[源码](../../src/kestri/tasks/service.py)
 
 约定服务 · [详细机制](../design/task-scheduling.zh-CN.md)
 
@@ -320,7 +320,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 ## telegram.py
 
-[源码](../../src/kestri/telegram.py)
+[源码](../../src/kestri/integrations/telegram.py)
 
 Bot 传输与路由 · [详细机制](../design/execution-and-delivery.zh-CN.md)
 
@@ -338,7 +338,7 @@ Bot 传输与路由 · [详细机制](../design/execution-and-delivery.zh-CN.md)
 
 ## tools.py
 
-[源码](../../src/kestri/tools.py)
+[源码](../../src/kestri/agent/tools.py)
 
 Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 
@@ -349,7 +349,7 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 
 ## url_policy.py
 
-[源码](../../src/kestri/url_policy.py)
+[源码](../../src/kestri/integrations/url_policy.py)
 
 公共目标策略 · [详细机制](../design/tools.zh-CN.md)
 
@@ -363,7 +363,7 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 
 ## web.py
 
-[源码](../../src/kestri/web.py)
+[源码](../../src/kestri/integrations/web.py)
 
 信息工具适配 · [详细机制](../design/tools.zh-CN.md)
 
@@ -382,7 +382,7 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 
 ## workspace.py
 
-[源码](../../src/kestri/workspace.py)
+[源码](../../src/kestri/storage/workspace.py)
 
 限定证据文件系统 · [详细机制](../design/tools.zh-CN.md)
 
@@ -419,15 +419,15 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 | 文件 | 验证边界 |
 | --- | --- |
 | [test_settings.py](../../tests/test_settings.py) | 配置 key/模式/范围校验。 |
-| [test_tools.py](../../tests/test_tools.py) | 严格有界加法。 |
-| [test_evidence.py](../../tests/test_evidence.py) | 可观察工具证明、key/推理排除、文件权限。 |
-| [test_runtime.py](../../tests/test_runtime.py) | 实际图/SDK 载荷、追问、限制、取消。 |
-| [test_boundaries.py](../../tests/test_boundaries.py) | 公共 URL/DNS、工作区、HTTP/Telegram 契约/菜单。 |
-| [test_schedule.py](../../tests/test_schedule.py) | 时刻解析与 DST 重复。 |
-| [test_research_integration.py](../../tests/test_research_integration.py) | 接收、持久化、预算、来源、worker、发送/恢复。 |
-| [test_tasks_integration.py](../../tests/test_tasks_integration.py) | 授权、约定、合并、重试、控制。 |
-| [test_memory_context_integration.py](../../tests/test_memory_context_integration.py) | 显式记忆、范围/撤销/到期、压缩。 |
-| [test_data_lifecycle_integration.py](../../tests/test_data_lifecycle_integration.py) | 私有备份、隔离、保留、磁盘失败/租约。 |
+| [test_tools.py](../../tests/agent/test_tools.py) | 严格有界加法。 |
+| [test_evidence.py](../../tests/agent/test_evidence.py) | 可观察工具证明、key/推理排除、文件权限。 |
+| [test_runtime.py](../../tests/agent/test_runtime.py) | 实际图/SDK 载荷、追问、限制、取消。 |
+| [test_boundaries.py](../../tests/integrations/test_boundaries.py) | 公共 URL/DNS、工作区、HTTP/Telegram 契约/菜单。 |
+| [test_schedule.py](../../tests/tasks/test_schedule.py) | 时刻解析与 DST 重复。 |
+| [test_research_integration.py](../../tests/agent/test_research_integration.py) | 接收、持久化、预算、来源、worker、发送/恢复。 |
+| [test_tasks_integration.py](../../tests/tasks/test_tasks_integration.py) | 授权、约定、合并、重试、控制。 |
+| [test_memory_context_integration.py](../../tests/memory/test_memory_context_integration.py) | 显式记忆、范围/撤销/到期、压缩。 |
+| [test_data_lifecycle_integration.py](../../tests/storage/test_data_lifecycle_integration.py) | 私有备份、隔离、保留、磁盘失败/租约。 |
 | [conftest.py](../../tests/conftest.py) | 环境隔离、不收集的配置 helper、可丢弃 store fixture。 |
 | [helpers.py](../../tests/helpers.py) | 共享离线传输与主人/任务/记忆场景构造。 |
 | [__init__.py](../../tests/__init__.py) | 空包标记，支持相对 helper import。 |
@@ -440,24 +440,26 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 
 ## memory_repository.py
 
-[源码](../../src/kestri/memory_repository.py)。`memory_command` 实现确定性开启/列表/候选/变更查看；`MemoryRepository.claim` 管来源顺序、前台优先、租约/run 恢复与版本捕获；`snapshot` 准入有界归档和当前记忆；`ensure_active` 校验代次/版本/epoch/租约；`publish` 复核提案并事务写事实/引用/事件/作业成功；`fail` 记录安全错误、重试时间和未知用量。见[运行进度](memory-v2-progress.zh-CN.md)。
+[源码](../../src/kestri/memory/repository.py)。`memory_command` 实现确定性开启/列表/候选/变更查看；`MemoryRepository.claim` 管来源顺序、前台优先、租约/run 恢复与版本捕获；`snapshot` 准入有界归档和当前记忆；`ensure_active` 校验代次/版本/epoch/租约；`publish` 复核提案并事务写事实/引用/事件/作业成功；`fail` 记录安全错误、重试时间和未知用量。见[运行进度](memory-v2-progress.zh-CN.md)。
 
 ## memory_worker.py
 
-[源码](../../src/kestri/memory_worker.py)。`MemoryJobControl.ensure_active` 在 run 活动检查上增加作业授权；`MemoryBudget.reserve` 使用主人与独立维护预算；`MemoryWorker.work_once` 领取、提取、提交或记录有限失败/重试。`Application.memory_maintaining` 独立于前台和投递运行。[005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) 与[持久作业测试](../../tests/test_memory_jobs_integration.py)覆盖本增量。逻辑备份升为 schema 5，兼容 schema 4。
+[源码](../../src/kestri/memory/worker.py)。`MemoryJobControl.ensure_active` 在 run 活动检查上增加作业授权；`MemoryBudget.reserve` 使用主人与独立维护预算；`MemoryWorker.work_once` 领取、提取、提交或记录有限失败/重试。`Application.memory_maintaining` 独立于前台和投递运行。[005_automatic_memory.sql](../../src/kestri/storage/sql/005_automatic_memory.sql) 与[持久作业测试](../../tests/memory/test_memory_jobs_integration.py)覆盖本增量。逻辑备份升为 schema 5，兼容 schema 4。
 
 ## memory_embedding.py
 
-[源码](../../src/kestri/memory_embedding.py)。`embedding_space` 标识编码/配置空间；`content_hash` 与 SQL MD5 内容指纹一致；`vector_literal` 校验/归一化向量文本；`charged_embedding` 检查来源/尺寸、预留换算后的 CNY 估算、结算合法用量、保留未知调用。账本元数据不含私人正文/向量。
+[源码](../../src/kestri/memory/embedding.py)。`embedding_space` 标识编码/配置空间；`content_hash` 与 SQL MD5 内容指纹一致；`vector_literal` 校验/归一化向量文本；`charged_embedding` 检查来源/尺寸、预留换算后的 CNY 估算、结算合法用量、保留未知调用。账本元数据不含私人正文/向量。
 
 ## memory_index.py
 
-[源码](../../src/kestri/memory_index.py)。`IndexControl` 在 run 活动检查上增加来源/作业/开关/租约；`IndexBudget` 使用共享维护预算；`MemoryIndexWorker.claim`、`ensure_active`、`publish`、`fail`、`work_once` 实现持久向量通道，schema 6 trigger 负责事务入队/失效。
+[源码](../../src/kestri/memory/index.py)。`IndexControl` 在 run 活动检查上增加来源/作业/开关/租约；`IndexBudget` 使用共享维护预算；`MemoryIndexWorker.claim`、`ensure_active`、`publish`、`fail`、`work_once` 实现持久向量通道，schema 6 trigger 负责事务入队/失效。
 
 ## memory_retriever.py
 
-[源码](../../src/kestri/memory_retriever.py)。`lexical_terms`、`lexical_rank`、`reciprocal_rank_fusion`、`bounded_query` 定义本地排序；`MemorySelection` 只接受有界唯一 UUID，`SelectionBudget` 标记前台筛选费用。`MemoryRetriever.snapshot`、`assemble`、`dense`、`select`、`retrieve` 实现一致过滤、临时偏好、精确搜索、ID 筛选、降级/缓存和最终版本检查。`ResearchAgent` 通过 `MemoryContext` 接入，限制、暂定策略和测试见[语义参考](../reference/semantic-memory.zh-CN.md)。
+[源码](../../src/kestri/memory/retriever.py)。`lexical_terms`、`lexical_rank`、`reciprocal_rank_fusion`、`bounded_query` 定义本地排序；`MemorySelection` 只接受有界唯一 UUID，`SelectionBudget` 标记前台筛选费用。`MemoryRetriever.snapshot`、`assemble`、`dense`、`select`、`retrieve` 实现一致过滤、临时偏好、精确搜索、ID 筛选、降级/缓存和最终版本检查。`ResearchAgent` 通过 `MemoryContext` 接入，限制、暂定策略和测试见[语义参考](../reference/semantic-memory.zh-CN.md)。
 
 ## 历史工具入口
 
-[HistoryRetriever](../../src/kestri/history.py) 提供 `state`/`version` 权限与代次、`turns` 有界来源加载、`search` 正匹配排序/句柄、`read` 来源复核、`recheck` 返回前检查、`output` 完整 JSON 限制、`tools` 框架注册。`HistorySearchInput`/`HistoryReadInput` 严格 schema，`instant` 校验时区，`segment` 校验完整轮次并生成来源 hash。详见[契约](../reference/history-retrieval.zh-CN.md)。
+[HistoryRetriever](../../src/kestri/history/retriever.py) 提供 `state`/`version` 权限与代次、`turns` 有界来源加载、`search` 正匹配排序/句柄、`read` 来源复核、`recheck` 返回前检查、`output` 完整 JSON 限制、`tools` 框架注册。`HistorySearchInput`/`HistoryReadInput` 严格 schema，`instant` 校验时区，`segment` 校验完整轮次并生成来源 hash。详见[契约](../reference/history-retrieval.zh-CN.md)。
+
+[目录与职责](repository-layout.zh-CN.md)说明六个领域包、对应测试及 SQL 资源位置；新增六个包初始化模块只用于组织，不重新导出实现。
