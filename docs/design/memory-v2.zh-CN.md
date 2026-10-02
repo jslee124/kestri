@@ -86,8 +86,8 @@ PostgreSQL 来源记录是依据。核心画像是有效稳定记忆的查询视
 
 交付顺序：(1) 独立 embedding 接入及文档，已实现；(2) 开关/来源/jobs/自动提取与语义事实存储，离线及独立数据库检查；(3) 模型路径混合召回与并发/生命周期；(4) 历史工具与评测；(5) 隔离的真实 Telegram、重启/忘记/恢复验收。模块划分为 `MemoryExtractor`、`MemoryRepository`、`MemoryRetriever`、`HistoryRetriever` 与维护 worker。后续增量满足门槛前，产品继续使用显式记忆。
 
-已实现的提取使用 0.15 USD/作业和 1.50 USD/月上限，因为当前仅调用 DeepSeek。上文 CNY 换算仍是后续 embedding 要求。每作业 1 条新消息、最多 3 次总尝试（包括冲突），耗尽后可见失败，不无限重新入队。`/memory changes` 为只读入口，自动变更通知和独立使用开关仍暂缓。准确差异和部署/评测边界见[进度](../development/memory-v2-progress.zh-CN.md)。
+已实现的提取、事实索引与历史索引共享 0.15 USD/作业和 1.50 USD/月维护上限。DeepSeek 提取及带版本的 embedding CNY→USD 记账均已实现。每作业 1 条新消息、最多 3 次总尝试（包括冲突），耗尽后可见失败，不无限重新入队。`/memory changes` 为只读入口，自动变更通知和自然语言模糊纠正目标解析仍暂缓，独立使用开关已实现。准确差异和部署/评测边界见[进度](../development/memory-v2-progress.zh-CN.md)。
 
-迁移 6 已实现语义存储/索引及有界混合模型链路，准确行为见[运行参考](../reference/semantic-memory.zh-CN.md)。新增独立语义开启和使用开关，对称 L2 编码空间指纹，按 0.5 CNY/百万与带版本固定 0.15 USD/CNY 估算，每 run 至多一次服务筛选，新增版本冲突只本地重选。这些是明确的实施选择；向量/偏好校准、历史工具和真实验收仍待完成。
+迁移 6 已实现语义存储/索引及有界混合模型链路，准确行为见[运行参考](../reference/semantic-memory.zh-CN.md)。新增独立语义开启和使用开关，对称 L2 编码空间指纹，按 0.5 CNY/百万与带版本固定 0.15 USD/CNY 估算，每 run 至多一次服务筛选，新增版本冲突只本地重选。这些是明确的实施选择；事实候选校准、历史工具和隔离合成真实验收已有记录；完整提取/选择质量与历史 JSON 校准仍待完成。
 
-历史工具首个增量见[运行参考](../reference/history-retrieval.zh-CN.md)：只做有界本地词项搜索，auto/use 同时开启时可用，auto 改变重置上下文。完整历史混合检索仍是上述目标。
+[历史运行参考](../reference/history-retrieval.zh-CN.md)记录已实现的有界词项/混合检索、渐进语义缓存及持久后台索引；auto/use 同时开启时可用，auto 改变重置上下文。[本地部署](../how-to/deploy-memory-v2.zh-CN.md)已完成，auto/semantic 关闭；完整 Memory v2 质量验收仍待完成。
