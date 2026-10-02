@@ -49,12 +49,18 @@
     "deployed_source_hashes_match": true,
     "production_restart": true,
     "production_telegram_home": true,
-    "settings_preserved": true
+    "settings_preserved": true,
+    "production_telegram_after_restart": true,
+    "rollback_config_validated": true,
+    "wheel_sdist_built": true
   },
   "container_health": "healthy",
   "limits": [
     "synthetic acceptance only",
     "no independent longitudinal quality",
     "no main merge"
-  ]
+  ],
+  "source_revision": "f7580ddaf444223e3cae503281307bb2c9d3235b",
+  "backup_sha256": "351ee5c2d3236448f9ed72316ea33a4ef8f709658d4276e4d115a2e59dc5379e",
+  "workspace_archive_entries": 86
 }

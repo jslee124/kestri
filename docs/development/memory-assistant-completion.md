@@ -23,3 +23,5 @@ Production advanced from migration 9 to 10, preserving 27 runs/133 messages befo
 Evidence covers these synthetic workflows and deployment integrity, not every natural expression, longitudinal personalization, all platforms or actual power failure. Conservative lexical routing may require clarification or a command for unsupported expressions. History selection/coverage retain the existing reference limitations.
 
 [Sanitized deployment record](evidence/memory-assistant-deployment.json).
+
+Deployed source: f7580ddaf444223e3cae503281307bb2c9d3235b. Both containers are healthy; production natural home and changes worked after restart. Private snapshots are in .kestri/deployment/2026-10-02-memory-assistant/. Rollback Compose is config-validated; no rollback poller was started.
