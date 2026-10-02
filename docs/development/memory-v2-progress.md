@@ -2,7 +2,7 @@
 
 [简体中文](memory-v2-progress.zh-CN.md) · [Documentation](../README.md)
 
-Date: 2026-10-02. Scope: proposal extraction, durable runtime, semantic fact recall, and bounded lexical history tools on `codex/memory-v2`. [Specification](../design/memory-v2.md) remains the complete target. This code has not been deployed to the owner's Telegram bot.
+Date: 2026-10-02. Scope: proposal extraction, durable runtime, semantic fact recall, and bounded lexical history tools on `codex/memory-v2`. [Specification](../design/memory-v2.md) remains the complete target. The verified revision is now deployed to the owner’s Telegram bot; auto/semantic remain off. See the [deployment record](../how-to/deploy-memory-v2.md).
 
 ## Proposal extraction
 
@@ -54,6 +54,10 @@ Nine job cases: local pgvector **232 passed**; ordinary PostgreSQL **204 passed,
 
 Eight migrations now use expanded definitions/conditions, descriptive trigger row variables, and consistent indentation. A CI readability guard checks indentation and line width. Token comparison confirms unchanged SQL behavior except local variable names; disposable PostgreSQL tests check execution. [Chinese evaluation](memory-evaluation.md) adds 120 synthetic labeled cases, reproducible scoring and live text-embedding-v4 evidence. Development-only calibration raises the fact threshold to 0.50; the history JSON recipe has a separate provisional 0.30 threshold. This measures candidates, not extraction, final selection or injection quality. Local pgvector: **241 passed**; ordinary PostgreSQL: **213 passed, 28 skipped**. Ruff (73 Python files), mypy (42 modules including the evaluation runner), 98 bilingual documents, SQL guard and wheel/sdist passed. [Isolated live validation](memory-live-validation.md) covers actual automatic extraction, semantic recall, history search/read, process restart, forget and restore quarantine. Source-reference failures are retained; exact anchor hints, safe diagnostics and bounded annotation retries were added. The original bot was restored to its previous runtime.
 
+## Persistent deployment
+
+Revision `b1d7bf2` now runs in the existing bot with migration 8 and pgvector 0.8.7. Original volumes/data were retained; a full pre-upgrade dump was restored in a disposable database, and the workspace archive was read-checked. Both containers are healthy; actual Telegram controls responded before/after restart. Auto/semantic remain off. The prior paragraph records the earlier isolated acceptance; this later deployment supersedes its old-runtime status. See the [deployment record and rollback procedure](../how-to/deploy-memory-v2.md).
+
 ## Remaining increments
 
-Next: independent harder labels, live extraction/selection/answer scoring, historical JSON calibration, and broader isolated provider/Telegram acceptance. Persistent deployment is still separate. Candidate evaluation does not satisfy all quality gates. Communication-profile markers remain provisional. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.
+Next: independent harder labels, live extraction/selection/answer scoring, historical JSON calibration, and broader isolated provider/Telegram acceptance. Persistent deployment and restart checks passed with auto/semantic off; full quality acceptance remains separate. Candidate evaluation does not satisfy all quality gates. Communication-profile markers remain provisional. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.

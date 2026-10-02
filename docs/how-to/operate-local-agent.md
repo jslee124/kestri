@@ -19,6 +19,8 @@ App and database use `restart: unless-stopped`. Docker must itself be running; t
 
 Base Compose publishes no database port. The app is non-root, has a read-only root, dedicated workspace volume, bounded temporary storage/resources, dropped capabilities, and no host-home or Docker-socket mount. Development overrides expose loopback PostgreSQL and do not isolate a host Python process. Containers are not a separate VM security guarantee. Web/model/messaging still contact external services.
 
+For the deployed Memory v2 vector installation, keep `-f compose.yaml -f compose.vector.yaml` on build/up commands. Using only the base file can replace the extension-enabled PostgreSQL image. Follow [Memory v2 deployment](deploy-memory-v2.md) for upgrade, backup and rollback instructions.
+
 ## Everyday use and recovery
 
 In Telegram, use the collapsible Menu for every registered command. Ask a public research question, reply to its answer, create an explicit daily/weekly task, and save facts through `/remember`. `/status` and `/runs` inspect execution and delivery; `/usage` reports local estimated spending. `/stop` cancels the foreground run, or accepts a run ID. `/new` resets idle conversation context while preserving memory, tasks, and archives. The [task](../reference/tasks.md) and [memory](../reference/memory-and-context.md) references explain controls.

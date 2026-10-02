@@ -1,0 +1,63 @@
+{
+  "recorded_at": "2026-10-02T12:40:22.593423+00:00",
+  "source_sha": "b1d7bf27450fde2f595db85a2374d12fb5884824",
+  "installed_source_matches_checkout": true,
+  "app_image": "sha256:c035044fc00d835bb026763d09e587ad50f8ba7d9bcb2ef9f46d51ef8358eb73",
+  "postgres_image": "sha256:e30f754ee1942a7a5f1ef8e22aad313b3890ee406bd50a3cbdc03fe8b4aa8d0f",
+  "schema_before": 4,
+  "schema_after": 8,
+  "vector_extension": "0.8.7",
+  "pre_upgrade_dump_restored_in_disposable_database": true,
+  "restored_counts": {
+    "runs": 27,
+    "messages": 113
+  },
+  "immediate_post_migration_counts": {
+    "runs": 27,
+    "messages": 113
+  },
+  "workspace_archive_readable": true,
+  "workspace_archive_entries": 85,
+  "private_backups": [
+    "full PostgreSQL dump",
+    "workspace archive",
+    "schema 7 logical backup"
+  ],
+  "private_backup_mode": "0600",
+  "old_app_image_retained": true,
+  "original_named_volumes_retained": [
+    "kestri_database",
+    "kestri_workspace"
+  ],
+  "switches": {
+    "auto": false,
+    "use": true,
+    "semantic": false
+  },
+  "startup_maintenance_jobs": {
+    "extraction": 0,
+    "fact_index": 0,
+    "history_index": 0
+  },
+  "telegram_checks": [
+    {
+      "command": "/memory",
+      "observed_response": "auto off; use on; semantic off"
+    },
+    {
+      "command": "/memory changes",
+      "after_app_restart": true,
+      "observed_response": "no indexing jobs or failures"
+    }
+  ],
+  "app_health": "healthy",
+  "postgres_health": "healthy",
+  "limitations": [
+    "Production auto and semantic switches were not enabled.",
+    "No production personal content was submitted for extraction or embedding in this acceptance.",
+    "Semantic workflow evidence is the separately recorded isolated live acceptance.",
+    "Full memory quality gates remain incomplete.",
+    "The retained rollback plan was validated but no production rollback was performed.",
+    "No main-branch merge was performed."
+  ]
+}

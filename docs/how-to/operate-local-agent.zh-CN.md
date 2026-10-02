@@ -19,6 +19,8 @@ docker compose exec app /app/.venv/bin/kestri data status
 
 基础 Compose 不发布数据库端口。应用使用非 root、只读根文件系统、独立工作区卷、受限临时空间/资源、移除 capabilities，不挂载主机 home 或 Docker socket。开发覆盖配置开放回环 PostgreSQL，主机 Python 进程没有容器隔离。容器不构成独立 VM 的安全保证；网络/模型/消息仍使用外部服务。
 
+当前 Memory v2 向量部署的 build/up 命令应始终带 `-f compose.yaml -f compose.vector.yaml`。只用基础文件可能将数据库替换为没有扩展的镜像。升级、备份和回退见[Memory v2 部署](deploy-memory-v2.zh-CN.md)。
+
 ## 日常使用和恢复
 
 Telegram 的可折叠 Menu 提供全部已注册命令。提问公开研究问题，回复答案继续追问，明确创建每日/每周任务，通过 `/remember` 保存事实。`/status` 和 `/runs` 检查执行/发送，`/usage` 查看本地费用估算。`/stop` 取消前台或指定 ID 执行；`/new` 在空闲时重置对话上下文，保留记忆、任务和归档。控制方式见[任务](../reference/tasks.zh-CN.md)和[记忆](../reference/memory-and-context.zh-CN.md)参考。

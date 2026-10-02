@@ -2,7 +2,7 @@
 
 [简体中文](semantic-memory.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Feature-branch implementation; no production bot upgrade or live private-dialogue evaluation has been performed.
+Updated: 2026-10-02. Feature-branch implementation is deployed with auto/semantic off; live private-dialogue quality evaluation remains incomplete. See the [deployment record](../how-to/deploy-memory-v2.md).
 
 ## Controls and data disclosure
 
@@ -52,9 +52,9 @@ The base Compose image/volume remain unchanged. Build the optional same-base Pos
 docker compose -f compose.yaml -f compose.vector.yaml build postgres
 ```
 
-For an existing installation, stop the app and make a private logical backup with the current code/config first. Recreate PostgreSQL using the override, then rebuild/start the app with both Compose files. Keep the existing database/workspace volumes; do not delete them. This is operator deployment, not an action already performed by this implementation. See [operations](../how-to/operate-local-agent.md) and [backup/restore](../how-to/backup-and-restore.md). Confirm healthy schema setup before `/memory semantic on`. The override preserves the original database major/distribution/data directory; packaging and disposable DB checks do not prove an owner's volume upgrade or installed-bot acceptance.
+For an existing installation, stop the app and make a private logical backup with the current code/config first. Recreate PostgreSQL using the override, then rebuild/start the app with both Compose files. Keep the existing database/workspace volumes; do not delete them. This procedure has now been performed on the local installation; the [record](../how-to/deploy-memory-v2.md) separates deployment checks from semantic quality acceptance. See [operations](../how-to/operate-local-agent.md) and [backup/restore](../how-to/backup-and-restore.md). Confirm healthy schema setup before `/memory semantic on`. The override preserves the original database major/distribution/data directory; packaging and disposable DB checks do not prove an owner's volume upgrade or installed-bot acceptance.
 
-Backup schema 6 includes settings and index jobs but omits rebuildable vector rows. Restore accepts schema 4/5/6 with strict column checks and conservative defaults, requires empty derived indexes, quarantines active/candidate facts, cancels index jobs and disables all memory controls. Cleanup/erase removes source-derived vectors through the same status-change trigger; explicitly retained facts can persist under their separate retention intent. Index jobs keep IDs/hashes and safe errors, not copied fact text.
+Current backup schema 7 includes settings and fact/history index jobs but omits rebuildable vector rows. Restore accepts schema 4/5/6/7 with strict column checks and conservative defaults, requires empty derived indexes, quarantines active/candidate facts, cancels index jobs and disables all memory controls. Cleanup/erase removes source-derived vectors through the same status-change trigger; explicitly retained facts can persist under their separate retention intent. Index jobs keep IDs/hashes and safe errors, not copied fact text.
 
 ## Verification boundary
 

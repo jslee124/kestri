@@ -2,7 +2,7 @@
 
 [English](semantic-memory.md) · [文档](../README.zh-CN.md)
 
-更新：2026-10-02。功能分支实现；尚未升级生产机器人，也未进行真实私人聊天评测。
+更新：2026-10-02。功能分支实现已部署，auto/semantic 关闭；真实私人聊天质量评测仍未完成，见[部署记录](../how-to/deploy-memory-v2.zh-CN.md)。
 
 ## 控制与数据披露
 
@@ -52,9 +52,9 @@ retriever 在 run 内缓存选中 ID，每次模型请求重查合法事实/版�
 docker compose -f compose.yaml -f compose.vector.yaml build postgres
 ```
 
-已有实例先停止 app，用当前代码/配置创建私有逻辑备份。用覆盖文件重建 PostgreSQL，再用两份 Compose 文件重新构建/启动 app。保留已有数据库/工作区卷，不删除。这是操作者部署流程，本次实现尚未执行。见[操作指南](../how-to/operate-local-agent.zh-CN.md)和[备份/恢复](../how-to/backup-and-restore.zh-CN.md)。确认 schema 健康后再 `/memory semantic on`。覆盖文件保留原数据库大版本/发行版/目录；打包和独立数据库测试不证明主人现有卷升级或已安装机器人验收。
+已有实例先停止 app，用当前代码/配置创建私有逻辑备份。用覆盖文件重建 PostgreSQL，再用两份 Compose 文件重新构建/启动 app。保留已有数据库/工作区卷，不删除。本地安装已执行此流程；[部署记录](../how-to/deploy-memory-v2.zh-CN.md)区分部署检查与语义质量验收。见[操作指南](../how-to/operate-local-agent.zh-CN.md)和[备份/恢复](../how-to/backup-and-restore.zh-CN.md)。确认 schema 健康后再 `/memory semantic on`。覆盖文件保留原数据库大版本/发行版/目录；打包和独立数据库测试不证明主人现有卷升级或已安装机器人验收。
 
-备份 schema 6 包含设置和索引作业，不含可重建向量行。恢复兼容 schema 4/5/6，严格校验列并补保守默认值，要求派生索引为空，隔离有效/候选事实、取消索引作业、关闭所有记忆控制。清理/清空通过状态变更 trigger 删除依赖来源的向量；显式事实按独立保留意图继续存在。索引作业保留 ID/hash 和安全错误，不复制事实正文。
+当前备份 schema 7 包含设置及事实/历史索引作业，不含可重建向量行。恢复兼容 schema 4/5/6/7，严格校验列并补保守默认值，要求派生索引为空，隔离有效/候选事实、取消索引作业、关闭所有记忆控制。清理/清空通过状态变更 trigger 删除依赖来源的向量；显式事实按独立保留意图继续存在。索引作业保留 ID/hash 和安全错误，不复制事实正文。
 
 ## 验证边界
 
