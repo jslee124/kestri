@@ -22,7 +22,13 @@ from langchain.agents.middleware.types import (
     ToolCallRequest,
 )
 from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import AIMessage, AnyMessage, BaseMessage, HumanMessage, ToolMessage
+from langchain_core.messages import (
+    AIMessage,
+    AnyMessage,
+    BaseMessage,
+    HumanMessage,
+    ToolMessage,
+)
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langsmith import tracing_context
 from openai import OpenAIError
@@ -74,7 +80,8 @@ class BoundsMiddleware(AgentMiddleware[Any, Any, Any]):
         if size > self.budget.settings.input_token_budget:
             raise ContextExceeded("InputAdmissionLimit")
         reservation = await self.budget.reserve(
-            "model", self.budget.model_cost(size, self.budget.settings.max_output_tokens)
+            "model",
+            self.budget.model_cost(size, self.budget.settings.max_output_tokens),
         )
         result = await handler(request)
         usage = [
@@ -125,8 +132,13 @@ class ResearchAgent:
         client: httpx.AsyncClient,
         policy: PublicURLPolicy | None = None,
     ) -> None:
-        self.settings, self.store, self.workspace = settings, store, workspace
-        self.saver, self.model, self.client, self.policy = saver, model, client, policy
+        self.settings = settings
+        self.store = store
+        self.workspace = workspace
+        self.saver = saver
+        self.model = model
+        self.client = client
+        self.policy = policy
 
     async def run(self, row: Row, control: RunControl) -> None:
         if row.get("kind") == "memory_control":
@@ -134,7 +146,12 @@ class ResearchAgent:
                 answer = await MemoryService(self.store, self.settings).apply(row)
                 await self.store.finish(row["id"], "completed", answer)
             except asyncio.CancelledError:
-                await self.store.finish(row["id"], "cancelled", "记忆指令已停止。", "Cancelled")
+                await self.store.finish(
+                    row["id"],
+                    "cancelled",
+                    "记忆指令已停止。",
+                    "Cancelled",
+                )
             return
         if row.get("kind") == "task_control":
             from kestri.task_agent import TaskAgent
@@ -142,12 +159,24 @@ class ResearchAgent:
             await TaskAgent(self.settings, self.store, self.model).run(row, control)
             return
         budget = Budget(self.settings, control)
-        web = WebTools(self.store, self.workspace, budget, row["chat_id"], self.client, self.policy)
+        web = WebTools(
+            self.store,
+            self.workspace,
+            budget,
+            row["chat_id"],
+            self.client,
+            self.policy,
+        )
         memory_service = MemoryService(self.store, self.settings)
         selected = await memory_service.retrieve(row)
         overhead = RESEARCH_PROMPT + str([m["content"] for m in selected])
         middleware: list[AgentMiddleware[Any, Any, Any]] = [
-            ContextSummary(self.model, budget, web.tools(), overhead),
+            ContextSummary(
+                self.model,
+                budget,
+                web.tools(),
+                overhead,
+            ),
             MemoryContext(memory_service, row),
             ModelCallLimitMiddleware(
                 run_limit=self.settings.max_model_calls, exit_behavior="error"
@@ -257,4 +286,9 @@ class ResearchAgent:
             answer = notices.get(type(error), "服务或执行失败，此次执行已停止。未自动重新研究。")
             if isinstance(error, OpenAIError):
                 answer = "模型服务请求失败，此次执行已停止。请检查本地配置和服务状态。"
-        await self.store.finish(row["id"], status, answer, error_type)
+        await self.store.finish(
+            row["id"],
+            status,
+            answer,
+            error_type,
+        )

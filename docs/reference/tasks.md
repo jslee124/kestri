@@ -4,6 +4,8 @@
 
 Updated: 2026-10-02. Scope: M2 implementation; validation status is tracked in the [M2 record](../development/m2-validation.md).
 
+For parsing, transaction validation, timezone/DST algorithms, and catch-up details, see [task and scheduling internals](../design/task-scheduling.md).
+
 ## Configuration and schedule
 
 | Variable | Default | Meaning |

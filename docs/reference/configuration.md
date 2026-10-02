@@ -2,7 +2,7 @@
 
 [简体中文](configuration.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-01. Scope: `kestri smoke`, implemented in `src/kestri/settings.py` and `src/kestri/runtime.py`.
+Updated: 2026-10-02. Scope: `kestri smoke`, implemented in `src/kestri/settings.py` and `src/kestri/runtime.py`.
 
 ## Configuration sources
 
@@ -41,6 +41,6 @@ CLI exit codes: 0 for a passed check, 1 for a failed check or execution/evidence
 
 Evidence schema version 1 includes the UTC timestamp, Python/package versions, provider/model/mode, configured limits, per-turn status/time, model-response counts, tool calls/results, available token usage, reasoning-presence booleans, answers, and verification outcome. It omits reasoning text and authentication data. Token usage is provider metadata, not an exact price or bill.
 
-## Planned settings
+## Other application settings
 
-The proposed 128,000-token input budget, compression threshold, monthly spending envelope, Telegram, Tavily, PostgreSQL, and scheduling values in the design are not M0 configuration. They are not enforced by this smoke CLI. M1 now implements input admission, spending reservations, Telegram, Tavily, and PostgreSQL; see the [M1 reference](telegram.md). See [architecture](../design/architecture.md) and [milestones](../development/milestones.md).
+This document describes only `kestri smoke`. The product implements input admission, context compression, spending reservations, Telegram, Tavily, PostgreSQL, scheduling, and data maintenance; these controls do not apply to smoke. See [CLI and complete configuration](cli.md) for every command/settings class and [model and accounting](../design/model-and-accounting.md) for model adaptation and the smoke evidence format.

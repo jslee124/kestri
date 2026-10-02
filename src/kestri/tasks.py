@@ -9,7 +9,12 @@ from psycopg.types.json import Jsonb
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from kestri.errors import PolicyDenied
-from kestri.schedule import latest_occurrence, next_occurrence, requested_time, requested_weekdays
+from kestri.schedule import (
+    latest_occurrence,
+    next_occurrence,
+    requested_time,
+    requested_weekdays,
+)
 from kestri.settings import ResearchSettings
 from kestri.store import Row, Store
 from kestri.task_intent import TaskAction, task_intent
@@ -79,7 +84,8 @@ async def list_tasks(conn: Any, chat_id: int) -> str:
 
 class TaskService:
     def __init__(self, store: Store, settings: ResearchSettings) -> None:
-        self.store, self.settings = store, settings
+        self.store = store
+        self.settings = settings
 
     async def apply(
         self, run: Row, plan: TaskPlan, intent: TaskAction, now: datetime | None = None
@@ -109,7 +115,8 @@ class TaskService:
                     raise PolicyDenied("RunInactive")
                 prior = await (
                     await conn.execute(
-                        "SELECT result FROM kestri.task_changes WHERE run_id=%s", (run["id"],)
+                        "SELECT result FROM kestri.task_changes WHERE run_id=%s",
+                        (run["id"],),
                     )
                 ).fetchone()
                 if prior:
@@ -174,7 +181,12 @@ class TaskService:
                                         plan.local_time,
                                         plan.weekdays,
                                         21600,
-                                        next_occurrence(now, plan.local_time, zone, plan.weekdays),
+                                        next_occurrence(
+                                            now,
+                                            plan.local_time,
+                                            zone,
+                                            plan.weekdays,
+                                        ),
                                         run["id"],
                                     ),
                                 )
@@ -249,7 +261,10 @@ class TaskService:
                                 "delete": "deleted",
                             }[intent]
                         task["next_due"] = next_occurrence(
-                            now, task["local_time"], task["timezone"], task["weekdays"]
+                            now,
+                            task["local_time"],
+                            task["timezone"],
+                            task["weekdays"],
                         )
                         task["revision"] += 1
                         task = await (
@@ -287,7 +302,8 @@ class TaskService:
                 if task:
                     notice = agreement(task)
                     await conn.execute(
-                        "UPDATE kestri.runs SET task_id=%s WHERE id=%s", (task["id"], run["id"])
+                        "UPDATE kestri.runs SET task_id=%s WHERE id=%s",
+                        (task["id"], run["id"]),
                     )
                 notice = self.store.redactor.text(notice)
                 await conn.execute(
@@ -335,7 +351,10 @@ class TaskService:
                 remaining = self.settings.background_queue_limit - (count["n"] if count else 0)
                 for task in tasks:
                     latest = latest_occurrence(
-                        now, task["local_time"], task["timezone"], task["weekdays"]
+                        now,
+                        task["local_time"],
+                        task["timezone"],
+                        task["weekdays"],
                     )
                     if latest < task["next_due"]:
                         continue
@@ -381,7 +400,10 @@ class TaskService:
                         "UPDATE kestri.tasks SET next_due=%s WHERE id=%s",
                         (
                             next_occurrence(
-                                now, task["local_time"], task["timezone"], task["weekdays"]
+                                now,
+                                task["local_time"],
+                                task["timezone"],
+                                task["weekdays"],
                             ),
                             task["id"],
                         ),

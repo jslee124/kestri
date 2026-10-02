@@ -2,7 +2,7 @@
 
 [English](configuration.md) · [文档](../README.zh-CN.md)
 
-更新日期：2026-10-01。范围：`kestri smoke`，实现位于 `src/kestri/settings.py` 和 `src/kestri/runtime.py`。
+更新日期：2026-10-02。范围：`kestri smoke`，实现位于 `src/kestri/settings.py` 和 `src/kestri/runtime.py`。
 
 ## 配置来源
 
@@ -28,7 +28,7 @@
 - SDK 自动重试次数为零。限制按轮计算，因此两轮 smoke 整体最多尝试两倍的单轮模型调用额度。
 - LangChain 模型和工具限制中间件在新调用将超过额度时终止执行。失败或取消的会话不能继续接受下一轮。
 - 此次执行禁用应用的 LangSmith 跟踪，即使父环境已启用。
-- agent 状态使用进程内 LangGraph `InMemorySaver`，尚无跨进程恢复或原始消息归档。
+- agent 状态使用进程内 LangGraph `InMemorySaver`。此 smoke 无跨进程恢复或原始消息归档；M1 产品另行实现两者。
 - `checked_add` 接受两个 ±1,000,000 范围内的严格整数，拒绝未知字段，结果也必须在该范围内。工具不访问文件、网络或 shell。
 
 服务适配器保留历史 assistant 消息中的 `reasoning_content`，并规范化空的 assistant 工具调用内容。这弥补了锁定集成版本的请求序列化行为，有请求载荷级回归测试覆盖。DeepSeek 的[思考模式指南](https://api-docs.deepseek.com/guides/thinking_mode/)规定携带工具请求的思考状态回传要求（核对于 2026-10-01）。
@@ -41,8 +41,6 @@ CLI 退出码：检查通过为 0，检查失败或执行、证据错误为 1，
 
 证据 schema 版本 1 包含 UTC 时间、Python 和包版本、服务、模型、模式、配置限制，以及每轮状态、耗时、模型响应次数、工具调用和结果、可用 token 用量、是否包含思考的布尔值、回答和验证结果。不包含思考原文或认证数据。token 用量来自服务元数据，不是精确价格或账单。
 
-## 计划中的配置
+## 其他应用配置
 
-设计提出的 128,000-token 输入预算、压缩阈值、月度费用范围，以及 Telegram、Tavily、PostgreSQL 和调度参数，都不是 M0 配置。此 CLI 不执行这些控制。见[架构](../design/architecture.zh-CN.md)与[里程碑](../development/milestones.zh-CN.md)。
-
-M1 已另行实现输入准入、费用预留、Telegram、Tavily 与 PostgreSQL，见 [M1 参考](telegram.zh-CN.md)。这些行为不适用于 `kestri smoke`。
+本文仅说明 `kestri smoke`。产品已实现输入预算、上下文压缩、费用预留，以及 Telegram、Tavily、PostgreSQL、任务调度与数据维护；这些控制不适用于 smoke。全部命令和配置类见 [CLI 与完整配置](cli.zh-CN.md)，模型适配与 smoke 证据格式见[模型与费用账本](../design/model-and-accounting.zh-CN.md)。

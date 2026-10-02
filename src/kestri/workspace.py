@@ -28,7 +28,9 @@ class Workspace:
                     except FileExistsError:
                         pass
                 run_fd = os.open(
-                    safe_id, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=root_fd
+                    safe_id,
+                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                    dir_fd=root_fd,
                 )
                 try:
                     yield run_fd

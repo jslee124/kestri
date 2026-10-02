@@ -7,17 +7,16 @@ import pytest
 
 from kestri.errors import PolicyDenied, ProviderFailure
 from kestri.http import post_json
-from kestri.telegram import DeliveryProblem, TelegramClient, authorized_message, command_for
+from kestri.telegram import (
+    DeliveryProblem,
+    TelegramClient,
+    authorized_message,
+    command_for,
+)
 from kestri.url_policy import PublicURLPolicy
 from kestri.workspace import Workspace
 
-
-async def public(host: str, port: int) -> list[str]:
-    return ["93.184.216.34"]
-
-
-async def private(host: str, port: int) -> list[str]:
-    return ["127.0.0.1"]
+from .helpers import resolve_public, telegram_update
 
 
 @pytest.mark.parametrize(
@@ -35,12 +34,20 @@ async def private(host: str, port: int) -> list[str]:
 )
 async def test_url_rejects_unsupported_targets_before_provider_work(url: str) -> None:
     with pytest.raises(PolicyDenied):
-        await PublicURLPolicy(public).validate(url)
+        await PublicURLPolicy(resolve_public).validate(url)
 
 
 @pytest.mark.parametrize(
     "ip",
-    ["127.0.0.1", "10.0.0.1", "169.254.169.254", "::1", "fc00::1", "::ffff:8.8.8.8", "0.0.0.0"],
+    [
+        "127.0.0.1",
+        "10.0.0.1",
+        "169.254.169.254",
+        "::1",
+        "fc00::1",
+        "::ffff:8.8.8.8",
+        "0.0.0.0",
+    ],
 )
 async def test_url_rejects_nonpublic_dns_and_address_forms(ip: str) -> None:
     async def resolve(host: str, port: int) -> list[str]:
@@ -52,7 +59,7 @@ async def test_url_rejects_nonpublic_dns_and_address_forms(ip: str) -> None:
 
 async def test_url_accepts_public_target_and_removes_fragment() -> None:
     assert (
-        await PublicURLPolicy(public).validate("https://example.com/page#part")
+        await PublicURLPolicy(resolve_public).validate("https://example.com/page#part")
         == "https://example.com/page"
     )
 
@@ -89,31 +96,17 @@ async def test_bounded_provider_json_read() -> None:
         )
     ) as client:
         with pytest.raises(ProviderFailure, match="ResponseTooLarge"):
-            await post_json(client, "https://provider.invalid", {}, max_bytes=100)
-
-
-def update(
-    text: str = "Research this",
-    user_id: int = 111,
-    chat_type: str = "private",
-    update_id: int = 1,
-    message_id: int = 1,
-    reply_to: int | None = None,
-) -> dict:
-    message = {
-        "message_id": message_id,
-        "text": text,
-        "from": {"id": user_id, "is_bot": False},
-        "chat": {"id": user_id, "type": chat_type},
-    }
-    if reply_to is not None:
-        message["reply_to_message"] = {"message_id": reply_to}
-    return {"update_id": update_id, "message": message}
+            await post_json(
+                client,
+                "https://provider.invalid",
+                {},
+                max_bytes=100,
+            )
 
 
 @pytest.mark.parametrize("user,chat", [(222, "private"), (111, "group"), (111, "channel")])
 def test_owner_and_private_chat_are_both_required(user: int, chat: str) -> None:
-    assert authorized_message(update(user_id=user, chat_type=chat), 111) is None
+    assert authorized_message(telegram_update(user_id=user, chat_type=chat), 111) is None
 
 
 async def test_telegram_rate_limit_is_known_rejection_and_timeout_is_uncertain() -> None:
@@ -205,7 +198,7 @@ async def test_native_menu_exposes_all_commands_to_owner_in_both_languages() -> 
             text = "/" + item["command"]
             assert item["description"]
             assert command_for(text) == item["command"]
-            assert authorized_message(update(text=text, user_id=222), 111) is None
+            assert authorized_message(telegram_update(text=text, user_id=222), 111) is None
     assert [payload["language_code"] for _, payload in requests[:2]] == ["", "zh"]
     assert requests[2] == (
         "setChatMenuButton",

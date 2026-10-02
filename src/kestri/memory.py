@@ -14,7 +14,11 @@ def memory_instruction(text: str) -> tuple[str, str] | None:
     match = re.match(r"^/(remember|correct|forget)(?:@[\w]+)?(?:\s+(.*))?$", text.strip(), re.S)
     if match:
         return match[1], (match[2] or "").strip()
-    for prefix, action in (("记住", "remember"), ("更正记忆", "correct"), ("忘记记忆", "forget")):
+    for prefix, action in (
+        ("记住", "remember"),
+        ("更正记忆", "correct"),
+        ("忘记记忆", "forget"),
+    ):
         if text.strip().startswith(prefix):
             return action, text.strip()[len(prefix) :].lstrip(" ：:")
     return None
@@ -54,7 +58,8 @@ async def listing(conn: Any, chat_id: int) -> str:
 
 class MemoryService:
     def __init__(self, store: Store, settings: ResearchSettings) -> None:
-        self.store, self.settings = store, settings
+        self.store = store
+        self.settings = settings
 
     async def apply(self, run: Row) -> str:
         instruction = memory_instruction(run["request"])
@@ -69,7 +74,8 @@ class MemoryService:
                 )
                 current = await (
                     await conn.execute(
-                        ("SELECT * FROM kestri.runs WHERE id=%s FOR UPDATE"), (run["id"],)
+                        ("SELECT * FROM kestri.runs WHERE id=%s FOR UPDATE"),
+                        (run["id"],),
                     )
                 ).fetchone()
                 if (
@@ -82,7 +88,8 @@ class MemoryService:
                     raise PolicyDenied("RunInactive")
                 prior = await (
                     await conn.execute(
-                        ("SELECT result FROM kestri.memory_changes WHERE run_id=%s"), (run["id"],)
+                        ("SELECT result FROM kestri.memory_changes WHERE run_id=%s"),
+                        (run["id"],),
                     )
                 ).fetchone()
                 if prior:
@@ -124,7 +131,13 @@ class MemoryService:
                         task_id, body = targets[0]["id"], scoped[2]
                     elif body.startswith("task "):
                         return "未保存。任务范围格式：/remember task 任务ID 内容。"
-                    notice, changed = await self._insert(conn, run, body, task_id, expires=expires)
+                    notice, changed = await self._insert(
+                        conn,
+                        run,
+                        body,
+                        task_id,
+                        expires=expires,
+                    )
                 else:
                     parts = body.split(maxsplit=1)
                     if re.fullmatch(r"[0-9a-f-]{8,36}", parts[0]):

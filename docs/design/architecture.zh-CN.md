@@ -1,111 +1,155 @@
-# 架构设计
+# 已实现的软件架构
 
-[English](architecture.md) · [文档](../README.zh-CN.md)
+[English](architecture.md) · [文档指南](../README.zh-CN.md)
 
-更新日期：2026-10-02。状态：设计草案；主要技术和边界决策已确认。M1 已实现前台研究、受控信息工具、原始记录、checkpoint、发送及 Compose。M2 已实现持久化任务约定与独立后台调度；M3 已实现显式个人记忆与预算内上下文压缩，见[记忆/上下文参考](../reference/memory-and-context.zh-CN.md)。准确实现行为见 [M1 参考](../reference/telegram.zh-CN.md)和[验证记录](../development/m1-validation.zh-CN.md)。
+更新：2026-10-02。状态：依据源码描述已实现的第一版。下方数值是仓库默认值，不是服务商保证或性能测量。历史决策和验收证据继续保留在 ADR 与开发记录中。
 
-## 系统边界
+逐模块/方法职责及各专题的详细入口见[实现阅读地图](../development/implementation-guide.zh-CN.md)。
 
-Kestri 通过 Docker Compose 在本地运行应用与 PostgreSQL。Telegram 是首个远程交互入口。DeepSeek 执行模型推理，Tavily 提供搜索与提取。开发时可以直接运行 Python，但不能把这种模式当作容器隔离有效的证明。
+## 系统与部署边界
+
+Kestri 是一个本地异步 Python 应用和一个 PostgreSQL 服务。Telegram 提供主人界面，DeepSeek 提供模型推理，Tavily 提供公共搜索与提取。LangChain `create_agent` 构建模型/工具图，LangGraph checkpoint saver 保存图执行状态。业务授权、调度、取消、计费和投递仍由 Kestri 负责。
 
 ```mermaid
 flowchart LR
-    U[用户] <--> T[Telegram]
-    T <--> A[Telegram 适配器]
-    A --> C[应用控制器]
-    S[本地调度器] --> C
-    C <--> R[LangChain Agent / LangGraph]
-    R <--> M[DeepSeek 官方 API]
-    R --> P[工具策略与分发]
-    P --> W[受控信息工具]
-    W <--> V[Tavily]
-    P --> F[限定范围的工作区工具]
-    F <--> D[专用工作区]
-    C <--> DB[(本地 PostgreSQL)]
-    R <--> DB
+    Owner[主人私聊] <--> Telegram[Telegram Bot API]
+    Telegram <--> Adapter[TelegramClient]
+    Adapter <--> App[Application 循环]
+    App --> Research[ResearchAgent 路由]
+    Research --> Memory[MemoryService]
+    Research --> TaskAgent[TaskAgent 提案]
+    TaskAgent --> Tasks[TaskService]
+    App --> Tasks
+    Research --> Graph[研究图与中间件]
+    TaskAgent --> Model[DeepSeekChatModel]
+    Graph --> Model
+    Graph --> Tools[WebTools]
+    Tools --> Tavily[Tavily API]
+    Tools --> URL[PublicURLPolicy]
+    Tools --> Files[Workspace 证据正文]
+    App --> Store[Store 业务事务]
+    Memory --> Store
+    Tasks --> Store
+    Tools --> Store
+    Graph --> Saver[AsyncPostgresSaver]
+    Store --> DB[(PostgreSQL kestri schema)]
+    Saver --> Checkpoints[(PostgreSQL public checkpoints)]
+    App --> Data[DataService 维护]
+    Data --> Store
+    Data --> Files
 ```
 
-图示表达职责，不表示独立进程或权限授予。模型的工具请求必须经过应用策略检查。调度器触发已保存的约定，模型不能认定时间事件授予了新权限。
+方框表示职责，不是独立部署服务。当前没有公开应用 HTTP 服务、shell 执行器、自主安装工具、向量数据库或分布式任务队列。
 
-## 职责
+[compose.yaml](../../compose.yaml) 将 PostgreSQL 放在不暴露主机端口的内部数据库网络。应用加入该网络和出站网络，挂载可写工作区，根文件系统只读，`/tmp` 临时可写，移除 capabilities，通过 [Dockerfile](../../Dockerfile) 以 UID/GID 10001 运行。两个服务都设资源限制。应用健康检查执行 `kestri data status`：检查本地数据库访问，不代表 Telegram 轮询、模型推理或完整投递成功。直接运行 Python 不提供容器边界。
 
-| 组件 | 职责 |
-| --- | --- |
-| Telegram 适配器 | 用户与聊天授权、入站更新身份、持久接受、消息和回复关联、状态与结果发送 |
-| 应用控制器 | 前台顺序、执行生命周期、取消、权限范围、用量统计与发送协调 |
-| Agent runtime | 模型与工具循环、中间件、主对话连续性和独立任务上下文 |
-| 工具策略与分发 | 在产生影响前检查身份、任务范围、参数、路径和 URL、取消与预算 |
-| 信息工具 | 通过可替换的服务适配器搜索和提取，保留来源、限制输出并保存证据 |
-| 记忆服务 | 显式写入与建议、范围和来源、纠正删除、相关检索 |
-| 任务服务与调度器 | 持久化约定、判断到期和补跑、避免本地重复启动、暂停恢复删除 |
-| 持久化 | 检查点、原始消息归档、记忆、任务、执行、发送状态与证据元数据 |
-| 工作区服务 | 任务范围内的证据和成果文件，不允许任意本机路径访问 |
+## 入口与模块职责
 
-以上是逻辑边界，初始应用无需拆成一组微服务。包采用 `src/kestri`。M1 分离 `telegram.py`、`application.py`、`research.py`、`web.py`、`url_policy.py`、`workspace.py`、`budget.py` 和 `store.py`，表结构位于 `sql/001_initial.sql`。M2 增加 `task_intent.py`、`task_agent.py`、`tasks.py`、`schedule.py` 与 `sql/002_tasks.sql`。调度采用本地异步循环及 PostgreSQL 权威状态，见 [ADR-0004](../decisions/0004-recurring-task-execution.zh-CN.md)和[任务参考](../reference/tasks.zh-CN.md)。M3 增加 `memory.py`、`context.py` 与 `sql/003_memory_context.sql`；[ADR-0005](../decisions/0005-explicit-memory-and-revocable-context.zh-CN.md)说明上下文失效和摘要扩展。
+先读 [cli.py](../../src/kestri/cli.py)，再沿对应路线阅读。`runtime.py` 主要是最小集成会话；产品执行路线经过 `application.py` 和 `research.py`。
 
-LangChain 提供基于 LangGraph 的 agent harness，后者提供持久化与执行控制基础能力。Kestri 仍须实现应用权限、任务生命周期与发送行为。见[官方框架概览](https://docs.langchain.com/oss/python/langchain/overview)和 [ADR-0001](../decisions/0001-agent-stack.zh-CN.md)。
-
-## 执行流程
-
-### 前台研究
-
-1. 对 Telegram 更新授权，依据稳定身份持久接受后，再确认已消费。
-2. 将回复关联到已知消息或执行，为已接受的前台工作排序。
-3. 从最近完成的 checkpoint 初始化新执行线程，在预算内包含所引用的结果和证据。将当前有效记忆注入模型请求，在共享预算内压缩较早状态。
-4. 运行 agent；每次工具操作都必须先检查并限制范围。
-5. 保存结果和证据引用，协调发送，保留消息与执行关联。
-
-普通对话可以不调用网页工具。耗时查询提供简短状态，用户可以请求取消。M1 使用一个研究 worker、八个请求的队列上限及独立轮询/发送循环。`/stop` 与回复控制见 M1 参考。
-
-### 持续简报
-
-1. 持久化用户约定、明确时区、内容要求、补跑规则与启用或暂停状态。
-2. 在到期或符合条件的恢复事件中，通过持久化任务和执行状态认领一次允许的执行。
-3. 用当前任务约定启动独立 agent 上下文，不使用全部 Telegram 历史；M3 提供有效全局/任务记忆，不改变保存的约定。
-4. 生成并持久化结果，发送流程消费这个保存的结果。
-5. 记录发送成功、失败或不确定。传输重试无需重复研究。
-
-暂停影响后续启动；取消针对单次执行。后台工作采用独立且有边界的并发，避免占用全部前台处理能力。具体值与重启时在途工作的处理，在交付前必须验证。
-
-### 记忆与追问
-
-检查显式记忆指令，连同来源与范围保存并回执。建议偏好等待同意。纠正取代旧记录；忘记后，从检索和重新提取中排除。
-
-回复简报时，将对应结果和必要证据检索到前台上下文，不合并全部后台执行历史。这样可以在一个聊天中说“展开第二条”，而不产生无限增长的模型对话。
-
-## 状态边界
-
-| 状态 | 用途 |
-| --- | --- |
-| 原始消息 | 入站和出站原始内容与关联元数据，受保留策略约束 |
-| 检查点 | LangGraph 执行与对话状态，包括压缩历史 |
-| 个人记忆 | 有来源和删除状态的持久用户事实、偏好及其范围 |
-| 任务约定 | 明确用户授权、时间安排、时区、内容要求与生命周期 |
-| 执行与发送 | 已认领的计划执行、结果、用量、保存成果与发送状态 |
-| 证据与成果 | 获取材料、来源、截断元数据与生成文件 |
-
-LangGraph 区分线程级检查点与跨线程 store。两者都不能代替独立原始消息归档或结构化业务状态。见[官方持久化文档](https://docs.langchain.com/oss/python/langgraph/persistence)和 [ADR-0003](../decisions/0003-persistence-and-state-separation.zh-CN.md)。
-
-## 外部服务边界
-
-提供 Kestri 自有搜索与提取操作，不把服务专属 API 暴露到任务定义中。Tavily 提供独立的 [Search](https://docs.tavily.com/documentation/api-reference/endpoint/search) 和 [Extract](https://docs.tavily.com/documentation/api-reference/endpoint/extract) 接口；搜索发现候选来源，提取提供证据材料。
-
-应用控制允许的查询与 URL、服务超时、元数据和模型可见输出。搜索、提取适配器不得让任意网络访问或服务生成的总结成为权威指令。[安全设计](security-and-data.zh-CN.md)定义具体边界。
-
-已选择 DeepSeek 官方 API。目前建议的模型标识符是 `deepseek-flash`；M0 的两轮工具流程已在两种思考模式下真实验证，见 [M0 证据](../development/m0-validation.zh-CN.md)。其他流程仍需单独验证。官方文档标明 1M 上下文，这是服务容量，不是 Kestri 的活跃请求预算。服务信息核对于 2026-09-30，之后可能变化。见 [DeepSeek 文档](https://api-docs.deepseek.com/quick_start/pricing/)。
-
-## 可调初始默认值
-
-以下数值来自设计讨论，是起点，不是性能测试结果或不可变需求。已实现的 M0 设置见[配置参考](../reference/configuration.zh-CN.md)；M1 实现输入准入与本地费用预算，准确行为见 [M1 参考](../reference/telegram.zh-CN.md)。M2 实现六小时合并补跑；M3 已实现有界摘要与范围记忆。
-
-| 配置 | 初始值 | 含义 |
+| 模块 | 主要接口 | 职责 |
 | --- | --- | --- |
-| 模型标识符 | `deepseek-flash` | M0 默认型号，其模型和工具流程已验证 |
-| 活跃输入预算 | 128,000 tokens | 包括系统提示词、工具定义、记忆、摘要、消息和当前工具材料；另留输出空间 |
-| 压缩触发点 | 输入预算约 70% | 计入固定开销，不假定中间件统计所有请求组成部分 |
-| 实验预算 | 每月 20 美元 | 模型和搜索的本地估算费用范围，不是账单预测或服务侧硬限制 |
-| 简报补跑窗口 | 6 小时 | 任务级默认值；合并错过执行，窗口外跳过 |
+| [cli.py](../../src/kestri/cli.py) | `main`、`run_data` | 解析 `smoke`、`telegram`、`telegram-id` 和本地 `data` 命令；选择所需配置 |
+| [settings.py](../../src/kestri/settings.py) | `Settings`、`ResearchSettings`、`DataSettings`、`TelegramCredentials` | 分别校验运行、产品、维护和引导配置 |
+| [runtime.py](../../src/kestri/runtime.py)、[models.py](../../src/kestri/models.py) | `build_model`、`AgentSession`、`DeepSeekChatModel` | 官方端点模型构造、内存 smoke 图、推理字段序列化适配 |
+| [telegram.py](../../src/kestri/telegram.py) | `TelegramClient`、`authorized_message`、`command_for` | Bot API/菜单、主人与私聊检查、命令识别、发送不确定性 |
+| [application.py](../../src/kestri/application.py) | `run_telegram`、`Application` | 构造依赖；运行轮询、执行、调度、投递与维护 |
+| [research.py](../../src/kestri/research.py) | `ResearchAgent.run`、`BoundsMiddleware` | 路由记忆/任务控制；否则构建研究图、执行限制并保存结果 |
+| [context.py](../../src/kestri/context.py)、[memory.py](../../src/kestri/memory.py) | `ContextSummary`、`MemoryContext`、`MemoryService` | 显式事实、检索、代次失效、临时模型注入、有界压缩 |
+| [task_intent.py](../../src/kestri/task_intent.py)、[task_agent.py](../../src/kestri/task_agent.py) | `task_intent`、`TaskAgent.run` | 识别直接持续任务意图；无研究工具地提取一个结构化提案 |
+| [tasks.py](../../src/kestri/tasks.py)、[schedule.py](../../src/kestri/schedule.py) | `TaskService.apply`、`tick`、occurrence 函数 | 校验/保存约定；每日/每周时区调度、错过策略与版本 |
+| [web.py](../../src/kestri/web.py)、[url_policy.py](../../src/kestri/url_policy.py) | `WebTools`、`PublicURLPolicy` | 公共信息工具、来源记录、URL 检查、有界模型输出 |
+| [workspace.py](../../src/kestri/workspace.py)、[http.py](../../src/kestri/http.py) | `Workspace`、`post_json` | 标识限定的证据文件与有界 HTTP JSON 读取 |
+| [budget.py](../../src/kestri/budget.py)、[store.py](../../src/kestri/store.py) | `RunControl`、`Budget`、`Store` | 撤销检查、保守计费、事务化业务状态 |
+| [data.py](../../src/kestri/data.py)、[redaction.py](../../src/kestri/redaction.py) | `DataService`、`Redactor` | 操作员备份/恢复/保留与本地内容脱敏 |
 
-M3 扩展 LangChain 的[摘要中间件](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization)，加入预算内模型调用与历史数据标记。[M3 证据](../development/m3-validation.zh-CN.md)覆盖强制压缩、纠正保留、原始归档与真实 DeepSeek 行为。请求估算仍是保守值，摘要质量仍依赖模型。
+model、saver、HTTP client、store、workspace 和可选 URL resolver 都通过构造参数传入。测试注入模拟传输和确定性响应，同时执行真实图。`Store` 维护 SQL 事务，业务服务实施领域策略。当前是模块化单体，没有 ORM 或额外的通用 repository 接口。
 
-任务时区没有隐含默认值：使用用户明确配置的时区，否则先澄清。M0 在配置参考中定义模型、工具、输出和时间上限及锁定依赖。前台并发、费用预留与发送不确定性在 M1 已实现。M2 实现一项前台和一项后台并行执行，调度每五秒检查一次持久化约定。M4 实现保留清理与保守备份恢复，见[数据参考](../reference/data-lifecycle.zh-CN.md)。第一版不选择自动模型路由或托管 agent server。
+## 启动与并发
+
+`run_telegram()` 打开业务存储/迁移，创建独立 Telegram/DNS/Tavily HTTP client，读取 bot 身份，拒绝已配置 webhook，取得 bot advisory 租约，绑定数据库身份，执行 checkpoint saver setup，并配置主人菜单。随后构造 `ResearchAgent` 和 `Application`。
+
+`serve()` 先处理恢复标记，再恢复中断记录，然后在一个 `asyncio.TaskGroup` 中启动六个任务：
+
+| 循环 | 职责 | 协调方式 |
+| --- | --- | --- |
+| `polling()` | 长轮询消息，授权/接收，推进持久 offset | 模型执行期间继续；本地处理限流/网络等待 |
+| `working()` | 每次领取一个非后台执行 | 前台会话、任务控制和记忆控制共享 worker |
+| `working(background=True)` | 每次领取一个持续任务 occurrence | 与前台 worker 独立 |
+| `scheduling()` | 将到期约定转成后台 run | 默认五秒 tick；数据库仍是调度权威 |
+| `delivering()` | 发送已保存 outbox 正文 | 有序队列；每次尝试后暂停 1.1 秒 |
+| `DataService.maintaining()` | 应用本地保留策略 | 默认每小时；执行或发送忙时延后 |
+
+`wake_run` 和 `wake_delivery` 只是进程内唤醒，不是持久队列。空闲 worker 也会在一秒后重查；丢失唤醒不丢失数据库工作。默认前台/后台队列上限都为 8，active/paused 任务数量默认最多 16。并发为一个前台和一个后台 worker，不是每个任务独立 worker。TaskGroup 子任务未处理异常会结束其他循环。SIGTERM 取消应用；进程监督使用 Compose restart 策略。
+
+## 前台请求完整链路
+
+```mermaid
+sequenceDiagram
+    participant T as Telegram
+    participant A as Application
+    participant S as Store
+    participant R as ResearchAgent
+    participant G as Agent graph
+    participant D as Delivery loop
+    T->>A: update 与可选回复 ID
+    A->>A: 主人/私聊与命令检查
+    A->>S: 接收事务
+    S-->>A: 去重执行与确认已保存
+    A->>S: 推进 update offset
+    A->>S: 领取最早前台工作
+    S-->>A: run、source_thread、memory_epoch
+    A->>R: run 与 RunControl
+    R->>G: 初始化上次成功消息，加入当前请求
+    G->>G: 压缩、注入记忆、校验模型/工具边界
+    G-->>R: 最终答案或受控失败
+    R->>S: 完成事务
+    S-->>R: 结果、合格对话头与 outbox 已提交
+    D->>S: 领取已保存投递
+    D->>T: 发送已保存正文
+    D->>S: 记录成功、可重试失败或不确定
+```
+
+未授权消息在个人状态写入前拒绝。重复的授权更新不会再创建 run。状态命令在接收事务中回答，普通输入创建 run。直接记忆指令优先于持续任务意图；转发/外部回复不能成为记忆或任务授权。
+
+领取时，前台 run 获得最近成功对话头和当前 memory epoch。研究为本次 run 创建新图 thread，按需复制旧消息，再加入新请求。回复还可插入被引用的已完成结果和最多 20 个证据引用，不会合并整个后台图。
+
+图交替执行模型决策和固定工具。`ResearchAgent` 要求最终非空 `AIMessage`，添加应用生成的来源状态页脚，限制显示正文，脱敏配置秘密，然后调用 `Store.finish()`。该事务保存结果、分类未结算费用、仅对成功前台推进对话头，并写入结果分块。执行期间证据可能已经保存。图 checkpoint 写入与业务完成是不同提交点。
+
+## 任务与记忆控制路线
+
+任务请求在研究前识别。`TaskAgent` 只使用当前请求、固定提取指令和配置的主人时区，不提供研究工具或旧对话；`ToolStrategy(TaskPlan)` 在最多两次模型调用内生成提案。`TaskService.apply()` 再检查直接意图、动作、来自主人原文的内容、明确时间/时区、目标关联和执行状态，事务化提交约定与 `task_changes` 回执。模型提案不是授权。
+
+调度器锁定主人/任务状态，查找最近有效的每日/每周 occurrence，在六小时内合并错过次数，跳过过期 occurrence，写入唯一 `(task_id, scheduled_for)` run。领取时再次检查任务状态/版本及补跑期限。后台研究没有前台 source thread，使用已保存约定和合格全局/任务记忆。暂停/删除任务阻止后续启动；已开始执行需用 `/stop` 停止。
+
+记忆命令不调用模型。`MemoryService.apply()` 校验原样内容和明确目标，记录来源，提交 `memory_changes` 回执。成功变化清空对话头并递增 `memory_epoch`；正在执行的旧上下文不能发起后续计费操作或重新推进对话头。详见[上下文管理](context-management.zh-CN.md)。
+
+## 完成、重试与恢复
+
+| 情况 | 已实现行为 |
+| --- | --- |
+| 前台推理/工具失败 | 保存安全终态，不自动重新研究；保留上次成功对话头 |
+| 指定的后台暂时性服务失败 | 任务仍有效且版本相同时，30 秒后最多再尝试一次；新图 thread，共用 run/费用账本 |
+| `/stop` | 保存取消并取消对应 asyncio task；已提交远端请求仍可能完成或计费 |
+| 任务/记忆变更提交但最终回复未完成 | 用 run 变更回执报告已提交行为；重启不重新应用 |
+| 研究运行时进程停止 | 恢复标记 `interrupted`；不自动续跑 checkpoint 或研究 |
+| 已保存的 pending 投递 | 使用已保存正文继续，不重新生成模型结果 |
+| 已知投递失败 | 在尝试上限内重试已保存内容；run 成功状态独立 |
+| 响应或崩溃导致发送结果未知 | 标记 `uncertain`；不自动重复发送可能已送达的消息 |
+| 备份恢复 | 空目标导入；隔离记忆、暂停约定、重置 checkpoint、停止未完成工作、抑制陈旧待处理更新 |
+
+PostgreSQL、Telegram、模型 API、Tavily 和磁盘之间没有统一事务。本地去重和保守恢复缩小风险，不能证明远端副作用恰好一次或图执行无损恢复。
+
+## 资源、数据与服务边界
+
+研究默认限制：8 次模型调用、8 次工具调用、120 秒执行超时、30 秒服务超时、4096 输出 token、128,000 本地输入准入单位、12,000 字符工具输出与回复正文。摘要单独计调用次数，但共享执行超时和费用。每次 USD 0.50、每月 USD 20 是本地配置的费用估算，不是当前服务商报价或服务商强制限额。准确配置见 [settings.py](../../src/kestri/settings.py) 和参考文档。
+
+`build_model()` 固定 DeepSeek API base URL，禁用 SDK 重试。`DeepSeekChatModel` 在 assistant 消息重放时保留 `reasoning_content`；其 SDK 受保护接口有回归测试。研究/摘要/任务 agent 关闭云 tracing。Tavily 凭据位于注入的 HTTP client，不进入工具参数。脱敏后本地行和文件仍可能含私人内容；逻辑备份排除 checkpoint 推理字段。
+
+字段和事务见[数据库](../reference/database.zh-CN.md)，提示组装见[上下文管理](context-management.zh-CN.md)，接口和检查见[工具设计](tools.zh-CN.md)，策略见[安全与数据](security-and-data.zh-CN.md)。依赖升级需要重新校验默认行为和框架受保护接口。
+
+## 验证与扩展位置
+
+[研究集成测试](../../tests/test_research_integration.py)覆盖接收、预算、checkpoint、取消、投递和恢复；[任务测试](../../tests/test_tasks_integration.py)覆盖约定/调度；[记忆/上下文测试](../../tests/test_memory_context_integration.py)覆盖压缩/撤销；[数据生命周期测试](../../tests/test_data_lifecycle_integration.py)覆盖备份/恢复/清理。[运行检查](../how-to/run-checks.zh-CN.md)区分离线/数据库检查、真实服务与远端 CI。
+
+替换服务商从 `build_model()` 或 `WebTools` 的固定端点入手；协议兼容本身不证明行为等价。添加工具遵循工具设计的 schema/策略/计费/证据规则。修改状态需同时添加迁移和备份兼容性决策。未来渠道应先授权输入，再调用共享业务服务，不能绕过业务策略。这些是维护方向，不是已实现的插件或多渠道 API。

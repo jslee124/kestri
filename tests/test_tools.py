@@ -12,7 +12,13 @@ async def test_addition_has_no_arbitrary_execution() -> None:
 
 async def test_out_of_scope_inputs_and_total_are_rejected() -> None:
     with pytest.raises(ValidationError):
-        await checked_add.ainvoke({"left": 1, "right": 2, "path": "/etc/passwd"})
+        await checked_add.ainvoke(
+            {
+                "left": 1,
+                "right": 2,
+                "path": "/etc/passwd",
+            }
+        )
     with pytest.raises(ValidationError):
         await checked_add.ainvoke({"left": True, "right": 2})
     with pytest.raises(ValidationError):

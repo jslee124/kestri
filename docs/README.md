@@ -30,19 +30,31 @@ Updated: 2026-10-02. Status: M0, M1, M2, M3, and M4 complete first-version deliv
 - [M0 configuration](reference/configuration.md): exact implemented settings and results.
 - [M0 validation record](development/m0-validation.md): evidence and known limitations.
 
+## Study the implementation
+
+Start with the [implementation guide](development/implementation-guide.md): every Python module and function/method entry point, SQL, engineering configuration, and test responsibility, with links to the owning detailed document.
+
+- [CLI and complete configuration](reference/cli.md): commands, arguments, exit codes, settings classes, and defaults.
+- [Execution and delivery](design/execution-and-delivery.md): input authorization, archiving, queues, cancellation, recovery, and outbox states.
+- [Tasks and scheduling](design/task-scheduling.md): intent detection, proposal validation, mutation transactions, timezones/DST, catch-up, and retries.
+- [Model and accounting](design/model-and-accounting.md): request adaptation, middleware, usage, reservation/settlement, and error classification.
+- [Data maintenance internals](design/data-maintenance.md): locks, snapshot format, validation, restore transformations, cleanup, and failure boundaries.
+
 ## Read the design
 
 | Document | Purpose | Status |
 | --- | --- | --- |
 | [Product](design/product.md) | Positioning, user journeys, and first-version scope | Accepted product direction |
 | [Requirements](design/requirements.md) | Identified requirements and acceptance criteria | Accepted first-version specification |
-| [Architecture](design/architecture.md) | Responsibilities, boundaries, and execution flows | First-version architecture |
+| [Architecture](design/architecture.md) | Deployment, module map, concurrency, complete request flows, and recovery | Implemented software architecture |
+| [Database](reference/database.md) | Tables, fields, relationships, indexes, transactions, and checkpoint storage | Implemented schema reference |
+| [Context management](design/context-management.md) | Run seeding, prompt composition, memory selection, compression, and epoch revocation | Implemented context design |
+| [Tool design](design/tools.md) | Capability sets, schemas, adapters, URL/file boundaries, evidence, and accounting | Implemented tool design |
 | [Security and data](design/security-and-data.md) | Permissions, isolation, memory, context, and data lifecycle | Implemented first-version boundary design |
 | [Runnable milestones](development/milestones.md) | Runnable increments, exit criteria, requirement coverage, and evidence | M0, M1, M2, M3, and M4 verified |
 | [ADR-0001](decisions/0001-agent-stack.md) | Python, LangChain Agent, and DeepSeek official API | Accepted |
 | [ADR-0002](decisions/0002-local-deployment-and-tool-boundaries.md) | Local deployment and controlled tools | Accepted |
 | [ADR-0003](decisions/0003-persistence-and-state-separation.md) | PostgreSQL and separation of state categories | Accepted |
-
 | [ADR-0004](decisions/0004-recurring-task-execution.md) | Durable agreements, local scheduling, and independent execution | Accepted |
 | [ADR-0005](decisions/0005-explicit-memory-and-revocable-context.md) | Explicit memory, epoch invalidation, and budgeted summaries | Accepted |
 
@@ -57,7 +69,7 @@ Kestri uses [Diátaxis](https://diataxis.fr/) to distinguish learning tutorials,
 | Tutorials | Learn by completing a guided experience | First agent run, Telegram research, recurring briefing, and personal memory available |
 | How-to guides | Complete a specific task | Development checks, operations, and backup/restore available |
 | Reference | Look up exact interfaces, configuration, and behavior | M0 configuration, M1 Telegram, M2 tasks, and M3 memory/context, and M4 data reference available |
-| Explanation | Understand concepts, mechanisms, and tradeoffs | Current design documents provide design-stage explanations |
+| Explanation | Understand concepts, mechanisms, and tradeoffs | Source-grounded architecture, context management, and tool design available |
 | Design | Review intended product behavior and system boundaries | Available above |
 | Development | Follow runnable delivery increments and verification progress | Milestones, M0, M1, M2, M3, and M4 evidence available |
 | Decisions | Understand why a major choice was made | Available above |
@@ -71,7 +83,7 @@ Do not present a proposal as reference documentation for an implemented feature.
 - Update both versions in the same change. Preserve requirement IDs, decision IDs, technical identifiers, and the meaning of dates and statuses.
 - If a translation diverges, correct the pair; do not retain different requirements in different languages.
 - Keep headings, scope, tables, and acceptance cases aligned. Translate prose, while preserving exact API identifiers and paths when relevant.
-- Store each normative fact in one designated document and link to it elsewhere. Product defines scope, requirements define acceptance, design documents define proposed mechanisms and defaults, and milestones define delivery order and evidence status.
+- Store each normative fact in one designated document and link to it elsewhere. Product defines scope, requirements define acceptance, design documents explain mechanisms and defaults with explicit implementation status, and milestones define delivery order and evidence status.
 - Label confirmed decisions, adjustable defaults, open questions, implemented behavior, and verification evidence distinctly.
 - Cite primary sources for external technical capabilities and record when they were checked. Recheck drifting provider facts during implementation.
 

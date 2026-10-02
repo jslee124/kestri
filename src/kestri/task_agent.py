@@ -35,7 +35,9 @@ validates and persists the agreement after this proposal. Output TaskPlan using 
 
 class TaskAgent:
     def __init__(self, settings: ResearchSettings, store: Store, model: BaseChatModel) -> None:
-        self.settings, self.store, self.model = settings, store, model
+        self.settings = settings
+        self.store = store
+        self.model = model
 
     async def run(self, row: Row, control: RunControl) -> None:
         from kestri.research import BoundsMiddleware
@@ -43,7 +45,10 @@ class TaskAgent:
         intent = task_intent(row["request"], task_reference=row["reply_to"] is not None)
         if intent is None:
             await self.store.finish(
-                row["id"], "failed", "未识别明确的任务指令，请重新说明。", "TaskIntentUnavailable"
+                row["id"],
+                "failed",
+                "未识别明确的任务指令，请重新说明。",
+                "TaskIntentUnavailable",
             )
             return
         agent = create_agent(
@@ -72,7 +77,12 @@ class TaskAgent:
                     )
             await self.store.finish(row["id"], "completed", answer)
         except asyncio.CancelledError:
-            await self.store.finish(row["id"], "cancelled", "任务指令已停止。", "Cancelled")
+            await self.store.finish(
+                row["id"],
+                "cancelled",
+                "任务指令已停止。",
+                "Cancelled",
+            )
         except Exception as error:
             # Recover the authoritative agreement if finalization failed after commit.
             change = await self.store.one(

@@ -4,6 +4,8 @@
 
 更新：2026-10-02。
 
+快照字段、校验顺序、恢复转换、清理算法与故障边界见[数据维护内部实现](../design/data-maintenance.zh-CN.md)。
+
 ## 本地维护接口
 
 `kestri data` 使用 `DATABASE_URL`、`KESTRI_TELEGRAM_OWNER_ID` 和 `KESTRI_WORKSPACE_DIR`，不需要模型服务密钥。这些是本地维护命令，不作为模型工具或 Telegram 指令提供。备份、导出、恢复和手动维护前停止应用。同一 bot 的数据库租约会拒绝运行中的维护操作；状态查询仍可在运行时使用。

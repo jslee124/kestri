@@ -26,7 +26,8 @@ class ContextSummary(SummarizationMiddleware[Any]):
     def __init__(
         self, model: BaseChatModel, budget: Budget, tools: list[Any], overhead: str
     ) -> None:
-        self.budget, self.calls = budget, 0
+        self.budget = budget
+        self.calls = 0
         self.model = model
         super().__init__(
             model,
@@ -58,7 +59,9 @@ class ContextSummary(SummarizationMiddleware[Any]):
             SystemMessage(content=SUMMARY_PROMPT),
             HumanMessage(
                 content=json.dumps(
-                    [m.model_dump() for m in messages_to_summarize], ensure_ascii=False, default=str
+                    [m.model_dump() for m in messages_to_summarize],
+                    ensure_ascii=False,
+                    default=str,
                 )
             ),
         ]
@@ -66,7 +69,8 @@ class ContextSummary(SummarizationMiddleware[Any]):
         if size > self.budget.settings.input_token_budget:
             raise ContextExceeded("SummaryInputAdmissionLimit")
         reservation = await self.budget.reserve(
-            "summary", self.budget.model_cost(size, self.budget.settings.max_output_tokens)
+            "summary",
+            self.budget.model_cost(size, self.budget.settings.max_output_tokens),
         )
         response = await self.model.ainvoke(prompt)
         usage = response.usage_metadata
@@ -102,7 +106,8 @@ class ContextSummary(SummarizationMiddleware[Any]):
 
 class MemoryContext(AgentMiddleware[Any, Any]):
     def __init__(self, service: MemoryService, run: Row) -> None:
-        self.service, self.run = service, run
+        self.service = service
+        self.run = run
 
     async def awrap_model_call(
         self,
@@ -111,13 +116,19 @@ class MemoryContext(AgentMiddleware[Any, Any]):
     ) -> ModelResponse[Any]:
         await self.service.expire(self.run["chat_id"])
         conversation = await self.service.store.one(
-            "SELECT memory_epoch FROM kestri.conversations WHERE chat_id=%s", (self.run["chat_id"],)
+            "SELECT memory_epoch FROM kestri.conversations WHERE chat_id=%s",
+            (self.run["chat_id"],),
         )
         if conversation and conversation["memory_epoch"] != self.run.get("memory_epoch", 0):
             raise PolicyDenied("MemoryContextChanged")
         memories = await self.service.retrieve(self.run)
         data = [
-            {"id": str(m["id"]), "scope": m["scope"], "content": m["content"]} for m in memories
+            {
+                "id": str(m["id"]),
+                "scope": m["scope"],
+                "content": m["content"],
+            }
+            for m in memories
         ]
         # Ephemeral injection: never store selected memories in graph messages or summaries.
         prompt = request.system_message.text if request.system_message else ""

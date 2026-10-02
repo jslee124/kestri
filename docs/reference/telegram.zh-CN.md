@@ -4,6 +4,8 @@
 
 更新日期：2026-10-02。范围：已实现的 `kestri telegram` 与 `kestri telegram-id`。完整真实验收状态见 [M1 记录](../development/m1-validation.zh-CN.md)。
 
+完整执行/投递状态机见[执行与投递](../design/execution-and-delivery.zh-CN.md)，能力边界见[工具设计](../design/tools.zh-CN.md)，费用计算见[模型与费用账本](../design/model-and-accounting.zh-CN.md)。
+
 ## 配置
 
 进程环境覆盖当前工作目录 `.env`，名称不区分大小写，未知键忽略，无效值阻止启动。凭据属于应用配置，不进入模型提示词。`kestri telegram-id` 仅需 `TELEGRAM_BOT_TOKEN`。
@@ -28,7 +30,7 @@
 | `KESTRI_MAX_REPLY_CHARS` | `12000` | 1000–16000，截断提示和分块前的显示目标 |
 | `KESTRI_WORKSPACE_DIR` | `.kestri/workspace` | 操作者配置的证据根目录，Compose 使用 `/workspace` |
 | `KESTRI_URL_DNS_MODE` | `system` | `system` 或 `cloudflare`，公开 URL 的 DNS 核验方式 |
-| `KESTRI_QUEUE_LIMIT` | `8` | 排队加进行中研究请求 1–32 |
+| `KESTRI_QUEUE_LIMIT` | `8` | 排队加运行中的非后台请求 1–32（包括控制请求） |
 | `KESTRI_MONTHLY_BUDGET_USD` | `20` | 大于 0、不超过 1000，UTC 月本地预算 |
 | `KESTRI_RUN_BUDGET_USD` | `0.50` | 大于 0、不超过 20，单次本地预算 |
 | `KESTRI_INPUT_USD_PER_MILLION` | `0.30` | 大于 0、不超过 100，输入估算费率 |
@@ -49,7 +51,7 @@
 | `/stop`、完整的 `stop` / `停止` / `停止当前执行` / `停止当前任务` / `停下` | 停止前台执行，回复则选择相应已知的排队或运行执行 |
 | `/status`、`/runs` | 最近五次执行、状态、证据/用量数量、发送问题与安全错误类型 |
 | `/usage` | UTC 月已记录估算及未完成/未知预留，不是服务商账单 |
-| `/new` | 无排队或运行工作时清空提交上下文，保留记录 |
+| `/new` | 无排队或运行的非后台工作时清空提交上下文，保留记录 |
 | `/memory`、`/remember`、`/correct`、`/forget`、`/history` | 确定性记忆控制与只读归档，见 [M3 参考](memory-and-context.zh-CN.md) |
 | 其他斜杠命令 | 不支持提示，不调用模型 |
 
@@ -59,7 +61,7 @@
 
 `search_web(query, topic)` 接受严格的 1–500 字符查询，以及 `general` 或 `news`。使用 basic 搜索，最多五项，不请求服务商生成答案，不自动选择参数。摘要保留来源并标为不可信。
 
-`extract_pages(urls)` 接受一至三个公开 URL，计费前全部验证，使用 basic 文本提取。缺失、失败或空页面记录为失败。成功材料每页最多保留 64,000 字符；节选有边界，并明确截断。`read_evidence(evidence_id)` 有限读取当前执行或同一聊天中已完成执行的材料。模型不能提供任意路径或覆盖、删除文件。
+`extract_pages(urls)` 接受一至三个公开 URL，计费前全部验证，使用 basic 文本提取。缺失、失败或空页面记录为失败。成功材料每页最多保留 64,000 字符；节选有边界，并明确截断。`read_evidence(evidence_id)` 有限读取当前执行或属于主人、当前记忆代次已完成执行的材料，且证据状态必须是 `retrieved`。模型不能提供任意路径或覆盖、删除文件。
 
 仅允许 HTTP(S)、标准网页端口和解析为公开地址的目标。拒绝嵌入凭据、指定敏感查询参数、localhost/私有/链路本地地址、异常格式与映射 IPv6 地址。DNS 核验不保证 Tavily 的远端 DNS 和重定向目标；提取仍有受委托服务商的信任边界。应用不在本地任意抓取网页。
 
@@ -69,7 +71,7 @@
 
 ## 持久执行与发送
 
-执行从 `queued` 到 `running`，再到 `completed`、`failed`、`cancelled` 或 `interrupted`。只有完成执行推进提交对话指针。每次执行使用新 graph thread，由上次提交的 checkpoint 初始化；原始入站、出站消息独立归档。M3 加入预算内自动压缩与记忆代次检查，只有当前代次已完成的前台研究推进指针。见[记忆/上下文参考](memory-and-context.zh-CN.md)。
+执行从 `queued` 到 `running`，再到 `completed`、`failed`、`cancelled` 或 `interrupted`。只有当前记忆代次已完成的前台研究推进提交对话指针。每次执行使用新 graph thread，由上次提交的 checkpoint 初始化；原始入站、出站消息独立归档。M3 加入预算内自动压缩与记忆代次检查，只有当前代次已完成的前台研究推进指针。见[记忆/上下文参考](memory-and-context.zh-CN.md)。
 
 接受消息与更新去重在事务中完成，持久处理后推进游标。结果和出站分块先保存后发送。重启保留排队请求和结果，将未完成执行标为中断，将发送中的消息改为 `uncertain`。中断研究不自动重跑。
 

@@ -4,6 +4,8 @@
 
 Updated: 2026-10-02. Scope: implemented `kestri telegram` and `kestri telegram-id`. Full live acceptance status is tracked in the [M1 record](../development/m1-validation.md).
 
+See [execution and delivery](../design/execution-and-delivery.md) for complete state machines, [tool design](../design/tools.md) for capability boundaries, and [model and accounting](../design/model-and-accounting.md) for cost calculations.
+
 ## Configuration
 
 Process environment overrides `.env` in the current working directory. Names are case-insensitive; unknown keys are ignored. Invalid values stop startup. Secrets are application configuration, excluded from model prompts. `kestri telegram-id` requires only `TELEGRAM_BOT_TOKEN`.
@@ -28,7 +30,7 @@ Process environment overrides `.env` in the current working directory. Names are
 | `KESTRI_MAX_REPLY_CHARS` | `12000` | 1000–16000; answer display target before notice/chunking |
 | `KESTRI_WORKSPACE_DIR` | `.kestri/workspace` | Operator-selected evidence root; Compose uses `/workspace` |
 | `KESTRI_URL_DNS_MODE` | `system` | `system` or `cloudflare`; public-URL DNS verification |
-| `KESTRI_QUEUE_LIMIT` | `8` | 1–32 queued plus running research requests |
+| `KESTRI_QUEUE_LIMIT` | `8` | 1–32 queued plus running non-background requests, including controls |
 | `KESTRI_MONTHLY_BUDGET_USD` | `20` | Greater than 0, at most 1000; UTC-month local envelope |
 | `KESTRI_RUN_BUDGET_USD` | `0.50` | Greater than 0, at most 20; local run envelope |
 | `KESTRI_INPUT_USD_PER_MILLION` | `0.30` | Greater than 0, at most 100; input estimation rate |
@@ -49,7 +51,7 @@ The owner’s private chat uses Telegram’s native collapsible command menu. It
 | `/stop`, exact `stop` / `停止` / `停止当前执行` / `停止当前任务` / `停下` | Stop foreground run; a reply selects the referenced known queued/running run |
 | `/status`, `/runs` | Latest five runs, status, evidence/usage counts, delivery problems, safe error type |
 | `/usage` | UTC-month recorded estimates plus outstanding/unknown reservations; not a provider bill |
-| `/new` | Clear committed context only when no queued/running work; preserve records |
+| `/new` | Clear committed context only when no queued/running non-background work; preserve records |
 | `/memory`, `/remember`, `/correct`, `/forget`, `/history` | Deterministic memory controls and read-only archive access; see [M3 reference](memory-and-context.md) |
 | Other slash commands | Unsupported-command notice; no model call |
 
@@ -59,7 +61,7 @@ Polling continues while one research worker runs. Authentication requires the co
 
 `search_web(query, topic)` accepts a strict query of 1–500 characters and `general` or `news`. It requests basic search with at most five results, without provider-generated answers or automatic parameter selection. Snippets retain provenance and are labeled untrusted.
 
-`extract_pages(urls)` accepts one to three public URLs, validates all before spending, and requests basic text extraction. Missing, failed, or empty pages are recorded as failed. Successful material is retained up to 64,000 characters per page; excerpts are bounded and truncation is explicit. `read_evidence(evidence_id)` reads bounded retained material from the current run or a completed run in the same chat. Models cannot supply arbitrary paths or overwrite/delete files.
+`extract_pages(urls)` accepts one to three public URLs, validates all before spending, and requests basic text extraction. Missing, failed, or empty pages are recorded as failed. Successful material is retained up to 64,000 characters per page; excerpts are bounded and truncation is explicit. `read_evidence(evidence_id)` reads bounded retained material from the current run or an owner-scoped completed run at the current memory epoch; evidence must have status `retrieved`. Models cannot supply arbitrary paths or overwrite/delete files.
 
 Only HTTP(S), standard web ports, and public resolved addresses are accepted. Credentials, selected secret query parameters, localhost/private/link-local addresses, malformed forms, and mapped IPv6 addresses are rejected. Local DNS checks do not guarantee Tavily's remote DNS/redirect destinations; extraction remains a delegated provider trust boundary. The application does not locally fetch arbitrary pages.
 
@@ -69,7 +71,7 @@ Provider responses are bounded to 2 MB. Oversized tool serialization fails safel
 
 ## Durable execution and delivery
 
-Runs move from `queued` to `running`, then `completed`, `failed`, `cancelled`, or `interrupted`. Only a completed run advances the committed conversation pointer. Each run uses a fresh graph thread seeded from the last committed checkpoint; original inbound/outbound messages are archived separately. M3 adds automatic budgeted compression and memory-epoch checks; only completed foreground research from the current epoch advances the head. See the [memory/context reference](memory-and-context.md).
+Runs move from `queued` to `running`, then `completed`, `failed`, `cancelled`, or `interrupted`. Only completed foreground research at the current memory epoch advances the committed conversation pointer. Each run uses a fresh graph thread seeded from the last committed checkpoint; original inbound/outbound messages are archived separately. M3 adds automatic budgeted compression and memory-epoch checks; only completed foreground research from the current epoch advances the head. See the [memory/context reference](memory-and-context.md).
 
 Acceptance and update deduplication are transactional. Cursor advancement follows durable handling. Results and outgoing chunks are saved before sending. Restart retains queued requests and saved results, marks unfinished runs interrupted, and converts in-flight sends to `uncertain`. Interrupted research is not automatically rerun.
 

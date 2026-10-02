@@ -44,6 +44,8 @@ Local operation means the application and its durable data run locally. Model re
 
 ## Documentation
 
-Start with the [documentation guide](docs/README.md). The suggested reading order is product, requirements, architecture, security and data, and then architecture decisions.
+Start with the [implementation guide](docs/development/implementation-guide.md) to locate each module/method and its detailed design.
+
+Start with the [documentation guide](docs/README.md). For implementation study, read [software architecture](docs/design/architecture.md), [database structure](docs/reference/database.md), [context management](docs/design/context-management.md), and [tool design](docs/design/tools.md) in that order. Each explains implemented behavior and links to the responsible source and tests. Product, requirements, security/data policy, and architecture decisions provide the surrounding rationale.
 
 English is the primary documentation language. Every English document has a corresponding Simplified Chinese translation, with matching scope, status, and identifiers.

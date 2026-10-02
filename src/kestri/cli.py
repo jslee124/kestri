@@ -12,7 +12,12 @@ from pydantic import ValidationError
 from kestri.application import run_telegram, show_telegram_ids
 from kestri.data import DataService
 from kestri.redaction import Redactor
-from kestri.settings import DataSettings, ResearchSettings, Settings, TelegramCredentials
+from kestri.settings import (
+    DataSettings,
+    ResearchSettings,
+    Settings,
+    TelegramCredentials,
+)
 from kestri.smoke import run_smoke, save_evidence
 from kestri.store import Store
 from kestri.workspace import Workspace
@@ -108,7 +113,10 @@ def main() -> int:
     try:
         settings = Settings()
     except ValidationError:
-        print("Configuration invalid. Check .env and the configuration reference.", file=sys.stderr)
+        print(
+            "Configuration invalid. Check .env and the configuration reference.",
+            file=sys.stderr,
+        )
         return 2
     try:
         evidence = asyncio.run(run_smoke(settings))
@@ -117,7 +125,10 @@ def main() -> int:
         print("Cancelled. No further model calls will be initiated.", file=sys.stderr)
         return 130
     except Exception as error:
-        print(f"Smoke check failed ({type(error).__name__}); details suppressed.", file=sys.stderr)
+        print(
+            f"Smoke check failed ({type(error).__name__}); details suppressed.",
+            file=sys.stderr,
+        )
         return 1
     print(f"Evidence: {path}")
     if evidence["passed"]:

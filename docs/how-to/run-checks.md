@@ -21,6 +21,21 @@ These checks do not require service credentials or contact a model provider. Run
 
 The documentation check covers translation partners, counterpart links, local file links, heading counts, and engineering identifier sets. It does not assess translation quality, external links, or Markdown anchors; review those separately.
 
+## Test organization and code style
+
+Tests are named by behavior, rather than by the milestone that introduced them:
+
+| Test module | Coverage | Original milestone |
+| --- | --- | --- |
+| `tests/test_research_integration.py` | Telegram research, persistence, budgets, delivery, and recovery | M1 |
+| `tests/test_tasks_integration.py` | Recurring task agreements, scheduling, and background execution | M2 |
+| `tests/test_memory_context_integration.py` | Explicit memory, revocation, and conversation compression | M3 |
+| `tests/test_data_lifecycle_integration.py` | Export, backup, restore, retention, and purge | M4 |
+
+`tests/helpers.py` contains shared mock transports and scenario builders. `tests/conftest.py` provides environment isolation and the disposable database fixture. Test modules do not import other test modules. Milestone names remain in development records to identify historical acceptance evidence.
+
+Use one assignment per line, explicit branches for nested decisions, and one item per line for dictionaries with several fields or calls with several arguments. A trailing comma keeps these structures expanded under Ruff; the line limit remains 100 characters. Run both Ruff checks above before submitting changes.
+
 ## Include persistence and recovery checks
 
 Use an isolated disposable PostgreSQL instance. Never use your personal Kestri database: these tests **drop the `kestri` schema** before each case. The fixture requires a loopback hostname and database name `kestri_test`, but the name alone does not make your data disposable.

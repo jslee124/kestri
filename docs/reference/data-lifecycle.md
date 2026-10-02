@@ -4,6 +4,8 @@
 
 Updated: 2026-10-02.
 
+See [data maintenance internals](../design/data-maintenance.md) for snapshot fields, validation order, restore transformations, cleanup algorithms, and failure boundaries.
+
 ## Local operator interface
 
 `kestri data` uses `DATABASE_URL`, `KESTRI_TELEGRAM_OWNER_ID`, and `KESTRI_WORKSPACE_DIR`; provider credentials are unnecessary. These commands are operator controls, never model tools or Telegram commands. Stop the app for backup, export, restore, and manual maintenance. A database advisory lease rejects an operator while the matching bot is running. Status remains available while running.

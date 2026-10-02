@@ -1,5 +1,4 @@
 import asyncio
-from collections.abc import Sequence
 from typing import Any
 
 import httpx
@@ -7,64 +6,11 @@ import pytest
 from langchain_core.messages import ToolMessage
 from langchain_deepseek import ChatDeepSeek
 
-from kestri.models import DeepSeekChatModel
 from kestri.runtime import AgentSession, build_model
 from kestri.smoke import verify_turn
 
 from .conftest import test_settings
-
-
-def completion(message: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "id": "offline-response",
-        "object": "chat.completion",
-        "created": 0,
-        "model": "deepseek-flash",
-        "choices": [{"index": 0, "message": message, "finish_reason": "stop"}],
-        "usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15},
-    }
-
-
-def tool_call(left: int, right: int, identity: str = "call-1") -> dict[str, Any]:
-    return {
-        "role": "assistant",
-        "content": "",
-        "tool_calls": [
-            {
-                "id": identity,
-                "type": "function",
-                "function": {
-                    "name": "checked_add",
-                    "arguments": f'{{"left":{left},"right":{right}}}',
-                },
-            }
-        ],
-    }
-
-
-def offline_model(
-    responses: Sequence[dict[str, Any]], requests: list[dict[str, Any]]
-) -> tuple[ChatDeepSeek, httpx.AsyncClient, httpx.Client]:
-    remaining = iter(responses)
-
-    def respond(request: httpx.Request) -> httpx.Response:
-        import json
-
-        requests.append(json.loads(request.content))
-        return httpx.Response(200, json=completion(next(remaining)))
-
-    transport = httpx.MockTransport(respond)
-    async_client = httpx.AsyncClient(transport=transport)
-    sync_client = httpx.Client(transport=transport)
-    model = DeepSeekChatModel(
-        model="deepseek-flash",
-        api_key=test_settings().deepseek_api_key,
-        api_base="https://api.deepseek.com/v1",
-        http_async_client=async_client,
-        http_client=sync_client,
-        max_retries=0,
-    )
-    return model, async_client, sync_client
+from .helpers import completion, offline_model, tool_call
 
 
 async def test_real_agent_loop_preserves_tool_result_and_followup() -> None:
@@ -140,8 +86,8 @@ async def test_call_limits_stop_an_actual_agent_loop(limit: str) -> None:
     requests: list[dict[str, Any]] = []
     responses = [tool_call(1, 2), tool_call(3, 4, "call-2")]
     model, async_client, sync_client = offline_model(responses, requests)
-    settings = test_settings(**{f"max_{limit}_calls": 1})
-    session = AgentSession(settings, model)
+    research_settings = test_settings(**{f"max_{limit}_calls": 1})
+    session = AgentSession(research_settings, model)
     try:
         result = await session.ask("Keep adding.")
         assert result.status == f"{limit}_limit"
@@ -158,7 +104,10 @@ async def test_call_limits_stop_an_actual_agent_loop(limit: str) -> None:
 async def test_tool_failure_is_safely_returned_to_model() -> None:
     requests: list[dict[str, Any]] = []
     model, async_client, sync_client = offline_model(
-        [tool_call(1_000_000, 1), {"role": "assistant", "content": "Outside the tool range."}],
+        [
+            tool_call(1_000_000, 1),
+            {"role": "assistant", "content": "Outside the tool range."},
+        ],
         requests,
     )
     session = AgentSession(test_settings(), model)

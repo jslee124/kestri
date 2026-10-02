@@ -1,107 +1,39 @@
 import asyncio
 import json
-import os
-from collections.abc import AsyncIterator
 from decimal import Decimal
 from pathlib import Path
-from typing import Any
-from urllib.parse import urlsplit
 
 import httpx
 import pytest
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-from kestri.application import Application
 from kestri.budget import Budget, RunControl
 from kestri.errors import BudgetExceeded, PolicyDenied
-from kestri.redaction import Redactor
 from kestri.research import ResearchAgent
-from kestri.settings import ResearchSettings
 from kestri.store import Store
-from kestri.telegram import TelegramClient
 from kestri.url_policy import PublicURLPolicy
 from kestri.web import WebTools
 from kestri.workspace import Workspace
 
-from .test_boundaries import public, update
-from .test_runtime import offline_model
+from .helpers import (
+    TEST_DSN,
+    accept_run,
+    make_application,
+    model_tool_call,
+    offline_model,
+    research_settings,
+    resolve_public,
+    telegram_update,
+)
 
-TEST_DSN = os.environ.get("KESTRI_TEST_DATABASE_URL")
 pytestmark = pytest.mark.skipif(not TEST_DSN, reason="Set a dedicated KESTRI_TEST_DATABASE_URL")
-
-
-def settings(**overrides: Any) -> ResearchSettings:
-    values = {
-        "DEEPSEEK_API_KEY": "test-only-placeholder",
-        "TELEGRAM_BOT_TOKEN": "123:abcdefghijklmnopqrstuvwxyz",
-        "TAVILY_API_KEY": "test-tavily-placeholder",
-        "DATABASE_URL": TEST_DSN or "postgresql://unused/kestri_test",
-        "telegram_owner_id": 111,
-        **overrides,
-    }
-    return ResearchSettings(_env_file=None, **values)
-
-
-@pytest.fixture
-async def store() -> AsyncIterator[Store]:
-    parsed = urlsplit(TEST_DSN or "")
-    assert parsed.hostname in {"127.0.0.1", "localhost"} and parsed.path == "/kestri_test"
-    repository = Store(TEST_DSN, Redactor(["test-only-placeholder", "test-tavily-placeholder"]))
-    await repository.pool.open(wait=True)
-    await repository.execute("DROP SCHEMA IF EXISTS kestri CASCADE")
-    await repository.open()
-    try:
-        yield repository
-    finally:
-        await repository.close()
-
-
-async def accept_run(store: Store, text: str = "Research", identity: int = 1) -> dict:
-    accepted, _ = await store.accept(identity, 111, identity, text, None, None, 8)
-    assert accepted
-    row = await store.claim_run()
-    assert row is not None
-    return row
-
-
-def call(name: str, args: dict, identity: str) -> dict:
-    return {
-        "role": "assistant",
-        "content": "",
-        "tool_calls": [
-            {
-                "id": identity,
-                "type": "function",
-                "function": {"name": name, "arguments": json.dumps(args)},
-            }
-        ],
-    }
-
-
-class NeverResearch:
-    async def run(self, row: dict, control: RunControl) -> None:
-        raise AssertionError("research should not start")
-
-
-def app(
-    store: Store,
-    client: httpx.AsyncClient,
-    researcher: Any = None,
-    options: ResearchSettings | None = None,
-) -> Application:
-    return Application(
-        options or settings(),
-        store,
-        TelegramClient("123:placeholder", client),
-        researcher or NeverResearch(),
-    )
 
 
 async def test_rejected_updates_touch_no_personal_state_or_model(store: Store) -> None:
     async with httpx.AsyncClient() as client:
-        application = app(store, client)
-        assert not await application.accept_update(update(user_id=222))
-        assert not await application.accept_update(update(chat_type="group"))
+        application = make_application(store, client)
+        assert not await application.accept_update(telegram_update(user_id=222))
+        assert not await application.accept_update(telegram_update(chat_type="group"))
     assert not await store.all("SELECT * FROM kestri.inbox")
     assert not await store.all("SELECT * FROM kestri.messages")
     assert not await store.all("SELECT * FROM kestri.runs")
@@ -109,9 +41,9 @@ async def test_rejected_updates_touch_no_personal_state_or_model(store: Store) -
 
 async def test_duplicate_acceptance_and_cursor_recovery(store: Store) -> None:
     async with httpx.AsyncClient() as client:
-        application = app(store, client)
-        assert await application.accept_update(update())
-        assert not await application.accept_update(update())
+        application = make_application(store, client)
+        assert await application.accept_update(telegram_update())
+        assert not await application.accept_update(telegram_update())
     await store.advance_offset(1)
     await store.advance_offset(0)
     assert await store.offset() == 2
@@ -120,16 +52,34 @@ async def test_duplicate_acceptance_and_cursor_recovery(store: Store) -> None:
     assert len(await store.all("SELECT * FROM kestri.outbox")) == 1
 
 
-async def test_atomic_budget_reservations_prevent_parallel_overspending(store: Store) -> None:
+async def test_atomic_budget_reservations_prevent_parallel_overspending(
+    store: Store,
+) -> None:
     row = await accept_run(store)
     outcomes = await asyncio.gather(
-        *[store.reserve(row["id"], "search", 6, 10, 10) for _ in range(2)], return_exceptions=True
+        *[
+            store.reserve(
+                row["id"],
+                "search",
+                6,
+                10,
+                10,
+            )
+            for _ in range(2)
+        ],
+        return_exceptions=True,
     )
     assert sum(isinstance(value, str) for value in outcomes) == 1
     assert sum(isinstance(value, BudgetExceeded) for value in outcomes) == 1
     await store.execute("UPDATE kestri.runs SET cancel_requested=true WHERE id=%s", (row["id"],))
     with pytest.raises(PolicyDenied):
-        await store.reserve(row["id"], "search", 1, 100, 100)
+        await store.reserve(
+            row["id"],
+            "search",
+            1,
+            100,
+            100,
+        )
 
 
 async def test_restart_keeps_results_and_quarantines_unknown_send(store: Store) -> None:
@@ -146,7 +96,9 @@ async def test_restart_keeps_results_and_quarantines_unknown_send(store: Store) 
     assert conversation["thread_id"] == row["id"]
 
 
-async def test_restart_does_not_rerun_interrupted_work_or_poison_conversation(store: Store) -> None:
+async def test_restart_does_not_rerun_interrupted_work_or_poison_conversation(
+    store: Store,
+) -> None:
     row = await accept_run(store)
     await store.recover()
     interrupted = await store.one("SELECT status FROM kestri.runs WHERE id=%s", (row["id"],))
@@ -171,12 +123,17 @@ async def test_saved_delivery_retries_without_regenerating_and_preserves_chunk_o
         attempts += 1
         if attempts == 1:
             return httpx.Response(
-                429, json={"ok": False, "error_code": 429, "parameters": {"retry_after": 1}}
+                429,
+                json={
+                    "ok": False,
+                    "error_code": 429,
+                    "parameters": {"retry_after": 1},
+                },
             )
         return httpx.Response(200, json={"ok": True, "result": {"message_id": 100 + attempts}})
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
-        application = app(store, client)
+        application = make_application(store, client)
         assert await application.deliver_once()
         await store.execute("UPDATE kestri.outbox SET next_attempt=now() WHERE status='pending'")
         while await application.deliver_once():
@@ -186,18 +143,36 @@ async def test_saved_delivery_retries_without_regenerating_and_preserves_chunk_o
     assert len(await store.all("SELECT * FROM kestri.runs")) == 1
 
 
-async def test_stop_targets_reply_and_blocks_subsequent_billable_work(store: Store) -> None:
+async def test_stop_targets_reply_and_blocks_subsequent_billable_work(
+    store: Store,
+) -> None:
     row = await accept_run(store)
     await store.execute(
         "INSERT INTO kestri.messages(chat_id,telegram_id,direction,content,run_id) "
         "VALUES (111,100,'out','working',%s)",
         (row["id"],),
     )
-    await store.accept(2, 111, 2, "/stop", 999, "stop", 8)
+    await store.accept(
+        2,
+        111,
+        2,
+        "/stop",
+        999,
+        "stop",
+        8,
+    )
     assert not await store.cancelled(row["id"])
-    await store.accept(3, 111, 3, "/stop", 100, "stop", 8)
+    await store.accept(
+        3,
+        111,
+        3,
+        "/stop",
+        100,
+        "stop",
+        8,
+    )
     assert await store.cancelled(row["id"])
-    budget = Budget(settings(), RunControl(store, row["id"]))
+    budget = Budget(research_settings(), RunControl(store, row["id"]))
     with pytest.raises(asyncio.CancelledError):
         await budget.reserve("model", 1)
     assert not await store.all("SELECT * FROM kestri.usage")
@@ -221,7 +196,10 @@ async def test_extract_failure_truncation_and_private_url_policy(
                     }
                 ],
                 "failed_results": [
-                    {"url": "https://example.com/missing", "error": "private failure body"}
+                    {
+                        "url": "https://example.com/missing",
+                        "error": "private failure body",
+                    }
                 ],
                 "usage": {"credits": 1},
             },
@@ -231,10 +209,10 @@ async def test_extract_failure_truncation_and_private_url_policy(
         tools = WebTools(
             store,
             Workspace(tmp_path),
-            Budget(settings(), RunControl(store, row["id"])),
+            Budget(research_settings(), RunControl(store, row["id"])),
             111,
             client,
-            PublicURLPolicy(public),
+            PublicURLPolicy(resolve_public),
         )
         with pytest.raises(PolicyDenied):
             await tools.extract(["http://localhost/secret"])
@@ -259,8 +237,8 @@ async def test_real_framework_research_and_followup_survive_new_agent(
     model_requests = []
     model, async_model_client, sync_model_client = offline_model(
         [
-            call("search_web", {"query": "official topic"}, "s1"),
-            call("extract_pages", {"urls": ["https://example.com/good"]}, "e1"),
+            model_tool_call("search_web", {"query": "official topic"}, "s1"),
+            model_tool_call("extract_pages", {"urls": ["https://example.com/good"]}, "e1"),
             {"role": "assistant", "content": "Fact from https://example.com/good"},
             {"role": "assistant", "content": "Follow-up uses the original fact."},
         ],
@@ -281,7 +259,10 @@ async def test_real_framework_research_and_followup_survive_new_agent(
         else:
             result = {
                 "results": [
-                    {"url": "https://example.com/good", "raw_content": "Actual source fact"}
+                    {
+                        "url": "https://example.com/good",
+                        "raw_content": "Actual source fact",
+                    }
                 ]
             }
         return httpx.Response(200, json={**result, "usage": {"credits": 1}})
@@ -291,13 +272,13 @@ async def test_real_framework_research_and_followup_survive_new_agent(
     async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
         try:
             researcher = ResearchAgent(
-                settings(),
+                research_settings(),
                 store,
                 Workspace(tmp_path),
                 saver,
                 model,
                 client,
-                PublicURLPolicy(public),
+                PublicURLPolicy(resolve_public),
             )
             first = await accept_run(store)
             await researcher.run(first, RunControl(store, first["id"]))
@@ -308,18 +289,26 @@ async def test_real_framework_research_and_followup_survive_new_agent(
                 "VALUES (111,100,'out',%s,%s)",
                 (record["result"], first["id"]),
             )
-            await store.accept(2, 111, 2, "Explain that fact", 100, None, 8)
+            await store.accept(
+                2,
+                111,
+                2,
+                "Explain that fact",
+                100,
+                None,
+                8,
+            )
             second = await store.claim_run()
             assert second["source_thread"] == first["id"]
             # A fresh agent instance reads the prior durable checkpoint, not process memory.
             researcher = ResearchAgent(
-                settings(),
+                research_settings(),
                 store,
                 Workspace(tmp_path),
                 saver,
                 model,
                 client,
-                PublicURLPolicy(public),
+                PublicURLPolicy(resolve_public),
             )
             await researcher.run(second, RunControl(store, second["id"]))
             record = await store.one("SELECT * FROM kestri.runs WHERE id=%s", (second["id"],))
@@ -344,8 +333,15 @@ async def test_run_budget_rejects_before_first_model_request(store: Store, tmp_p
     await saver.setup()
     async with httpx.AsyncClient() as client:
         try:
-            options = settings(run_budget_usd=Decimal("0.000001"))
-            agent = ResearchAgent(options, store, Workspace(tmp_path), saver, model, client)
+            options = research_settings(run_budget_usd=Decimal("0.000001"))
+            agent = ResearchAgent(
+                options,
+                store,
+                Workspace(tmp_path),
+                saver,
+                model,
+                client,
+            )
             row = await accept_run(store)
             await agent.run(row, RunControl(store, row["id"]))
             result = await store.one("SELECT * FROM kestri.runs WHERE id=%s", (row["id"],))
@@ -367,8 +363,8 @@ async def test_research_limits_persist_failure_without_promoting_checkpoint(
     requests = []
     model, async_client, sync_client = offline_model(
         [
-            call("search_web", {"query": "source"}, "one"),
-            call("search_web", {"query": "more"}, "two"),
+            model_tool_call("search_web", {"query": "source"}, "one"),
+            model_tool_call("search_web", {"query": "more"}, "two"),
         ],
         requests,
     )
@@ -386,7 +382,12 @@ async def test_research_limits_persist_failure_without_promoting_checkpoint(
     ) as client:
         try:
             researcher = ResearchAgent(
-                settings(**values), store, Workspace(tmp_path), saver, model, client
+                research_settings(**values),
+                store,
+                Workspace(tmp_path),
+                saver,
+                model,
+                client,
             )
             row = await accept_run(store, "你" * 3000 if limit == "context" else "Research")
             await researcher.run(row, RunControl(store, row["id"]))
@@ -400,7 +401,14 @@ async def test_research_limits_persist_failure_without_promoting_checkpoint(
                     "context": "ContextExceeded",
                 }[limit]
             )
-            assert len(requests) == {"model": 1, "tool": 2, "context": 0}[limit]
+            assert (
+                len(requests)
+                == {
+                    "model": 1,
+                    "tool": 2,
+                    "context": 0,
+                }[limit]
+            )
             assert (await store.one("SELECT thread_id FROM kestri.conversations"))[
                 "thread_id"
             ] is None
@@ -417,7 +425,7 @@ async def test_polling_can_cancel_real_inflight_research_and_worker_can_continue
 ) -> None:
     from kestri.models import DeepSeekChatModel
 
-    from .test_runtime import completion
+    from .helpers import completion
 
     entered = asyncio.Event()
     attempts = 0
@@ -433,7 +441,7 @@ async def test_polling_can_cancel_real_inflight_research_and_worker_can_continue
     model_client = httpx.AsyncClient(transport=httpx.MockTransport(slow))
     model = DeepSeekChatModel(
         model="deepseek-flash",
-        api_key=settings().deepseek_api_key,
+        api_key=research_settings().deepseek_api_key,
         http_async_client=model_client,
         max_retries=0,
     )
@@ -441,17 +449,28 @@ async def test_polling_can_cancel_real_inflight_research_and_worker_can_continue
     await saver.setup()
     async with httpx.AsyncClient() as client:
         try:
-            researcher = ResearchAgent(settings(), store, Workspace(tmp_path), saver, model, client)
-            application = app(store, client, researcher)
-            await application.accept_update(update())
+            researcher = ResearchAgent(
+                research_settings(),
+                store,
+                Workspace(tmp_path),
+                saver,
+                model,
+                client,
+            )
+            application = make_application(store, client, researcher)
+            await application.accept_update(telegram_update())
             work = asyncio.create_task(application.work_once())
             await asyncio.wait_for(entered.wait(), 2)
-            assert await application.accept_update(update("/stop", update_id=2, message_id=2))
+            assert await application.accept_update(
+                telegram_update("/stop", update_id=2, message_id=2)
+            )
             await asyncio.wait_for(work, 2)
             record = (await store.all("SELECT * FROM kestri.runs"))[0]
             assert record["status"] == "cancelled"
             assert (await store.all("SELECT state FROM kestri.usage"))[0]["state"] == "unknown"
-            await application.accept_update(update("Next question", update_id=3, message_id=3))
+            await application.accept_update(
+                telegram_update("Next question", update_id=3, message_id=3)
+            )
             assert await application.work_once()
             records = await store.all("SELECT * FROM kestri.runs ORDER BY created_at")
             assert records[-1]["status"] == "completed"
@@ -469,8 +488,11 @@ async def test_source_footer_clearly_marks_failed_page_and_does_not_follow_sourc
     requests = []
     model, async_client, sync_client = offline_model(
         [
-            call("extract_pages", {"urls": ["https://example.com/missing"]}, "extract"),
-            {"role": "assistant", "content": "The page is unavailable; no claim supported."},
+            model_tool_call("extract_pages", {"urls": ["https://example.com/missing"]}, "extract"),
+            {
+                "role": "assistant",
+                "content": "The page is unavailable; no claim supported.",
+            },
         ],
         requests,
     )
@@ -496,13 +518,13 @@ async def test_source_footer_clearly_marks_failed_page_and_does_not_follow_sourc
         try:
             row = await accept_run(store)
             researcher = ResearchAgent(
-                settings(),
+                research_settings(),
                 store,
                 Workspace(tmp_path),
                 saver,
                 model,
                 client,
-                PublicURLPolicy(public),
+                PublicURLPolicy(resolve_public),
             )
             await researcher.run(row, RunControl(store, row["id"]))
             record = await store.one("SELECT * FROM kestri.runs WHERE id=%s", (row["id"],))
@@ -518,12 +540,30 @@ async def test_source_footer_clearly_marks_failed_page_and_does_not_follow_sourc
             sync_client.close()
 
 
-async def test_new_context_retains_archive_and_requires_idle_conversation(store: Store) -> None:
+async def test_new_context_retains_archive_and_requires_idle_conversation(
+    store: Store,
+) -> None:
     row = await accept_run(store)
-    await store.accept(2, 111, 2, "/new", None, "new", 8)
+    await store.accept(
+        2,
+        111,
+        2,
+        "/new",
+        None,
+        "new",
+        8,
+    )
     await store.finish(row["id"], "completed", "original result")
     assert (await store.one("SELECT thread_id FROM kestri.conversations"))["thread_id"] == row["id"]
-    await store.accept(3, 111, 3, "/new", None, "new", 8)
+    await store.accept(
+        3,
+        111,
+        3,
+        "/new",
+        None,
+        "new",
+        8,
+    )
     assert (await store.one("SELECT thread_id FROM kestri.conversations"))["thread_id"] is None
     assert len(await store.all("SELECT * FROM kestri.messages")) == 3
     assert (await store.one("SELECT result FROM kestri.runs"))["result"] == "original result"
@@ -535,8 +575,8 @@ async def test_retrieved_instructions_cannot_grant_private_network_access(
     requests = []
     model, async_client, sync_client = offline_model(
         [
-            call("extract_pages", {"urls": ["https://example.com/source"]}, "source"),
-            call("extract_pages", {"urls": ["http://127.0.0.1/credentials"]}, "attack"),
+            model_tool_call("extract_pages", {"urls": ["https://example.com/source"]}, "source"),
+            model_tool_call("extract_pages", {"urls": ["http://127.0.0.1/credentials"]}, "attack"),
             {"role": "assistant", "content": "Private access was rejected."},
         ],
         requests,
@@ -566,13 +606,13 @@ async def test_retrieved_instructions_cannot_grant_private_network_access(
     async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
         try:
             agent = ResearchAgent(
-                settings(),
+                research_settings(),
                 store,
                 Workspace(tmp_path),
                 saver,
                 model,
                 client,
-                PublicURLPolicy(public),
+                PublicURLPolicy(resolve_public),
             )
             row = await accept_run(store)
             await agent.run(row, RunControl(store, row["id"]))
@@ -604,7 +644,7 @@ async def test_terminal_model_failures_preserve_usage_and_notify(
     model_client = httpx.AsyncClient(transport=httpx.MockTransport(respond))
     model = DeepSeekChatModel(
         model="deepseek-flash",
-        api_key=settings().deepseek_api_key,
+        api_key=research_settings().deepseek_api_key,
         http_async_client=model_client,
         max_retries=0,
     )
@@ -613,7 +653,12 @@ async def test_terminal_model_failures_preserve_usage_and_notify(
     async with httpx.AsyncClient() as client:
         try:
             agent = ResearchAgent(
-                settings(run_timeout_seconds=0.1), store, Workspace(tmp_path), saver, model, client
+                research_settings(run_timeout_seconds=0.1),
+                store,
+                Workspace(tmp_path),
+                saver,
+                model,
+                client,
             )
             row = await accept_run(store)
             await agent.run(row, RunControl(store, row["id"]))
@@ -649,7 +694,7 @@ async def test_process_shutdown_exits_worker_after_research_handles_cancellation
     model_client = httpx.AsyncClient(transport=httpx.MockTransport(waiting))
     model = DeepSeekChatModel(
         model="deepseek-flash",
-        api_key=settings().deepseek_api_key,
+        api_key=research_settings().deepseek_api_key,
         http_async_client=model_client,
         max_retries=0,
     )
@@ -657,9 +702,16 @@ async def test_process_shutdown_exits_worker_after_research_handles_cancellation
     await saver.setup()
     async with httpx.AsyncClient() as client:
         try:
-            researcher = ResearchAgent(settings(), store, Workspace(tmp_path), saver, model, client)
-            application = app(store, client, researcher)
-            await application.accept_update(update())
+            researcher = ResearchAgent(
+                research_settings(),
+                store,
+                Workspace(tmp_path),
+                saver,
+                model,
+                client,
+            )
+            application = make_application(store, client, researcher)
+            await application.accept_update(telegram_update())
             worker = asyncio.create_task(application.working())
             await asyncio.wait_for(entered.wait(), 2)
             worker.cancel()

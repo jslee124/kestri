@@ -53,7 +53,11 @@ def turn_evidence(result: TurnResult, previous_count: int, secret: str) -> dict[
             for call in message.tool_calls
         ],
         "tool_results": [
-            {"name": message.name, "status": message.status, "content": message.content}
+            {
+                "name": message.name,
+                "status": message.status,
+                "content": message.content,
+            }
             for message in tool_results
         ],
         "usage": [message.usage_metadata for message in model_messages],
