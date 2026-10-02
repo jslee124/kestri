@@ -124,8 +124,17 @@ async def memory_command(
                 (chat_id,),
             )
         ).fetchall()
+        history_jobs = await (
+            await conn.execute(
+                "SELECT status,count(*) AS n FROM kestri.history_index_jobs WHERE chat_id=%s "
+                "GROUP BY status ORDER BY status",
+                (chat_id,),
+            )
+        ).fetchall()
         return (
-            "向量作业："
+            "历史索引作业："
+            + ("；".join(f"{r['status']} {r['n']}" for r in history_jobs) or "无")
+            + "\n向量作业："
             + ("；".join(f"{r['status']} {r['n']}" for r in indexing) or "无")
             + "\n向量失败："
             + ("；".join(r["error_type"] for r in index_errors) or "无")

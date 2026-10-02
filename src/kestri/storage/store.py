@@ -72,6 +72,10 @@ class Store:
                     files("kestri").joinpath("storage/sql/007_history_embeddings.sql").read_text(),
                     prepare=False,
                 )
+                await conn.execute(
+                    files("kestri").joinpath("storage/sql/008_history_jobs.sql").read_text(),
+                    prepare=False,
+                )
 
     async def close(self) -> None:
         await self.pool.close()
@@ -720,19 +724,45 @@ class Store:
         maintenance_monthly: int | None = None,
         maintenance_job: tuple[str, str] | None = None,
         index_job: tuple[str, str] | None = None,
+        history_job: tuple[str, str, int] | None = None,
     ) -> str:
         reservation = str(uuid4())
         async with self.pool.connection() as conn:
             async with conn.transaction():
                 await conn.execute("SELECT pg_advisory_xact_lock(hashtext('kestri-budget'))")
-                if maintenance_job is not None or index_job is not None:
+                if maintenance_job is not None or index_job is not None or history_job is not None:
                     await conn.execute(
                         "SELECT c.chat_id FROM kestri.conversations c JOIN kestri.runs r ON "
                         "r.chat_id=c.chat_id "
                         "WHERE r.id=%s FOR UPDATE OF c",
                         (run_id,),
                     )
-                    if index_job is not None:
+                    if history_job is not None:
+                        allowed = await (
+                            await conn.execute(
+                                "SELECT 1 FROM kestri.history_index_jobs j JOIN "
+                                "kestri.conversations c ON c.chat_id=j.chat_id JOIN "
+                                "kestri.messages m ON m.id=j.owner_message_id JOIN "
+                                "kestri.runs s ON s.id=m.run_id WHERE j.id=%s "
+                                "AND j.lease_token=%s AND j.source_revision=%s AND j.run_id=%s "
+                                "AND j.status='running' AND j.lease_until>now() "
+                                "AND c.auto_memory_enabled AND c.memory_use_enabled "
+                                "AND c.memory_semantic_enabled "
+                                "AND c.memory_settings_generation=j.settings_generation "
+                                "AND c.memory_retrieval_generation=j.retrieval_generation "
+                                "AND c.memory_embedding_space=j.embedding_space "
+                                "AND m.id>GREATEST(c.memory_activation_watermark,"
+                                "c.automatic_history_floor) AND m.provenance='direct' "
+                                "AND m.direction='in' AND s.kind='foreground' AND NOT "
+                                "s.history_expired "
+                                "AND (m.task_id IS NULL OR EXISTS(SELECT 1 FROM kestri.tasks "
+                                "WHERE id=m.task_id AND status!='deleted'))",
+                                (*history_job, run_id),
+                            )
+                        ).fetchone()
+                        if not allowed:
+                            raise PolicyDenied("HistoryJobChanged")
+                    elif index_job is not None:
                         allowed = await (
                             await conn.execute(
                                 "SELECT 1 FROM kestri.memory_index_jobs j JOIN "
@@ -766,7 +796,8 @@ class Store:
                                 "AND j.settings_generation=c.memory_settings_generation AND "
                                 "j.captured_revision=c.memory_revision "
                                 "AND j.captured_epoch=c.memory_epoch AND "
-                                "m.id>GREATEST(c.memory_activation_watermark,c.automatic_history_floor)",
+                                "m.id>GREATEST(c.memory_activation_watermark,c.automatic_hi"
+                                "story_floor)",
                                 (*maintenance_job, run_id),
                             )
                         ).fetchone()
@@ -781,7 +812,8 @@ class Store:
                 if not run or run["status"] != "running" or run["cancel_requested"]:
                     raise PolicyDenied("RunInactive")
                 if run["kind"] == "memory_maintenance" and (
-                    (maintenance_job is None and index_job is None) or maintenance_monthly is None
+                    (maintenance_job is None and index_job is None and history_job is None)
+                    or maintenance_monthly is None
                 ):
                     raise PolicyDenied("MaintenanceBudgetUnavailable")
                 month = datetime.now(UTC).replace(
@@ -802,7 +834,8 @@ class Store:
                     used = await (
                         await conn.execute(
                             "SELECT COALESCE(sum(amount_micro_usd),0) AS amount FROM kestri.usage "
-                            "WHERE created_at >= %s AND kind IN ('memory_extract','memory_index')",
+                            "WHERE created_at >= %s AND kind IN "
+                            "('memory_extract','memory_index','history_index')",
                             (month,),
                         )
                     ).fetchone()
@@ -863,7 +896,8 @@ class Store:
                 )
                 await conn.execute(
                     "INSERT INTO "
-                    "kestri.messages(chat_id,telegram_id,direction,content,reply_to,run_id,task_id,provenance)"
+                    "kestri.messages(chat_id,telegram_id,direction,content,reply_to,run_id,"
+                    "task_id,provenance)"
                     " VALUES (%s,%s,'out',%s,%s,%s,%s,'context') ON CONFLICT DO NOTHING",
                     (
                         row["chat_id"],

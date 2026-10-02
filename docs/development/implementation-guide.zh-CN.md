@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 40 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：全部 41 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -465,3 +465,5 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 [目录与职责](repository-layout.zh-CN.md)说明六个领域包、对应测试及 SQL 资源位置；新增六个包初始化模块只用于组织，不重新导出实现。
 
 [HistorySemantic](../../src/kestri/history/semantic.py) 的 `rank` 提供有界按需编码/查询缓存/精确排序，`publish` 在主人/来源锁内复查并发布派生索引；`history_space`/`encode_turn` 版本化完整消息配方。[迁移 7](../../src/kestri/storage/sql/007_history_embeddings.sql)维护来源、设置及 run 到期失效。
+
+[HistoryIndexWorker](../../src/kestri/history/worker.py) 的 `claim`/`ensure_active`/`publish`/`fail`/`work_once` 提供来源版本作业、租约、原子发布及有限恢复；`HistoryJobControl`/`HistoryIndexBudget` 将计费限定于有效租约和共享维护额度。[迁移 8](../../src/kestri/storage/sql/008_history_jobs.sql)维护归档/设置/来源到期入队与撤销。

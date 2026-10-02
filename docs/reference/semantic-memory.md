@@ -62,4 +62,4 @@ Backup schema 6 includes settings and index jobs but omits rebuildable vector ro
 
 These prove policy/data boundaries and controlled orchestration, not semantic accuracy of actual provider output. The labeled Chinese corpus, historical tools, live Telegram/provider tests and long-term recall evaluation remain separate increments.
 
-This branch adds [bounded chat history tools](history-retrieval.md), invoked on demand with both auto/use enabled. Historical recall is separate from personal-fact vector retrieval; progressive historical vector caching/hybrid recall is implemented; background coverage and evaluation remain outstanding.
+This branch adds [bounded chat history tools](history-retrieval.md), invoked on demand with both auto/use enabled. Historical recall is separate from personal-fact vector retrieval; progressive historical vector caching/hybrid recall is implemented; background indexing is implemented; quality evaluation remains outstanding.

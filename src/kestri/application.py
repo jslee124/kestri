@@ -168,6 +168,7 @@ class Application:
                     pass
 
     async def memory_maintaining(self) -> None:
+        from kestri.history.worker import HistoryIndexWorker
         from kestri.integrations.embedding import EmbeddingClient
         from kestri.memory.index import MemoryIndexWorker
         from kestri.memory.worker import MemoryWorker
@@ -182,11 +183,18 @@ class Application:
                 if config
                 else None
             )
+            history_indexer = (
+                HistoryIndexWorker(self.store, self.settings, EmbeddingClient(config, http))
+                if config
+                else None
+            )
             while True:
                 try:
                     await worker.work_once(self.settings.telegram_owner_id)
                     if indexer:
                         await indexer.work_once(self.settings.telegram_owner_id)
+                    if history_indexer:
+                        await history_indexer.work_once(self.settings.telegram_owner_id)
                 except Exception:
                     # Only a fixed category is logged; raw errors may contain private data.
                     logging.getLogger(__name__).warning("MemoryRepositoryUnavailable")

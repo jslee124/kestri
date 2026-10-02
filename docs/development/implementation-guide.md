@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 40 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: all 41 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -465,3 +465,5 @@ Coverage is traceable implementation documentation, not a formal correctness pro
 The [layout guide](repository-layout.md) describes six domain packages, corresponding tests, and SQL resources. Six new package initializers organize modules without re-exporting implementations.
 
 [HistorySemantic](../../src/kestri/history/semantic.py) provides bounded encoding/query caching/exact ranking in `rank` and owner/source-locked revalidation in `publish`; `history_space`/`encode_turn` version complete-message encoding. [Migration 7](../../src/kestri/storage/sql/007_history_embeddings.sql) owns source/settings/run-expiry invalidation.
+
+[HistoryIndexWorker](../../src/kestri/history/worker.py) provides source-version jobs, leases, atomic publication and bounded recovery through `claim`/`ensure_active`/`publish`/`fail`/`work_once`; `HistoryJobControl`/`HistoryIndexBudget` gate billing through valid leases and shared maintenance caps. [Migration 8](../../src/kestri/storage/sql/008_history_jobs.sql) owns archive/settings/source-expiry enqueue and revocation.

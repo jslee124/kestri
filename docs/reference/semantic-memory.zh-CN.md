@@ -62,4 +62,4 @@ docker compose -f compose.yaml -f compose.vector.yaml build postgres
 
 这些证明策略/数据边界和受控流程，不证明实际服务商输出的语义准确性。中文标注语料、历史工具、真实 Telegram/服务商验收和长期召回评测仍是独立增量。
 
-本分支新增[有界聊天历史工具](history-retrieval.zh-CN.md)，在 auto/use 同时开启时供模型按需调用；历史检索与个人事实向量检索是独立链路，渐进历史语义缓存/混合召回已实现，后台覆盖与质量评测仍待完成。
+本分支新增[有界聊天历史工具](history-retrieval.zh-CN.md)，在 auto/use 同时开启时供模型按需调用；历史检索与个人事实向量检索是独立链路，渐进历史语义缓存/混合召回已实现，持久后台索引已实现，质量评测仍待完成。

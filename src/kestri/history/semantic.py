@@ -3,7 +3,10 @@
 import asyncio
 import hashlib
 import json
+from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING
+
+from psycopg import AsyncConnection
 
 from kestri.errors import PolicyDenied
 from kestri.integrations.embedding import EmbeddingClient
@@ -34,7 +37,15 @@ class HistorySemantic:
         self.attempts = 0
         self.index_attempted = False
 
-    async def publish(self, state: Row, rows: list[Row], vectors: list[tuple[float, ...]]) -> None:
+    async def publish(
+        self,
+        state: Row,
+        rows: list[Row],
+        vectors: list[tuple[float, ...]],
+        *,
+        guard: Callable[[AsyncConnection[Row]], Awaitable[None]] | None = None,
+        complete: Callable[[AsyncConnection[Row]], Awaitable[None]] | None = None,
+    ) -> None:
         history = self.history
         async with history.store.pool.connection() as conn:
             async with conn.transaction():
@@ -59,6 +70,8 @@ class HistorySemantic:
                     )
                 ):
                     raise PolicyDenied("HistoryIndexSettingsChanged")
+                if guard is not None:
+                    await guard(conn)
                 # Source operations lock/delete these same rows or reset the owner epoch.
                 for item, vector in zip(rows, vectors, strict=True):
                     sources = await (
@@ -70,9 +83,13 @@ class HistorySemantic:
                         )
                     ).fetchall()
                     if not sources:
+                        if guard is not None:
+                            raise PolicyDenied("HistorySourceChanged")
                         continue
                     fresh = await history.turns(state, None, None, item["owner_id"], conn=conn)
                     if not fresh or fresh[0]["id"] != item["id"]:
+                        if guard is not None:
+                            raise PolicyDenied("HistorySourceChanged")
                         continue
                     await conn.execute(
                         "INSERT INTO kestri.history_embeddings("
@@ -94,6 +111,9 @@ class HistorySemantic:
                             vector_literal(vector),
                         ),
                     )
+
+                if complete is not None:
+                    await complete(conn)
 
     async def rank(self, state: Row, rows: list[Row], query: str) -> tuple[list[Row], int]:
         history = self.history

@@ -38,6 +38,7 @@ TABLES = (
     "memory_sources",
     "memory_events",
     "memory_index_jobs",
+    "history_index_jobs",
 )
 MAX_BYTES = 64 * 1024 * 1024
 MAX_ROWS = 50_000
@@ -184,7 +185,7 @@ class DataService:
             payload = {
                 "format": FORMAT,
                 "kind": "export" if export else "backup",
-                "schema": 6,
+                "schema": 7,
                 "created_at": datetime.now(UTC).isoformat(),
                 "tables": tables,
                 "evidence_text": attachments,
@@ -235,12 +236,14 @@ class DataService:
 
     async def restore(self, path: Path, *, apply: bool = False) -> dict[str, Any]:
         payload = await disk_operation(read_private, path)
-        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5, 6}:
+        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5, 6, 7}:
             raise PolicyDenied("NotRestorableBackup")
         tables = payload.get("tables")
         attachments = payload.get("evidence_text")
         schema = payload["schema"]
         expected_tables = set(TABLES)
+        if schema < 7:
+            expected_tables -= {"history_index_jobs"}
         if schema < 6:
             expected_tables -= {"memory_index_jobs"}
         if schema == 4:
@@ -251,7 +254,7 @@ class DataService:
             or not isinstance(attachments, dict)
         ):
             raise PolicyDenied("InvalidBackupTables")
-        if schema < 6:
+        if schema < 7:
             tables = dict(tables)
             for name in set(TABLES) - expected_tables:
                 tables[name] = []
@@ -356,7 +359,7 @@ class DataService:
                             row["memory_semantic_enabled"] = False
                             row["memory_retrieval_generation"] += 1
                             row["memory_settings_generation"] += 1
-                        elif table in {"memory_jobs", "memory_index_jobs"}:
+                        elif table in {"memory_jobs", "memory_index_jobs", "history_index_jobs"}:
                             row["status"] = "cancelled"
                             row["lease_until"] = None
                             row["error_type"] = "RestoreQuarantine"

@@ -141,4 +141,4 @@ sequenceDiagram
 
 [边界测试](../../tests/integrations/test_boundaries.py)覆盖私网目标、符号链接、有界 HTTP 与发送不确定性。[研究集成测试](../../tests/agent/test_research_integration.py)在真实图中覆盖来源攻击、失败/截断证据、预算与取消。[工具测试](../../tests/agent/test_tools.py)覆盖加法校验，[runtime 测试](../../tests/agent/test_runtime.py)覆盖实际 SDK 序列化与工具错误处理。这里的测试描述不扩大独立验证记录中的真实服务证据。
 
-本分支新增[有界聊天历史工具](../reference/history-retrieval.zh-CN.md)，在 auto/use 同时开启时供模型按需调用；历史检索与个人事实向量检索是独立链路，渐进历史语义缓存/混合召回已实现，后台覆盖与质量评测仍待完成。
+本分支新增[有界聊天历史工具](../reference/history-retrieval.zh-CN.md)，在 auto/use 同时开启时供模型按需调用；历史检索与个人事实向量检索是独立链路，渐进历史语义缓存/混合召回已实现，持久后台索引已实现，质量评测仍待完成。

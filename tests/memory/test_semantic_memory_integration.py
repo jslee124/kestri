@@ -95,7 +95,7 @@ async def test_default_off_enqueue_index_once_and_version_invalidation(vector_st
     )
     assert len(await store.all("SELECT * FROM kestri.memory_index_jobs WHERE status='queued'")) == 1
     await store.open()
-    assert (await store.one("SELECT max(version) AS n FROM kestri.migrations"))["n"] == 7
+    assert (await store.one("SELECT max(version) AS n FROM kestri.migrations"))["n"] == 8
 
 
 async def test_index_lease_reclaim_forget_and_closed_setting_guard(vector_store: Any) -> None:
@@ -324,7 +324,7 @@ async def test_backup_omits_vectors_restore_disables_all_memory_use(
     service = DataService(store, Workspace(tmp_path / "source"), configured())
     path = await service.backup(tmp_path / "bundle.json")
     payload = read_private(path)
-    assert payload["schema"] == 6 and "memory_embeddings" not in payload["tables"]
+    assert payload["schema"] == 7 and "memory_embeddings" not in payload["tables"]
     assert payload["tables"]["memory_index_jobs"]
     await store.execute("TRUNCATE " + ",".join("kestri." + name for name in TABLES) + " CASCADE")
     for table in ("checkpoint_writes", "checkpoint_blobs", "checkpoints"):
@@ -471,6 +471,7 @@ async def test_legacy_schema5_restore_defaults_and_no_vector_replay(
     bundle = read_private(await source.backup(tmp_path / "original.json"))
     bundle["schema"] = 5
     del bundle["tables"]["memory_index_jobs"]
+    del bundle["tables"]["history_index_jobs"]
     for row in bundle["tables"]["conversations"]:
         for field in (
             "memory_use_enabled",

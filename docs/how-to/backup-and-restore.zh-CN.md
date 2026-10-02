@@ -46,4 +46,6 @@ uv run kestri data status
 
 schema 6 恢复还关闭记忆 use 和语义召回。重新输入需要的事实后 `/memory use on`；向量部署就绪时再单独开启语义。派生向量不从备份恢复。
 
-迁移 7 增加可选、可重建的 `history_embeddings`（来源 ID/hash、配置代次及向量，无聊天正文副本），详情见[历史参考](../reference/history-retrieval.zh-CN.md)。逻辑备份仍 schema 6，省略事实与历史向量；恢复需要派生索引为空，并关闭 auto/use/semantic。来源变化、run 历史到期及开关/水位变更会清除历史缓存。
+迁移 7 增加可选、可重建的 `history_embeddings`（来源 ID/hash、配置代次及向量，无聊天正文副本），详情见[历史参考](../reference/history-retrieval.zh-CN.md)。逻辑备份当前为 schema 7，省略事实与历史向量；恢复需要派生索引为空，并关闭 auto/use/semantic。来源变化、run 历史到期及开关/水位变更会清除历史缓存。
+
+迁移 8 增加持久 `history_index_jobs`；逻辑 schema 7 备份包含此表并继续省略向量，恢复取消历史作业，旧 schema 4/5/6 补空作业。预算及租约契约见[历史参考](../reference/history-retrieval.zh-CN.md)。

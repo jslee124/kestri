@@ -44,6 +44,12 @@ Migration 7 adds revocable derived history vectors with a separate complete-mess
 
 Six controlled semantic history tests cover dense-only candidates, fixed-category fallback, usage, in-flight revocation, coverage bounds, main-graph search/read, and backup/restore. Local pgvector: **223 passed**; ordinary PostgreSQL: **204 passed, 19 vector cases skipped**. Ruff, mypy (40 source modules), 94 bilingual docs, and wheel/sdist checks pass. No deployment or actual private-dialogue provider request occurred; these checks do not establish Chinese quality gates.
 
+## Background history indexing
+
+Migration 8, `HistoryIndexWorker`, valid-lease billing, foreground priority and transactional publication are implemented. Background registration covers all eligible post-floor sources beyond the nine query-time additions; append/edit increments the source revision and blocks old in-flight publication. The shared maintenance monthly cap includes historical indexing, and foreground caches avoid repeated charges. Schema 7 includes jobs, strictly accepts 4/5/6, and disables/cancels imported work. The [history reference](../reference/history-retrieval.md) defines the current contract.
+
+Nine job cases: local pgvector **232 passed**; ordinary PostgreSQL **204 passed, 28 vector cases skipped**. Ruff, mypy (41 source modules), 94 documents and wheel/sdist checks pass. The preceding 223 count describes the previous increment. No deployment or actual private-service request occurred; Chinese quality evaluation and isolated live acceptance remain pending.
+
 ## Remaining increments
 
-Next: durable background historical indexing to expand progressive coverage, labeled Chinese evaluation corpus, isolated live Telegram/provider recall and restart/forget/restore acceptance. Dense threshold and communication-profile markers are provisional until evaluated. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.
+Next: Chinese retrieval-threshold calibration, labeled Chinese evaluation corpus, isolated live Telegram/provider recall and restart/forget/restore acceptance. Dense threshold and communication-profile markers are provisional until evaluated. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.
