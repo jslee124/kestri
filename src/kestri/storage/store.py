@@ -68,6 +68,10 @@ class Store:
                     files("kestri").joinpath("storage/sql/006_semantic_memory.sql").read_text(),
                     prepare=False,
                 )
+                await conn.execute(
+                    files("kestri").joinpath("storage/sql/007_history_embeddings.sql").read_text(),
+                    prepare=False,
+                )
 
     async def close(self) -> None:
         await self.pool.close()

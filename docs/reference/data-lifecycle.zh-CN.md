@@ -57,3 +57,5 @@ schema 6 包含 `memory_jobs`、`memory_sources`、`memory_events`；schema 4 �
 ## Schema 6 与派生索引
 
 当前备份为 schema 6、17 张业务表，包含 `memory_index_jobs`，省略可重建 `memory_embeddings`。明确兼容 schema 4/5，严格校验旧/新列。恢复要求派生索引为空、关闭记忆 use/semantic 与提取设置，取消索引作业，保留既有隔离/暂停任务政策。重新授权需要的事实后 `/memory use on`，语义能力单独开启。状态/版本/hash 变化通过迁移 6 的 trigger 删除向量，含来源到期/清空。索引作业的 hash/错误不复制事实正文。[语义参考](semantic-memory.zh-CN.md)维护索引/召回细节。
+
+迁移 7 增加可选、可重建的 `history_embeddings`（来源 ID/hash、配置代次及向量，无聊天正文副本），详情见[历史参考](../reference/history-retrieval.zh-CN.md)。逻辑备份仍 schema 6，省略事实与历史向量；恢复需要派生索引为空，并关闭 auto/use/semantic。来源变化、run 历史到期及开关/水位变更会清除历史缓存。

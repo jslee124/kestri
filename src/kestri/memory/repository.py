@@ -76,7 +76,8 @@ async def memory_command(
                 (chat_id,),
             )
         return (
-            "已开启语义召回：有效记忆与查询将发送到北京 DashScope，候选筛选使用 DeepSeek。"
+            "已开启语义召回：有效记忆、合格历史片段与查询将发送到北京 DashScope，"
+            "事实候选筛选使用 DeepSeek。"
             "只重建有效事实索引，不扫描旧聊天；/memory semantic off 可关闭。"
             if semantic and enabled
             else "已关闭语义召回，保留本地索引并回到词项召回。"

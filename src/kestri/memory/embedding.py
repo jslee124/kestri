@@ -46,7 +46,12 @@ def vector_literal(values: tuple[float, ...]) -> str:
 
 
 async def charged_embedding(
-    client: EmbeddingClient, texts: list[str], budget: Budget, kind: str
+    client: EmbeddingClient,
+    texts: list[str],
+    budget: Budget,
+    kind: str,
+    *,
+    recipe: str = "personal-fact-or-query-v1",
 ) -> EmbeddingBatch:
     if not 1 <= len(texts) <= 10 or any(not t.strip() or len(t.encode()) > 8192 for t in texts):
         raise PolicyDenied("EmbeddingInputLimit")
@@ -63,6 +68,7 @@ async def charged_embedding(
         "provider": "dashscope",
         "space": embedding_space(client.settings),
         "original_currency": "CNY",
+        "input_recipe": recipe,
         "cny_per_million": str(rate),
         "usd_per_cny": str(conversion),
         "conversion_version": budget.settings.embedding_conversion_version,

@@ -3,14 +3,19 @@
 import hashlib
 import json
 from datetime import UTC, datetime
+from typing import Any
 
 from langchain_core.tools import BaseTool, tool
+from psycopg import AsyncConnection
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from kestri.agent.budget import Budget
 from kestri.errors import PolicyDenied, ProviderFailure
+from kestri.history.semantic import HistorySemantic
+from kestri.integrations.embedding import EmbeddingClient
+from kestri.memory.embedding import embedding_space
 from kestri.memory.extractor import SECRET_PATTERN
-from kestri.memory.retriever import lexical_rank
+from kestri.memory.retriever import lexical_rank, reciprocal_rank_fusion
 from kestri.storage.store import Row, Store
 
 
@@ -67,8 +72,11 @@ def segment(rows: list[Row]) -> Row | None:
 
 
 class HistoryRetriever:
-    def __init__(self, store: Store, budget: Budget, run: Row) -> None:
+    def __init__(
+        self, store: Store, budget: Budget, run: Row, client: EmbeddingClient | None = None
+    ) -> None:
         self.store, self.budget, self.run = store, budget, run
+        self.semantic = HistorySemantic(self, client) if client else None
         self.handles: dict[str, tuple[int, str, tuple[int, int, int]]] = {}
 
     async def state(self) -> Row:
@@ -100,10 +108,17 @@ class HistoryRetriever:
         before: datetime | None,
         after: datetime | None,
         owner_id: int | None = None,
+        *,
+        conn: AsyncConnection[Row] | None = None,
     ) -> list[Row]:
+        async def all_rows(sql: str, params: tuple[Any, ...]) -> list[Row]:
+            if conn is not None:
+                return await (await conn.execute(sql, params)).fetchall()
+            return await self.store.all(sql, params)
+
         # SQL bounds metadata first, then loads at most 12 eligible messages per turn.
         # Runs beyond this bounded newest window are not claimed to have been searched.
-        owners = await self.store.all(
+        owners = await all_rows(
             "SELECT m.id,m.run_id FROM kestri.messages m JOIN kestri.runs r ON r.id=m.run_id "
             "LEFT JOIN kestri.tasks t ON t.id=m.task_id "
             "WHERE m.chat_id=%s AND m.direction='in' AND m.provenance='direct' "
@@ -128,7 +143,7 @@ class HistoryRetriever:
         )
         result = []
         for owner in owners:
-            rows = await self.store.all(
+            rows = await all_rows(
                 "SELECT id,telegram_id,direction,content,created_at FROM kestri.messages "
                 "WHERE chat_id=%s AND run_id=%s AND id>=%s AND id>%s "
                 "AND ((direction='in' AND provenance='direct') OR "
@@ -137,12 +152,13 @@ class HistoryRetriever:
                 (self.run["chat_id"], owner["run_id"], owner["id"], self.version(state)[2]),
             )
             # An oversized owner/answer invalidates the whole turn, never a partial claim.
-            count = await self.store.one(
+            counts = await all_rows(
                 "SELECT count(*) AS n FROM kestri.messages WHERE chat_id=%s AND run_id=%s "
                 "AND id>=%s AND id>%s AND ((direction='in' AND provenance='direct') OR "
                 "(direction='out' AND provenance='context'))",
                 (self.run["chat_id"], owner["run_id"], owner["id"], self.version(state)[2]),
             )
+            count = counts[0] if counts else None
             if (
                 count
                 and count["n"] == len(rows)
@@ -173,8 +189,24 @@ class HistoryRetriever:
             raise ValueError("InvalidHistoryTimeRange")
         state = await self.state()
         rows = await self.turns(state, end, start)
+        ranked = lexical_rank(rows, query)
+        method, indexed, fallback = "bounded_lexical", 0, None
+        if (
+            self.semantic
+            and state["memory_semantic_enabled"]
+            and state["memory_embedding_space"] == embedding_space(self.semantic.client.settings)
+        ):
+            try:
+                dense, indexed = await self.semantic.rank(state, rows, query)
+                ranked = reciprocal_rank_fusion(ranked, dense)
+                method = "bounded_hybrid" if indexed else "bounded_lexical"
+            except Exception:
+                fallback = "SemanticUnavailable"
+                await self.store.event(
+                    self.run["id"], "history_retrieval_fallback", {"category": fallback}
+                )
         results: list[Row] = []
-        for item in lexical_rank(rows, query)[:limit]:
+        for item in ranked[:limit]:
             # Re-read exact source before issuing a handle; deletion or alteration denies it.
             current = await self.turns(state, end, start, item["owner_id"])
             if not current or current[0]["id"] != item["id"]:
@@ -198,9 +230,13 @@ class HistoryRetriever:
         return self.output(
             {
                 "status": "searched",
-                "method": "bounded_lexical",
+                "method": method,
+                "indexed_turns": indexed,
+                "eligible_turns": len(rows),
+                "fallback": fallback,
                 "coverage": "Newest at most 200 eligible owner turns in requested time range; "
-                "oversized turns skipped. No semantic search or exhaustive archive claim.",
+                "oversized turns skipped. Semantic coverage is indexed_turns only; "
+                "unindexed turns remain lexical. No exhaustive archive claim.",
                 "untrusted": True,
                 "results": results,
             }
@@ -232,7 +268,7 @@ class HistoryRetriever:
         async def search_history(
             query: str, before: str | None = None, after: str | None = None, limit: int = 5
         ) -> str:
-            """Search opted-in owner chat history with bounded lexical matching. Times must
+            """Search opted-in owner chat history with bounded lexical/hybrid matching. Times must
             be timezone-aware ISO-8601; after inclusive, before exclusive. No matches means
             no relevant result in the bounded window, not proof the whole archive is empty."""
             return await self.search(query, before, after, limit)

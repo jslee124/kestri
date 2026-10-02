@@ -36,6 +36,14 @@ Controlled verification: **208 passed, no skipped cases** with that pgvector ima
 
 The history increment has nine controlled tests including actual-framework HTTP mocks, task scoping, and the 200-turn window. Full local pgvector suite: **217 passed**; ordinary PostgreSQL: **204 passed, 13 vector tests skipped**. Ruff, mypy (33 modules), 92 documents, and packaging checks pass. The preceding 208 count describes the previous semantic-fact increment. No private-dialogue provider calls or deployment acceptance were performed; full Memory v2 still awaits evaluation.
 
+## Domain packages and historical semantic cache
+
+Source and tests now follow agent/memory/history/tasks/storage/integrations, with entry/configuration/application composition at the root. The [layout guide](repository-layout.md) and source links are synchronized. The directory commit is separate from behavior changes and preserves existing SQL object names.
+
+Migration 7 adds revocable derived history vectors with a separate complete-message JSON encoding space. A run indexes at most nine turns on its first search, with at most three distinct query embedding attempts and successful-query caching. Exact cosine and lexical candidates fuse using RRF; output reports eligible/indexed counts without claiming complete archive coverage. Source changes, run-history expiry, and settings/floor changes purge caches; reads and publication revalidate hashes. Logical backup remains schema 6 and omits both vector tables; restore disables all memory switches. See the [history reference](../reference/history-retrieval.md).
+
+Six controlled semantic history tests cover dense-only candidates, fixed-category fallback, usage, in-flight revocation, coverage bounds, main-graph search/read, and backup/restore. Local pgvector: **223 passed**; ordinary PostgreSQL: **204 passed, 19 vector cases skipped**. Ruff, mypy (40 source modules), 94 bilingual docs, and wheel/sdist checks pass. No deployment or actual private-dialogue provider request occurred; these checks do not establish Chinese quality gates.
+
 ## Remaining increments
 
-Next: indexed historical segments and hybrid recall, labeled Chinese evaluation corpus, isolated live Telegram/provider recall and restart/forget/restore acceptance. Dense threshold and communication-profile markers are provisional until evaluated. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.
+Next: durable background historical indexing to expand progressive coverage, labeled Chinese evaluation corpus, isolated live Telegram/provider recall and restart/forget/restore acceptance. Dense threshold and communication-profile markers are provisional until evaluated. The memory-use switch, semantic storage/recall and embedding currency accounting are now implemented. Natural-language ambiguous correction resolution and proactive change notices remain deferred; explicit ID controls are available. Complete Memory v2 has not been accepted.

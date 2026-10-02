@@ -2,7 +2,7 @@
 
 [简体中文](memory-v2.zh-CN.md) · [Documentation](../README.md)
 
-Date: 2026-10-02. Status: agreed product direction and implementation specification; durable opt-in automatic extraction is implemented on the feature branch; vector storage and hybrid retrieval are implemented on the feature branch; bounded lexical history tools are implemented; hybrid history indexing remains outstanding. The independently implemented [embedding connection](../reference/embedding.md) is a prerequisite only. [ADR-0007](../decisions/0007-automatic-semantic-memory.md) records the transition from explicit-only memory.
+Date: 2026-10-02. Status: agreed product direction and implementation specification; durable opt-in automatic extraction is implemented on the feature branch; vector storage and hybrid retrieval are implemented on the feature branch; bounded lexical history tools are implemented; progressive historical vector caching/hybrid recall is implemented; durable background coverage remains outstanding. The independently implemented [embedding connection](../reference/embedding.md) is a prerequisite only. [ADR-0007](../decisions/0007-automatic-semantic-memory.md) records the transition from explicit-only memory.
 
 Proposal extraction and persistent worker implementation are complete; see [progress](../development/memory-v2-progress.md) for precise delivery boundaries.
 

@@ -2,7 +2,7 @@
 
 [English](memory-v2.md) · [文档](../README.zh-CN.md)
 
-日期：2026-10-02。状态：已确认产品方向与实施规格；持久化、显式开启的自动提取已在功能分支实现；向量存储与混合检索已在功能分支实现；有界词项历史工具已实现，历史混合索引仍待完成。独立实现的 [embedding 接入](../reference/embedding.zh-CN.md)只是前置能力。[ADR-0007](../decisions/0007-automatic-semantic-memory.zh-CN.md)记录显式记忆向自动记忆的转变。
+日期：2026-10-02。状态：已确认产品方向与实施规格；持久化、显式开启的自动提取已在功能分支实现；向量存储与混合检索已在功能分支实现；有界词项历史工具已实现，历史渐进语义缓存/混合召回已实现，后台完整覆盖仍待完成。独立实现的 [embedding 接入](../reference/embedding.zh-CN.md)只是前置能力。[ADR-0007](../decisions/0007-automatic-semantic-memory.zh-CN.md)记录显式记忆向自动记忆的转变。
 
 提案提取与持久 worker 已实现，准确交付边界见[实施进度](../development/memory-v2-progress.zh-CN.md)。
 

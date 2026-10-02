@@ -304,15 +304,20 @@ class DataService:
                     ).fetchone()
                     if row and row["n"]:
                         raise PolicyDenied("RestoreRequiresEmptyDatabase")
-                derived = await (
-                    await conn.execute("SELECT to_regclass('kestri.memory_embeddings') AS name")
-                ).fetchone()
-                if derived and derived["name"]:
-                    count = await (
-                        await conn.execute("SELECT count(*) AS n FROM kestri.memory_embeddings")
+                for table in ("memory_embeddings", "history_embeddings"):
+                    derived = await (
+                        await conn.execute("SELECT to_regclass(%s) AS name", ("kestri." + table,))
                     ).fetchone()
-                    if count and count["n"]:
-                        raise PolicyDenied("RestoreRequiresEmptyIndexes")
+                    if derived and derived["name"]:
+                        count = await (
+                            await conn.execute(
+                                sql.SQL("SELECT count(*) AS n FROM kestri.{}").format(
+                                    sql.Identifier(table)
+                                )
+                            )
+                        ).fetchone()
+                        if count and count["n"]:
+                            raise PolicyDenied("RestoreRequiresEmptyIndexes")
                 if any(entry.name != "backups" for entry in self.workspace.root.iterdir()):
                     raise PolicyDenied("RestoreRequiresEmptyWorkspace")
                 checkpoint = await (
