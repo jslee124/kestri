@@ -8,8 +8,8 @@ Updated: 2026-10-02. Status: M0, M1, M2, M3, and M4 complete first-version deliv
 
 - [Beijing embedding connection](reference/embedding.md): implemented settings, adapter, and independent smoke.
 - [Connection validation](development/embedding-validation.md): live evidence and limits.
-- [Memory v2 specification](design/memory-v2.md): automatic facts, semantic recall, history tools, and lifecycle; unimplemented.
-- [Memory v2 progress](development/memory-v2-progress.md): extractor implemented; durable jobs and runtime integration pending.
+- [Memory v2 specification](design/memory-v2.md): automatic facts, semantic recall, history tools, and lifecycle; automatic extraction implemented, semantic retrieval pending.
+- [Memory v2 progress](development/memory-v2-progress.md): extractor and durable runtime implemented; semantic recall pending.
 - [ADR-0007](decisions/0007-automatic-semantic-memory.md): automatic and semantic memory direction.
 
 ## First-version use and operations

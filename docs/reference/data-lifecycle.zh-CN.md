@@ -42,10 +42,14 @@
 
 ## 保守恢复
 
-格式 `kestri-data-v1`、schema 4 包含业务表和已提取证据原文，排除 LangGraph checkpoint/内部思考和密钥。这是应用逻辑快照，不是 `pg_dump` 或完整崩溃状态镜像。schema 变更需明确决定迁移/兼容方式。
+格式 `kestri-data-v1`、schema 5 包含业务表和已提取证据原文，排除 LangGraph checkpoint/内部思考和密钥。这是应用逻辑快照，不是 `pg_dump` 或完整崩溃状态镜像。schema 变更需明确决定迁移/兼容方式。
 
 恢复隔离**所有导入的活跃记忆**、暂停**所有导入的未删除任务**，重置前台上下文，中断排队/运行工作，将待发送/发送中结果标为不确定，将未解决费用预留标为未知。已删除/忘记记录继续无效。`/memory` 显示隔离警告，想继续使用的事实需重新 `/remember`；`/tasks` 提示导入任务，仅对当前仍需要的约定显式恢复。旧备份无法静默恢复后来撤销的权限。
 
 恢复后第一次启动 Telegram 会丢弃该边界之前的待处理更新，并发送恢复通知。请在通知后发送新指令，防止旧命令再次授权恢复数据。普通重启不丢弃更新。边界采用 [Telegram getUpdates](https://core.telegram.org/bots/api#getupdates) 的负 offset 行为，核对于 2026-10-02。
 
 受控恢复失败会回滚数据库并删除新建证据。文件操作期间突然退出/断电可能留下孤立文件；保留源备份，检查后换空目标重试。不宣称所有崩溃点均原子恢复。参见[备份恢复指南](../how-to/backup-and-restore.zh-CN.md)和 [ADR-0006](../decisions/0006-conservative-data-recovery.zh-CN.md)。
+
+## 自动记忆生命周期
+
+schema 5 包含 `memory_jobs`、`memory_sources`、`memory_events`；schema 4 恢复补新列的保守默认值、新表为空。恢复总是关闭提取、增加开关代次、取消作业，隔离 active 与 candidate 记忆，不从恢复文本排入 embedding/提取。删除归档来源会级联删除引用，使依赖的自动 active/candidate 事实到期、取消受影响作业并使上下文失效。清空数据还删除全部来源引用并关闭提取。复核/到期过滤先于召回。事实与原始归档继续分离，显式事实保留独立意图。

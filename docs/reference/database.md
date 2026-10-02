@@ -2,11 +2,11 @@
 
 [简体中文](database.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: the implemented schema after migrations 1–4 and the checkpoint saver installed from `uv.lock`. This is a source-level reference, not an inspection of an owner's live database.
+Updated: 2026-10-02. Scope: the implemented schema after migrations 1–5 and the checkpoint saver installed from `uv.lock`. This is a source-level reference, not an inspection of an owner's live database.
 
 ## Storage ownership
 
-PostgreSQL holds two groups of tables. Kestri owns 14 tables in the `kestri` schema; LangGraph's `AsyncPostgresSaver` owns four checkpoint tables in `public`. Retrieved text lives separately in the application workspace. Database rows contain file identifiers and provenance, not full page bodies.
+PostgreSQL holds two groups of tables. Kestri owns 17 tables in the `kestri` schema; LangGraph's `AsyncPostgresSaver` owns four checkpoint tables in `public`. Retrieved text lives separately in the application workspace. Database rows contain file identifiers and provenance, not full page bodies.
 
 The authoritative business definitions are [001_initial.sql](../../src/kestri/sql/001_initial.sql), [002_tasks.sql](../../src/kestri/sql/002_tasks.sql), [003_memory_context.sql](../../src/kestri/sql/003_memory_context.sql), and [004_data_lifecycle.sql](../../src/kestri/sql/004_data_lifecycle.sql). [Store](../../src/kestri/store.py) implements transactions; [DataService](../../src/kestri/data.py) implements retention and logical backup.
 
@@ -160,7 +160,7 @@ There is no dedicated full-text, vector, `tasks.next_due`, or evidence-URL index
 | Cost reservation | `kestri-budget` transaction advisory lock; check monthly/per-run totals and insert reservation |
 | Maintenance | `kestri-data` transaction advisory lock; operator also checks bot lease; conversation rows locked for content changes |
 
-A pool of 1–6 connections uses autocommit for standalone statements, explicit transactions for grouped operations, a 10-second statement timeout, and a 5-second lock timeout. Foreign keys do not use automatic cascade deletion. Content retention clears or marks dependent business rows deliberately, preserving identifiers and ledgers.
+A pool of 1–6 connections uses autocommit for standalone statements, explicit transactions for grouped operations, a 10-second statement timeout, and a 5-second lock timeout. Memory source quotes use cascade deletion on archive removal; other retained business foreign keys do not cascade. Content retention clears or marks dependent business rows deliberately, preserving identifiers and ledgers.
 
 Database commit and external HTTP/file operations cannot form one atomic transaction. A file can become orphaned if its metadata insert fails; a send can succeed remotely before local confirmation. Recovery treats these gaps conservatively rather than claiming complete crash atomicity.
 
@@ -179,9 +179,9 @@ Each of the three state tables also has a thread-ID index. Kestri uses run UUID 
 
 ## Migration and data lifecycle
 
-`Store.open()` executes all four idempotent migration files in order and inserts version records. It does not select only files absent from `migrations`, and there is no down-migration runner. Migration 1 introduces execution/delivery/evidence, 2 adds tasks, 3 adds memory and epochs, and 4 adds content expiration/restore markers and deferrable constraints. Treat incompatible changes as explicit migrations and review backup compatibility.
+`Store.open()` executes all five idempotent migration files in order and inserts version records. It does not select only files absent from `migrations`, and there is no down-migration runner. Migration 1 introduces execution/delivery/evidence, 2 adds tasks, 3 adds memory and epochs, and 4 adds content expiration/restore markers and deferrable constraints. Treat incompatible changes as explicit migrations and review backup compatibility.
 
-Logical backups contain 13 business tables (excluding `migrations`) and retrieved evidence text. They exclude all framework checkpoints and credentials. Restore requires an empty target, resets graph continuity, quarantines active memory, pauses tasks, interrupts unfinished work, and marks unfinished delivery uncertain. It does not restore a runnable crash image.
+Logical backups contain 16 business tables (excluding `migrations`) and retrieved evidence text. They exclude all framework checkpoints and credentials. Restore requires an empty target, resets graph continuity, quarantines active memory, pauses tasks, interrupts unfinished work, and marks unfinished delivery uncertain. It does not restore a runnable crash image.
 
 Cleanup can delete archived messages, clear request/result/acknowledgement bodies, expire evidence, and clear all graph state while idle. It retains IDs, deduplication, identity, and cost records. Read [data lifecycle](data-lifecycle.md) for exact retention and [backup and restore](../how-to/backup-and-restore.md) for operator procedures.
 
@@ -194,3 +194,15 @@ Cleanup can delete archived messages, clear request/result/acknowledgement bodie
 - Restore/retention: [data lifecycle integration tests](../../tests/test_data_lifecycle_integration.py).
 
 These database tests use a disposable `kestri_test` database and drop its business schema. Follow [run checks](../how-to/run-checks.md); do not point them at personal data.
+
+## Automatic-memory migration 5
+
+[005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) adds conversation `auto_memory_enabled`, `memory_revision`, `memory_settings_generation`, `memory_activation_watermark`, `automatic_history_floor`; message `provenance` defaults to `legacy`, with new ingestion marking `direct`, `forwarded`, `external_reply` or outbound `context`. Memory adds `category`, `origin`, `revision`, `fact_key`, `valid_from`, `review_after`, `last_source_message_id` and `candidate` status. `last_source_message_id` is an archive ID; existing `source_message_id` remains a Telegram ID.
+
+| Table | Important fields / invariants |
+| --- | --- |
+| `memory_jobs` | UUID `id`, owner, archive source, extractor version, settings generation, status, maintenance run, lease token/deadline, attempts, availability, captured revision/epoch, safe error, timestamps; unique source/version; archive deletion sets source null |
+| `memory_sources` | Composite memory/archive primary key, exact quote and Unicode offsets; deferred foreign keys; archive deletion cascades quote removal |
+| `memory_events` | Bigserial `id`, owner, memory/job references, operation and timestamp; no prompt text |
+
+`kestri_memory_jobs_pending(chat_id,status,available_at)` supports maintenance scans. Owner conversation locks serialize controls/claims/publication; no model HTTP occurs under these transactions. Extraction cost kind is `memory_extract`, using the existing USD ledger. Backups include 16 business tables, excluding migration metadata. Repeated startup migrations preserve candidate states. These changes still contain no vector column or pgvector extension. [Job tests](../../tests/test_memory_jobs_integration.py) verify transitions and conservative restore on disposable PostgreSQL.

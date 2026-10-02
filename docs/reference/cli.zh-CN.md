@@ -79,7 +79,7 @@
 
 | 变量 | Bot 默认 | 校验 / 含义 |
 | --- | --- | --- |
-| `KESTRI_MEMORY_LIMIT` | 64 | 整数 1–64 条有效记录 |
+| `KESTRI_MEMORY_LIMIT` | 64 | 整数 1–64 条有效显式记录 |
 | `KESTRI_MEMORY_CONTEXT_LIMIT` | 8 | 整数 1–16 条每次请求选中记录 |
 | `KESTRI_CONTEXT_TRIGGER_RATIO` | 0.70 | 本地输入阈值的 0.1–0.9 |
 | `KESTRI_CONTEXT_KEEP_MESSAGES` | 12 | 整数 4–40；工具边界可能改变实际保留数量 |
@@ -127,3 +127,7 @@
 Data 输出 JSON：status 为 `counts` 与 `last_maintenance`；backup/export 为绝对 `path` 与 `private=true`；restore 为行/文件数和策略；cleanup 为截止时间/数量及是否 deferred。预览成功不证明 apply 的导入 SQL、外键或磁盘写入成功。Bot 长期运行，打印启动身份通知，不打印逐模型 trace。Smoke 打印证据路径和验证结果。错误报告类型/分类，隐藏原始私人异常正文。
 
 契约背后的算法见[执行/投递](../design/execution-and-delivery.zh-CN.md)、[模型/计费](../design/model-and-accounting.zh-CN.md)、[任务调度](../design/task-scheduling.zh-CN.md)、[上下文](../design/context-management.zh-CN.md)和[数据维护](../design/data-maintenance.zh-CN.md)。
+
+## 自动记忆配置
+
+四项 `ResearchSettings` 提取限制和主人命令见[记忆/上下文](memory-and-context.zh-CN.md)。`KESTRI_MEMORY_LIMIT` 现在统计活跃显式指令条目，前台排队/运行容量排除维护 run。不存在静默开启自动提取的环境开关。

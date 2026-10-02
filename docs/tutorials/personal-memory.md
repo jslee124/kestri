@@ -23,3 +23,7 @@ Restart with `docker compose restart app`, then inspect `/memory` again. Active 
 Continue ordinary conversation. Near 70% of the configured input admission budget, Kestri summarizes older history while retaining recent complete tool interactions. Original messages stay in the archive. `/runs` and `/usage` retain outcomes and summary spending. A failed/oversized summary stops safely; `/new` starts fresh context without forgetting personal memory.
 
 For optional expiry, see [memory/context reference](../reference/memory-and-context.md). Do not store API keys or passwords. Forgetting is removal from active retrieval, not deletion of Telegram messages, historical copies, or backups. M4 provides separate [data lifecycle controls](../reference/data-lifecycle.md).
+
+## Learn from ordinary dialogue
+
+After deploying this feature branch, send `/memory auto on`, then state a direct preference/goal normally. Let foreground work finish; inspect `/memory`, `/memory pending` and `/memory changes`. Confirm a desired candidate with `/correct ID full-content`, or dismiss it with `/forget ID`. `/memory auto off` prevents new extraction; existing facts remain usable. Old conversations are not backfilled. This uses DeepSeek; semantic recall with DashScope embeddings remains pending. See [runtime progress](../development/memory-v2-progress.md).

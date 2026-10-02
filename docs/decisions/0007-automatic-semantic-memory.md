@@ -2,7 +2,7 @@
 
 [简体中文](0007-automatic-semantic-memory.zh-CN.md) · [Documentation](../README.md)
 
-Date: 2026-10-02. Status: accepted direction; embedding connection implemented, remaining behavior specified but pending implementation.
+Date: 2026-10-02. Status: accepted direction; embedding connection and durable opt-in extraction implemented on the feature branch; semantic retrieval and live acceptance pending.
 
 ## Context
 
@@ -21,3 +21,5 @@ Adding embeddings alone cannot learn which facts matter. Automatic writes alone 
 ## Consequences and review
 
 Owner opt-in and inspect/correct/forget controls accompany increased personalization. Background jobs, concurrency, budgets, provenance, backup versions and cleanup require implementation before automatic use. Provider inputs leave the machine; local model support is a possible later alternative. Broad history cutoffs sacrifice unrelated old-history recall and must be disclosed in receipts. The standalone smoke is not a memory-quality evaluation or vector-database acceptance. See [connection reference](../reference/embedding.md) and [evidence](../development/embedding-validation.md).
+
+Current implementation boundaries and adjustments are recorded in [progress](../development/memory-v2-progress.md); deployed M0–M4 acceptance remains historical evidence, not automatic-memory acceptance.

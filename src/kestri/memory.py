@@ -30,7 +30,16 @@ def display(memory: Row) -> str:
         f"记忆 {str(memory['id'])[:8]} · {scope} · {memory['status']}\n"
         f"内容：{memory['content']}\n来源消息：{memory['source_message_id']}\n"
         f"创建：{memory['created_at'].isoformat()}；更新：{memory['updated_at'].isoformat()}\n"
-        f"到期：{memory['expires_at'].isoformat() if memory['expires_at'] else '无'}"
+        f"来源类型：{memory.get('origin', 'explicit_command')}；"
+        f"类别：{memory.get('category', 'background')}\n"
+        + (
+            f"来源归档：/history {memory['last_source_message_id']}\n"
+            if memory.get("last_source_message_id")
+            else ""
+        )
+        + (f"生效：{memory['valid_from'].isoformat()}\n" if memory.get("valid_from") else "")
+        + (f"复核：{memory['review_after'].isoformat()}\n" if memory.get("review_after") else "")
+        + f"到期：{memory['expires_at'].isoformat() if memory['expires_at'] else '无'}"
         + (
             "\n恢复隔离，不参与上下文；重新启用请用完整 /remember 指令保存。"
             if memory["status"] == "quarantined"
@@ -145,7 +154,7 @@ class MemoryService:
                             await conn.execute(
                                 (
                                     "SELECT * FROM kestri.memories WHERE chat_id=%s "
-                                    "AND status='active' AND id::text LIKE %s FOR "
+                                    "AND status IN ('active','candidate') AND id::text LIKE %s FOR "
                                     "UPDATE"
                                 ),
                                 (run["chat_id"], parts[0] + "%"),
@@ -170,13 +179,14 @@ class MemoryService:
                             else:
                                 notice, changed = (
                                     f"已忘记记忆 {str(old['id'])[:8]}；"
-                                    "已移出有效检索和对话上下文。历史仍保留。",
+                                    "已移出有效检索和对话上下文；自动提取不再使用此刻以前的聊天。"
+                                    "历史仍保留。",
                                     True,
                                 )
                             if changed:
                                 await conn.execute(
                                     (
-                                        "UPDATE kestri.memories SET status=%s,"
+                                        "UPDATE kestri.memories SET status=%s,revision=revision+1,"
                                         "updated_at=now() WHERE id=%s"
                                     ),
                                     (
@@ -187,10 +197,18 @@ class MemoryService:
                         else:
                             notice = "未作变更。目标不明确或格式不完整，请用 /memory 查看 ID。"
                 if changed:
+                    if action == "forget":
+                        await conn.execute(
+                            "UPDATE kestri.conversations SET automatic_history_floor="
+                            "(SELECT COALESCE(max(id),0) FROM kestri.messages WHERE "
+                            "chat_id=%s) WHERE chat_id=%s",
+                            (run["chat_id"], run["chat_id"]),
+                        )
                     await conn.execute(
                         (
                             "UPDATE kestri.conversations SET thread_id=NULL,"
-                            "memory_epoch=memory_epoch+1,updated_at=now() "
+                            "memory_revision=memory_revision+1,memory_epoch=memory_epoch+1,updated_at=now()"
+                            " "
                             "WHERE chat_id=%s"
                         ),
                         (run["chat_id"],),
@@ -222,7 +240,10 @@ class MemoryService:
             return "未保存。凭据应保存在本地秘密配置，不能进入个人记忆。", False
         count = await (
             await conn.execute(
-                ("SELECT count(*) AS n FROM kestri.memories WHERE chat_id=%s AND status='active'"),
+                (
+                    "SELECT count(*) AS n FROM kestri.memories WHERE chat_id=%s AND "
+                    "status='active' AND origin='explicit_command'"
+                ),
                 (run["chat_id"],),
             )
         ).fetchone()
@@ -233,8 +254,9 @@ class MemoryService:
                 (
                     "INSERT INTO kestri.memories(id,chat_id,content,"
                     "scope,task_id,source_message_id,source_run_id,"
-                    "status,supersedes,expires_at) VALUES (%s,%s,%s,%s,"
-                    "%s,%s,%s,'active',%s,%s) RETURNING *"
+                    "status,supersedes,expires_at,last_source_message_id) VALUES (%s,%s,%s,%s,"
+                    "%s,%s,%s,'active',%s,%s,(SELECT id FROM kestri.messages WHERE run_id=%s "
+                    "AND direction='in' LIMIT 1)) RETURNING *"
                 ),
                 (
                     uuid4(),
@@ -246,6 +268,7 @@ class MemoryService:
                     run["id"],
                     supersedes,
                     expires,
+                    run["id"],
                 ),
             )
         ).fetchone()
@@ -263,7 +286,8 @@ class MemoryService:
                         (
                             "UPDATE kestri.memories SET status='expired',"
                             "updated_at=now() WHERE chat_id=%s AND "
-                            "status='active' AND expires_at<=now() RETURNING id"
+                            "status='active' AND (expires_at<=now() OR review_after<=now()) "
+                            "RETURNING id"
                         ),
                         (chat_id,),
                     )
@@ -272,7 +296,8 @@ class MemoryService:
                     await conn.execute(
                         (
                             "UPDATE kestri.conversations SET thread_id=NULL,"
-                            "memory_epoch=memory_epoch+1 WHERE chat_id=%s"
+                            "memory_revision=memory_revision+1,memory_epoch=memory_epoch+1 "
+                            "WHERE chat_id=%s"
                         ),
                         (chat_id,),
                     )
@@ -285,6 +310,8 @@ class MemoryService:
                 "kestri.tasks t ON t.id=m.task_id WHERE "
                 "m.chat_id=%s AND m.status='active' AND "
                 "(m.expires_at IS NULL OR m.expires_at>now()) AND "
+                "(m.review_after IS NULL OR m.review_after>now()) AND "
+                "(m.valid_from IS NULL OR m.valid_from<=now()) AND "
                 "(m.task_id IS NULL OR (m.task_id=%s AND "
                 "t.status!='deleted')) ORDER BY m.updated_at DESC "
                 "LIMIT 64"

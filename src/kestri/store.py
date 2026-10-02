@@ -59,6 +59,10 @@ class Store:
                     files("kestri").joinpath("sql/004_data_lifecycle.sql").read_text(),
                     prepare=False,
                 )
+                await conn.execute(
+                    files("kestri").joinpath("sql/005_automatic_memory.sql").read_text(),
+                    prepare=False,
+                )
 
     async def close(self) -> None:
         await self.pool.close()
@@ -112,6 +116,7 @@ class Store:
         command: str | None,
         queue_limit: int,
         kind: str = "foreground",
+        provenance: str = "direct",
     ) -> tuple[bool, str | None]:
         """Called only after authorization. Deduplication and state changes are atomic."""
         text = self.redactor.text(text)
@@ -146,7 +151,8 @@ class Store:
                         await conn.execute(
                             (
                                 "SELECT count(*) AS n FROM kestri.runs WHERE "
-                                "chat_id=%s AND kind!='background' AND status IN "
+                                "chat_id=%s AND kind NOT IN "
+                                "('background','memory_maintenance') AND status IN "
                                 "('queued','running')"
                             ),
                             (chat_id,),
@@ -168,14 +174,23 @@ class Store:
                             ("UPDATE kestri.inbox SET run_id=%s WHERE update_id=%s"),
                             (run_id, update_id),
                         )
-                await conn.execute(
-                    (
-                        "INSERT INTO kestri.messages(chat_id,telegram_id,"
-                        "direction,content,reply_to,run_id) VALUES (%s,%s,"
-                        "'in',%s,%s,%s) ON CONFLICT DO NOTHING"
-                    ),
-                    (chat_id, message_id, text, reply_to, run_id),
-                )
+                archived = await (
+                    await conn.execute(
+                        "INSERT INTO kestri.messages(chat_id,telegram_id,direction,content,"
+                        "reply_to,run_id,provenance) VALUES (%s,%s,'in',%s,%s,%s,%s) "
+                        "ON CONFLICT DO NOTHING RETURNING id",
+                        (chat_id, message_id, text, reply_to, run_id, provenance),
+                    )
+                ).fetchone()
+                if archived and command is None and kind == "foreground" and provenance == "direct":
+                    await conn.execute(
+                        "INSERT INTO "
+                        "kestri.memory_jobs(id,chat_id,source_message_id,settings_generation)"
+                        " "
+                        "SELECT %s,chat_id,%s,memory_settings_generation FROM kestri.conversations "
+                        "WHERE chat_id=%s AND auto_memory_enabled",
+                        (uuid4(), archived["id"], chat_id),
+                    )
                 if command == "stop":
                     stop_args = text.split(maxsplit=1)
                     if len(stop_args) == 2 and stop_args[0].split("@")[0].lower() == "/stop":
@@ -214,7 +229,8 @@ class Store:
                             await conn.execute(
                                 (
                                     "SELECT id,status FROM kestri.runs WHERE "
-                                    "chat_id=%s AND kind!='background' AND "
+                                    "chat_id=%s AND kind NOT IN "
+                                    "('background','memory_maintenance') AND "
                                     "status='running' ORDER BY started_at LIMIT 1"
                                 ),
                                 (chat_id,),
@@ -238,6 +254,8 @@ class Store:
                         notice = "没有找到对应的进行中执行；没有停止其他执行。"
                 elif command == "queue_full":
                     notice = "待处理消息已达上限；此请求未启动。请稍后重发，或先停止当前执行。"
+                elif command == "memory" and provenance != "direct" and len(text.split()) > 1:
+                    notice = "记忆控制只接受主人的直接消息；未作变更。"
                 elif command is not None:
                     notice = await self._command_notice(
                         conn,
@@ -247,20 +265,21 @@ class Store:
                     )
                 else:
                     notice = "已收到，正在处理。你可以用 /stop 停止当前执行。"
-                await conn.execute(
-                    (
-                        "INSERT INTO kestri.outbox(id,chat_id,reply_to,"
-                        "run_id,content) VALUES (%s,%s,%s,%s,%s)"
-                    ),
-                    (uuid4(), chat_id, message_id, run_id, notice),
-                )
+                for part in chunks(notice):
+                    await conn.execute(
+                        (
+                            "INSERT INTO kestri.outbox(id,chat_id,reply_to,"
+                            "run_id,content) VALUES (%s,%s,%s,%s,%s)"
+                        ),
+                        (uuid4(), chat_id, message_id, run_id, part),
+                    )
         return True, run_id
 
     async def _command_notice(self, conn: Any, command: str, chat_id: int, text: str = "") -> str:
         if command == "memory":
-            from kestri.memory import listing
+            from kestri.memory_repository import memory_command
 
-            return await listing(conn, chat_id)
+            return await memory_command(conn, chat_id, text)
         if command == "history":
             args = text.split()
             if len(args) > 1:
@@ -319,6 +338,8 @@ class Store:
                 "可直接创建每日或每周简报，使用 /tasks 查看；/task 输入任务指令。\n"
                 "暂停、恢复、修改或删除可回复任务消息；/stop 执行ID 停止指定执行。\n"
                 "/remember 内容 保存记忆；/memory 查看；/correct ID 内容 纠正；/forget ID 忘记。\n"
+                "/memory auto on|off 开关自动提取；/memory pending 查看候选；"
+                "/memory changes 查看后台变更。\n"
                 "/history 查看最近原始记录。对话接近预算时自动压缩。\n"
                 "消息会通过 Telegram，研究内容会发送到 "
                 "DeepSeek/Tavily。"
@@ -328,7 +349,7 @@ class Store:
                 await conn.execute(
                     (
                         "SELECT id FROM kestri.runs WHERE chat_id=%s AND "
-                        "kind!='background' AND status IN ('running',"
+                        "kind NOT IN ('background','memory_maintenance') AND status IN ('running',"
                         "'queued') LIMIT 1"
                     ),
                     (chat_id,),
@@ -409,7 +430,8 @@ class Store:
                         (
                             "SELECT * FROM kestri.runs WHERE status='queued' "
                             "AND NOT cancel_requested AND available_at<=now() "
-                            "AND (kind='background')=%s ORDER BY created_at "
+                            "AND kind!='memory_maintenance' AND (kind='background')=%s ORDER "
+                            "BY created_at "
                             "LIMIT 1 FOR UPDATE SKIP LOCKED"
                         ),
                         (background,),
@@ -599,7 +621,9 @@ class Store:
                     )
 
     async def recover(self) -> None:
-        rows = await self.all("SELECT id FROM kestri.runs WHERE status='running'")
+        rows = await self.all(
+            "SELECT id FROM kestri.runs WHERE status='running' AND kind!='memory_maintenance'"
+        )
         for row in rows:
             change = await self.one(
                 (
@@ -675,19 +699,57 @@ class Store:
             (run_id, kind, Jsonb(self.redactor.data(metadata))),
         )
 
-    async def reserve(self, run_id: str, kind: str, amount: int, monthly: int, per_run: int) -> str:
+    async def reserve(
+        self,
+        run_id: str,
+        kind: str,
+        amount: int,
+        monthly: int,
+        per_run: int,
+        *,
+        maintenance_monthly: int | None = None,
+        maintenance_job: tuple[str, str] | None = None,
+    ) -> str:
         reservation = str(uuid4())
         async with self.pool.connection() as conn:
             async with conn.transaction():
                 await conn.execute("SELECT pg_advisory_xact_lock(hashtext('kestri-budget'))")
+                if maintenance_job is not None:
+                    await conn.execute(
+                        "SELECT c.chat_id FROM kestri.conversations c JOIN kestri.runs r ON "
+                        "r.chat_id=c.chat_id "
+                        "WHERE r.id=%s FOR UPDATE OF c",
+                        (run_id,),
+                    )
+                    allowed = await (
+                        await conn.execute(
+                            "SELECT 1 FROM kestri.memory_jobs j JOIN kestri.conversations c "
+                            "ON c.chat_id=j.chat_id "
+                            "JOIN kestri.messages m ON m.id=j.source_message_id WHERE j.id=%s"
+                            " AND j.lease_token=%s "
+                            "AND j.run_id=%s AND j.status='running' AND j.lease_until>now() "
+                            "AND c.auto_memory_enabled "
+                            "AND j.settings_generation=c.memory_settings_generation AND "
+                            "j.captured_revision=c.memory_revision "
+                            "AND j.captured_epoch=c.memory_epoch AND "
+                            "m.id>GREATEST(c.memory_activation_watermark,c.automatic_history_floor)",
+                            (*maintenance_job, run_id),
+                        )
+                    ).fetchone()
+                    if not allowed:
+                        raise PolicyDenied("MemoryJobChanged")
                 run = await (
                     await conn.execute(
-                        "SELECT status,cancel_requested FROM kestri.runs WHERE id=%s",
+                        "SELECT status,cancel_requested,kind FROM kestri.runs WHERE id=%s",
                         (run_id,),
                     )
                 ).fetchone()
                 if not run or run["status"] != "running" or run["cancel_requested"]:
                     raise PolicyDenied("RunInactive")
+                if run["kind"] == "memory_maintenance" and (
+                    maintenance_job is None or maintenance_monthly is None
+                ):
+                    raise PolicyDenied("MaintenanceBudgetUnavailable")
                 month = datetime.now(UTC).replace(
                     day=1,
                     hour=0,
@@ -702,6 +764,16 @@ class Store:
                         (month,),
                     )
                 ).fetchone()
+                if maintenance_monthly is not None:
+                    used = await (
+                        await conn.execute(
+                            "SELECT COALESCE(sum(amount_micro_usd),0) AS amount FROM kestri.usage "
+                            "WHERE created_at >= %s AND kind='memory_extract'",
+                            (month,),
+                        )
+                    ).fetchone()
+                    if used is None or used["amount"] + amount > maintenance_monthly:
+                        raise BudgetExceeded("MaintenanceMonthlyBudgetExceeded")
                 local = await (
                     await conn.execute(
                         "SELECT COALESCE(sum(amount_micro_usd),0) AS amount FROM kestri.usage "
@@ -757,8 +829,8 @@ class Store:
                 )
                 await conn.execute(
                     "INSERT INTO "
-                    "kestri.messages(chat_id,telegram_id,direction,content,reply_to,run_id,task_id)"
-                    " VALUES (%s,%s,'out',%s,%s,%s,%s) ON CONFLICT DO NOTHING",
+                    "kestri.messages(chat_id,telegram_id,direction,content,reply_to,run_id,task_id,provenance)"
+                    " VALUES (%s,%s,'out',%s,%s,%s,%s,'context') ON CONFLICT DO NOTHING",
                     (
                         row["chat_id"],
                         telegram_id,

@@ -34,6 +34,9 @@ TABLES = (
     "task_changes",
     "memories",
     "memory_changes",
+    "memory_jobs",
+    "memory_sources",
+    "memory_events",
 )
 MAX_BYTES = 64 * 1024 * 1024
 MAX_ROWS = 50_000
@@ -180,7 +183,7 @@ class DataService:
             payload = {
                 "format": FORMAT,
                 "kind": "export" if export else "backup",
-                "schema": 4,
+                "schema": 5,
                 "created_at": datetime.now(UTC).isoformat(),
                 "tables": tables,
                 "evidence_text": attachments,
@@ -192,18 +195,55 @@ class DataService:
             await disk_operation(write_private, path, bundle)
         return path
 
+    @staticmethod
+    def _upgrade_legacy_row(table: str, original: dict[str, Any]) -> dict[str, Any]:
+        defaults: dict[str, dict[str, Any]] = {
+            "conversations": {
+                "auto_memory_enabled": False,
+                "memory_revision": 0,
+                "memory_settings_generation": 0,
+                "memory_activation_watermark": 0,
+                "automatic_history_floor": 0,
+            },
+            "messages": {"provenance": "legacy"},
+            "memories": {
+                "category": "background",
+                "origin": "explicit_command",
+                "revision": 1,
+                "fact_key": None,
+                "valid_from": None,
+                "review_after": None,
+                "last_source_message_id": None,
+            },
+        }
+        additions = defaults.get(table, {})
+        # Reject a payload claiming schema 4 while smuggling new authorization fields.
+        if set(original) & set(additions):
+            raise PolicyDenied("LegacyBackupColumnMismatch")
+        return {**original, **additions}
+
     async def restore(self, path: Path, *, apply: bool = False) -> dict[str, Any]:
         payload = await disk_operation(read_private, path)
-        if payload.get("kind") != "backup" or payload.get("schema") != 4:
+        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5}:
             raise PolicyDenied("NotRestorableBackup")
         tables = payload.get("tables")
         attachments = payload.get("evidence_text")
+        legacy = payload.get("schema") == 4
+        expected_tables = (
+            set(TABLES) - {"memory_jobs", "memory_sources", "memory_events"}
+            if legacy
+            else set(TABLES)
+        )
         if (
             not isinstance(tables, dict)
-            or set(tables) != set(TABLES)
+            or set(tables) != expected_tables
             or not isinstance(attachments, dict)
         ):
             raise PolicyDenied("InvalidBackupTables")
+        if legacy:
+            tables = dict(tables)
+            for name in ("memory_jobs", "memory_sources", "memory_events"):
+                tables[name] = []
         total = 0
         for rows in tables.values():
             if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
@@ -278,13 +318,21 @@ class DataService:
                     ).fetchall()
                     names = [c["column_name"] for c in columns]
                     for original in tables[table]:
+                        if legacy:
+                            original = self._upgrade_legacy_row(table, original)
                         if set(original) != set(names):
                             raise PolicyDenied("BackupColumnMismatch")
                         row = dict(original)
                         if table == "conversations":
                             row["thread_id"] = None
                             row["memory_epoch"] += 1
-                        elif table == "memories" and row["status"] == "active":
+                            row["auto_memory_enabled"] = False
+                            row["memory_settings_generation"] += 1
+                        elif table == "memory_jobs":
+                            row["status"] = "cancelled"
+                            row["lease_until"] = None
+                            row["error_type"] = "RestoreQuarantine"
+                        elif table == "memories" and row["status"] in {"active", "candidate"}:
                             row["status"] = "quarantined"
                         elif table == "tasks" and row["status"] != "deleted":
                             row["status"], row["restored"] = "paused", True
@@ -342,6 +390,7 @@ class DataService:
                         ("messages", "id"),
                         ("outbox", "sequence"),
                         ("events", "sequence"),
+                        ("memory_events", "id"),
                     ):
                         await conn.execute(
                             sql.SQL(
@@ -447,6 +496,31 @@ class DataService:
                     ),
                     (now, now),
                 )
+            # Sources must be invalidated before cascade removes their evidence.
+            await conn.execute(
+                "UPDATE kestri.memories SET status='expired',updated_at=now(),revision=revision+1 "
+                "WHERE origin!='explicit_command' AND status IN ('active','candidate') AND id IN "
+                "(SELECT s.memory_id FROM kestri.memory_sources s JOIN kestri.messages m ON "
+                "m.id=s.message_id "
+                "WHERE m.created_at<%s)",
+                (archive_cutoff,),
+            )
+            await conn.execute(
+                "UPDATE kestri.memory_jobs SET "
+                "status='cancelled',lease_until=NULL,error_type='SourcePurged' "
+                "WHERE source_message_id IN (SELECT id FROM kestri.messages WHERE created_at<%s) "
+                "AND status IN ('queued','running','retry_wait')",
+                (archive_cutoff,),
+            )
+            if erase:
+                await conn.execute(
+                    "UPDATE kestri.conversations SET auto_memory_enabled=false,"
+                    "memory_settings_generation=memory_settings_generation+1",
+                )
+                await conn.execute("DELETE FROM kestri.memory_sources")
+            await conn.execute(
+                "DELETE FROM kestri.memory_events WHERE created_at<%s", (log_cutoff,)
+            )
             await conn.execute("DELETE FROM kestri.messages WHERE created_at<%s", (archive_cutoff,))
             await conn.execute(
                 (
@@ -482,7 +556,7 @@ class DataService:
                 await conn.execute(
                     (
                         "UPDATE kestri.conversations SET "
-                        "thread_id=NULL,memory_epoch=memory_epoch+1,updated_at=%s"
+                        "thread_id=NULL,memory_revision=memory_revision+1,memory_epoch=memory_epoch+1,updated_at=%s"
                     ),
                     (now,),
                 )

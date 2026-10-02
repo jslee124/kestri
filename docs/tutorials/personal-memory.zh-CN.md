@@ -23,3 +23,7 @@
 继续普通对话。在约 70% 的配置输入准入预算处，Kestri 总结旧历史并保留近期完整工具交互。原始消息留在归档。`/runs` 和 `/usage` 保留执行结果和摘要费用。摘要失败/超限时安全停止，`/new` 新建上下文，不忘记个人记忆。
 
 可选到期设置见[记忆/上下文参考](../reference/memory-and-context.zh-CN.md)。不要保存 API key 或密码。忘记表示移出活跃检索，不表示删除 Telegram 消息、历史副本或备份。M4 提供独立的[数据生命周期控制](../reference/data-lifecycle.zh-CN.md)。
+
+## 从普通聊天学习
+
+部署本功能分支后，发送 `/memory auto on`，再像平常一样陈述直接偏好/目标。等待前台工作完成，通过 `/memory`、`/memory pending`、`/memory changes` 检查。用 `/correct ID 完整内容` 确认需要的候选，或 `/forget ID` 丢弃。`/memory auto off` 阻止新提取，已有事实仍可使用。不回填旧聊天。提取使用 DeepSeek；DashScope embedding 语义召回尚待实现。见[运行进度](../development/memory-v2-progress.zh-CN.md)。

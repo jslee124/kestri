@@ -74,3 +74,7 @@ uv build
 最小模型和工具接入使用 [M0 教程](../tutorials/first-agent-run.zh-CN.md)，M1 使用 [Telegram 教程](../tutorials/telegram-research.zh-CN.md)。均需要本地凭据并消耗额度。在 [M1 记录](../development/m1-validation.zh-CN.md)中区分离线、真实服务和容器证据。
 
 [GitHub Checks 工作流](../../.github/workflows/checks.yml)在 Linux、Python 3.14 与可丢弃 PostgreSQL 服务上执行这些检查与包构建，不接收开发者的 `.env`，不调用 DeepSeek、Tavily 或 Telegram。只有查看完成运行后，才能声称远程 CI 成功。
+
+## 自动记忆检查
+
+同一独立 PostgreSQL 测试还包含 [test_memory_jobs_integration.py](../../tests/test_memory_jobs_integration.py)。确认 wheel 包含 `kestri/sql/005_automatic_memory.sql`。本增量测试不会开启主人的运行实例，也不向服务商发送真实私人聊天。

@@ -79,7 +79,7 @@ Rates are application estimates. There is no automatic price refresh, prepaid-cr
 
 | Variable | Bot default | Validation / meaning |
 | --- | --- | --- |
-| `KESTRI_MEMORY_LIMIT` | 64 | Integer 1–64 active records |
+| `KESTRI_MEMORY_LIMIT` | 64 | Integer 1–64 active explicit records |
 | `KESTRI_MEMORY_CONTEXT_LIMIT` | 8 | Integer 1–16 selected records per request |
 | `KESTRI_CONTEXT_TRIGGER_RATIO` | 0.70 | 0.1–0.9 of local input threshold |
 | `KESTRI_CONTEXT_KEEP_MESSAGES` | 12 | Integer 4–40; tool boundaries can change actual retention |
@@ -127,3 +127,7 @@ The following constants are not additional supported environment variables: Tele
 Data commands print JSON: status gives `counts` and `last_maintenance`; backup/export gives absolute `path` and `private=true`; restore gives row/file counts and policy; cleanup gives cutoffs/counts and whether deferred. Preview success is not proof that import SQL, foreign keys, or disk writes will succeed during apply. The bot is long-running and prints a startup identity notice, not per-model traces. Smoke prints the evidence path and verification result. Errors report class/category and suppress raw private exception bodies.
 
 For algorithms behind these contracts, read [execution/delivery](../design/execution-and-delivery.md), [model/accounting](../design/model-and-accounting.md), [task scheduling](../design/task-scheduling.md), [context](../design/context-management.md), and [data maintenance](../design/data-maintenance.md).
+
+## Automatic-memory configuration
+
+The four `ResearchSettings` extraction limits and owner commands are listed in [memory/context](memory-and-context.md). `KESTRI_MEMORY_LIMIT` now counts active explicit-command entries; queued/running foreground capacity excludes maintenance runs. No environment switch silently opts the owner into automatic extraction.

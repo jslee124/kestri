@@ -2,9 +2,9 @@
 
 [简体中文](memory-v2.zh-CN.md) · [Documentation](../README.md)
 
-Date: 2026-10-02. Status: agreed product direction and implementation specification; automatic memory, vector storage, hybrid retrieval, and history tools are **not implemented**. The independently implemented [embedding connection](../reference/embedding.md) is a prerequisite only. [ADR-0007](../decisions/0007-automatic-semantic-memory.md) records the transition from explicit-only memory.
+Date: 2026-10-02. Status: agreed product direction and implementation specification; durable opt-in automatic extraction is implemented on the feature branch; vector storage, hybrid retrieval, and history tools are **not implemented**. The independently implemented [embedding connection](../reference/embedding.md) is a prerequisite only. [ADR-0007](../decisions/0007-automatic-semantic-memory.md) records the transition from explicit-only memory.
 
-Proposal extraction implementation has started; see [progress](../development/memory-v2-progress.md) for precise delivery boundaries.
+Proposal extraction and persistent worker implementation are complete; see [progress](../development/memory-v2-progress.md) for precise delivery boundaries.
 
 ## Goal and scope
 
@@ -85,3 +85,5 @@ Deterministic tests cover provenance exclusion, exact quotation checks, candidat
 Maintain at least 100 Chinese labeled evaluation cases with paraphrases, pronouns, temporary emotions, hypotheses, quotations, conflicting preferences, historical decisions and no-relevant-memory queries. Proposed gates: active-fact precision ≥95%, direct-fact extraction recall ≥85%, semantic Recall@8 ≥90%, and no-relevant-memory false injection ≤5%; document corpus, labels, denominators and scorer versions. Never infer general memory quality from one embedding smoke comparison.
 
 Delivery order: (1) standalone embedding connection and docs, implemented; (2) opt-in/provenance/jobs/auto extraction and semantic fact storage with offline + disposable-DB checks; (3) model-path hybrid recall and concurrency/lifecycle integration; (4) history tools and evaluations; (5) isolated live Telegram and restart/forget/restore acceptance. Implement with `MemoryExtractor`, `MemoryRepository`, `MemoryRetriever`, `HistoryRetriever`, and a maintenance worker. The explicit-only product remains active until later increments meet their gates.
+
+Implemented extraction uses USD caps of 0.15/job and 1.50/month, because it currently calls DeepSeek only. CNY conversion above remains a future embedding requirement. Publication uses one fresh message per job and at most 3 total attempts, including conflicts; exhausted jobs fail visibly without infinite requeue. `/memory changes` is read-only; automatic change notices and the independent memory-use switch remain deferred. See [progress](../development/memory-v2-progress.md) for exact deviations and deployment/evaluation boundaries.

@@ -42,4 +42,4 @@ Start the intended recovered installation with its target configuration. Wait fo
 
 ## Handle failure
 
-A validation error leaves the target unchanged. Controlled apply failures roll back records and remove new evidence. A sudden process/power failure can leave orphan files: preserve the source, inspect the failed target, and retry into a separate fresh database/workspace. Do not delete the only remaining data copy. Restore accepts schema 4 bundles, not arbitrary PostgreSQL dumps or exports. See the [data reference](../reference/data-lifecycle.md) for bounds and retention.
+A validation error leaves the target unchanged. Controlled apply failures roll back records and remove new evidence. A sudden process/power failure can leave orphan files: preserve the source, inspect the failed target, and retry into a separate fresh database/workspace. Do not delete the only remaining data copy. Restore accepts schema 4 and 5 bundles, not arbitrary PostgreSQL dumps or exports. See the [data reference](../reference/data-lifecycle.md) for bounds and retention.

@@ -246,7 +246,7 @@ class MemoryExtractor:
             response_format=ToolStrategy(MemoryProposal, handle_errors=False),
             middleware=[
                 ModelCallLimitMiddleware(run_limit=1, exit_behavior="error"),
-                BoundsMiddleware(budget),
+                BoundsMiddleware(budget, output_limit=budget.settings.max_output_tokens),
             ],
         )
         with tracing_context(enabled=False):

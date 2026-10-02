@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 27 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：全部 29 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -102,7 +102,7 @@ CLI 路由 · [详细机制](../reference/cli.zh-CN.md)
 
 [源码](../../src/kestri/embedding.py) · [接口与配置](../reference/embedding.zh-CN.md)
 
-`EmbeddingBatch` 保存校验后的不可变向量/用量；`EmbeddingClient.__init__` 捕获配置/HTTP client，`embed` 执行有界请求及校验；`cosine_similarity` 用于固定比较；`run_embedding_smoke` 只发送非个人测试文本；`save_embedding_evidence` 写脱敏 JSON。`EmbeddingSettings` 校验 key、数字维度和北京接口。产品自动记忆见 [Memory v2](../design/memory-v2.zh-CN.md)，尚未实现。
+`EmbeddingBatch` 保存校验后的不可变向量/用量；`EmbeddingClient.__init__` 捕获配置/HTTP client，`embed` 执行有界请求及校验；`cosine_similarity` 用于固定比较；`run_embedding_smoke` 只发送非个人测试文本；`save_embedding_evidence` 写脱敏 JSON。`EmbeddingSettings` 校验 key、数字维度和北京接口。自动提取已单独实现；[Memory v2](../design/memory-v2.zh-CN.md) 的向量召回仍待完成。
 
 ## errors.py
 
@@ -437,3 +437,11 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 ## 文档覆盖与变更责任
 
 当前覆盖是可追踪的实现说明，不是完整形式化证明或稳定 SDK 承诺。维护时新增模块/类方法要更新本地图，字段/迁移更新数据库与备份格式，路由/状态更新执行与任务指南，工具更新 schema/副作用/证据，配置更新 CLI，压缩/记忆更新上下文；双语同时修改。单个职责的数值契约优先在 reference 维护，设计文档解释算法，历史证据保持原结论范围。
+
+## memory_repository.py
+
+[源码](../../src/kestri/memory_repository.py)。`memory_command` 实现确定性开启/列表/候选/变更查看；`MemoryRepository.claim` 管来源顺序、前台优先、租约/run 恢复与版本捕获；`snapshot` 准入有界归档和当前记忆；`ensure_active` 校验代次/版本/epoch/租约；`publish` 复核提案并事务写事实/引用/事件/作业成功；`fail` 记录安全错误、重试时间和未知用量。见[运行进度](memory-v2-progress.zh-CN.md)。
+
+## memory_worker.py
+
+[源码](../../src/kestri/memory_worker.py)。`MemoryJobControl.ensure_active` 在 run 活动检查上增加作业授权；`MemoryBudget.reserve` 使用主人与独立维护预算；`MemoryWorker.work_once` 领取、提取、提交或记录有限失败/重试。`Application.memory_maintaining` 独立于前台和投递运行。[005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) 与[持久作业测试](../../tests/test_memory_jobs_integration.py)覆盖本增量。逻辑备份升为 schema 5，兼容 schema 4。

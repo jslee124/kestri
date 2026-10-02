@@ -42,10 +42,14 @@ Only valid UUID-named backup bundles inside the workspace `backups` directory ar
 
 ## Conservative restore
 
-Format `kestri-data-v1`, schema 4, includes business tables and retrieved evidence text, and excludes LangGraph checkpoints/internal reasoning and credentials. It is a logical application snapshot, not `pg_dump` or a full crash-state image. Schema changes require an explicit migration/compatibility decision.
+Format `kestri-data-v1`, schema 5, includes business tables and retrieved evidence text, and excludes LangGraph checkpoints/internal reasoning and credentials. It is a logical application snapshot, not `pg_dump` or a full crash-state image. Schema changes require an explicit migration/compatibility decision.
 
 Restore quarantines **every imported active memory**, pauses **every imported nondeleted task**, resets foreground context, interrupts queued/running work, marks pending/sending deliveries uncertain, and converts unresolved usage reservations to unknown. Already deleted/forgotten records remain inactive. `/memory` shows quarantined facts with a warning; re-enter an intended fact with `/remember`. `/tasks` warns about imported tasks; explicitly resume only a currently intended agreement. Old backups cannot silently reinstate later-revoked authority.
 
 On the first Telegram startup after restore, the app discards updates pending at that boundary and emits a recovery notice. Send new instructions after that notice. This prevents stale commands from reauthorizing restored data. Ordinary restarts do not discard pending updates. The boundary uses the documented negative-offset behavior of [Telegram getUpdates](https://core.telegram.org/bots/api#getupdates), checked 2026-10-02.
 
 Controlled restore failures roll back database changes and remove newly created evidence. Abrupt process/power loss during file work can leave orphan files; keep the source backup and retry into a fresh empty target after inspection. Do not claim atomic recovery at every crash point. See [backup and restore](../how-to/backup-and-restore.md) and [ADR-0006](../decisions/0006-conservative-data-recovery.md).
+
+## Automatic-memory lifecycle
+
+Schema 5 includes `memory_jobs`, `memory_sources` and `memory_events`; schema 4 restore inserts conservative new-column defaults and empty new tables. Restore always disables extraction, increments settings generation, cancels jobs and quarantines both active and candidate memories. It never schedules embedding or extraction from restored text. Archive source deletion cascades quote removal, expires dependent automatic active/candidate facts, cancels affected jobs and invalidates context. Erase also removes all source quotes and disables extraction. Automatic review/expiry filters apply before recall. Facts and raw archive remain separate; explicit facts retain their own intent.

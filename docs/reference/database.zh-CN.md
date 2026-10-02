@@ -2,11 +2,11 @@
 
 [English](database.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：迁移 1–4 完成后的实际结构，以及从 `uv.lock` 安装的 checkpoint saver。这是源码级参考，不代表检查了主人的运行数据库。
+更新：2026-10-02。范围：迁移 1–5 完成后的实际结构，以及从 `uv.lock` 安装的 checkpoint saver。这是源码级参考，不代表检查了主人的运行数据库。
 
 ## 存储归属
 
-PostgreSQL 中有两组表。Kestri 在 `kestri` schema 中维护 14 张表；LangGraph 的 `AsyncPostgresSaver` 在 `public` 中维护 4 张 checkpoint 表。获取的正文另存于应用工作区。数据库保存文件标识和来源信息，不保存完整网页正文。
+PostgreSQL 中有两组表。Kestri 在 `kestri` schema 中维护 17 张表；LangGraph 的 `AsyncPostgresSaver` 在 `public` 中维护 4 张 checkpoint 表。获取的正文另存于应用工作区。数据库保存文件标识和来源信息，不保存完整网页正文。
 
 业务结构以 [001_initial.sql](../../src/kestri/sql/001_initial.sql)、[002_tasks.sql](../../src/kestri/sql/002_tasks.sql)、[003_memory_context.sql](../../src/kestri/sql/003_memory_context.sql) 和 [004_data_lifecycle.sql](../../src/kestri/sql/004_data_lifecycle.sql) 为准。[Store](../../src/kestri/store.py) 实现事务；[DataService](../../src/kestri/data.py) 实现保留策略和逻辑备份。
 
@@ -160,7 +160,7 @@ erDiagram
 | 费用预留 | `kestri-budget` 事务 advisory lock；检查月度/单次合计并插入预留 |
 | 数据维护 | `kestri-data` 事务 advisory lock；操作员另检查 bot 租约；内容变化时锁对话行 |
 
-连接池使用 1–6 条连接，独立语句 autocommit，组合操作显式事务，语句超时 10 秒，锁超时 5 秒。外键没有自动级联删除。内容保留操作有意清空或标记依赖记录，保留标识和账本。
+连接池使用 1–6 条连接，独立语句 autocommit，组合操作显式事务，语句超时 10 秒，锁超时 5 秒。归档删除会级联删除记忆来源引用，其他保留业务外键不级联。内容保留操作有意清空或标记依赖记录，保留标识和账本。
 
 数据库提交与外部 HTTP/文件操作无法成为一个原子事务。文件写完后元数据插入失败可留下孤立文件；远端发送成功可能发生在本地确认前。恢复保守处理这些间隙，不宣称完整的崩溃原子性。
 
@@ -179,9 +179,9 @@ erDiagram
 
 ## 迁移与数据生命周期
 
-`Store.open()` 按顺序执行全部四份幂等迁移文件并记录版本。它不是只执行 `migrations` 中缺失的文件，也没有向下迁移器。迁移 1 引入执行/投递/证据，2 增加任务，3 增加记忆与 epoch，4 增加内容过期/恢复标记与可延迟外键。不兼容修改需要显式迁移并审查备份兼容性。
+`Store.open()` 按顺序执行全部五份幂等迁移文件并记录版本。它不是只执行 `migrations` 中缺失的文件，也没有向下迁移器。迁移 1 引入执行/投递/证据，2 增加任务，3 增加记忆与 epoch，4 增加内容过期/恢复标记与可延迟外键。不兼容修改需要显式迁移并审查备份兼容性。
 
-逻辑备份包含 13 张业务表（不含 `migrations`）和成功获取的证据正文，不含任何框架 checkpoint 或凭据。恢复要求空目标，重置图连续性，隔离有效记忆、暂停任务、中断未完成执行、将未完成投递标记为不确定。它不会恢复可继续执行的崩溃现场。
+逻辑备份包含 16 张业务表（不含 `migrations`）和成功获取的证据正文，不含任何框架 checkpoint 或凭据。恢复要求空目标，重置图连续性，隔离有效记忆、暂停任务、中断未完成执行、将未完成投递标记为不确定。它不会恢复可继续执行的崩溃现场。
 
 清理可删除消息归档，清空请求/结果/回执正文，使证据过期，并在空闲时清空全部图状态。标识、去重、身份和费用记录保留。准确保留规则见[数据生命周期](data-lifecycle.zh-CN.md)，操作流程见[备份恢复](../how-to/backup-and-restore.zh-CN.md)。
 
@@ -194,3 +194,15 @@ erDiagram
 - 恢复与保留：[数据生命周期集成测试](../../tests/test_data_lifecycle_integration.py)。
 
 数据库测试使用可丢弃的 `kestri_test` 并删除其业务 schema。遵循[运行检查](../how-to/run-checks.zh-CN.md)，不能指向个人数据。
+
+## 自动记忆迁移 5
+
+[005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) 增加对话 `auto_memory_enabled`、`memory_revision`、`memory_settings_generation`、`memory_activation_watermark`、`automatic_history_floor`。消息 `provenance` 默认 `legacy`，新接收标为 `direct`、`forwarded`、`external_reply`，出站为 `context`。记忆增加 `category`、`origin`、`revision`、`fact_key`、`valid_from`、`review_after`、`last_source_message_id` 和 `candidate` 状态。`last_source_message_id` 是归档 ID，已有 `source_message_id` 仍是 Telegram ID。
+
+| 表 | 重要字段 / 不变量 |
+| --- | --- |
+| `memory_jobs` | UUID `id`、主人、归档来源、提取器版本、开关代次、状态、维护 run、租约令牌/期限、尝试数、可用时间、捕获版本/epoch、安全错误、时间戳；来源/版本唯一；删除归档将来源置空 |
+| `memory_sources` | 记忆/归档联合主键、精确引用和 Unicode 偏移；可延迟外键；删除归档级联删除引用 |
+| `memory_events` | Bigserial `id`、主人、记忆/作业引用、操作与时间；无提示词正文 |
+
+`kestri_memory_jobs_pending(chat_id,status,available_at)` 支持维护扫描。主人对话锁串行控制/领取/提交，模型 HTTP 不在这些事务中执行。提取用量类型为 `memory_extract`，复用 USD 账本。备份包含 16 张业务表，不含迁移元数据。重复启动迁移保留候选状态。仍无向量列或 pgvector 扩展。[作业测试](../../tests/test_memory_jobs_integration.py) 在独立 PostgreSQL 验证转换和保守恢复。

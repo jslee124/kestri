@@ -64,8 +64,9 @@ searches. Follow-up evidence can be inspected through read_evidence using its re
 
 
 class BoundsMiddleware(AgentMiddleware[Any, Any, Any]):
-    def __init__(self, budget: Budget) -> None:
+    def __init__(self, budget: Budget, *, output_limit: int | None = None) -> None:
         self.budget = budget
+        self.output_limit = output_limit
 
     async def awrap_model_call(
         self,
@@ -83,6 +84,10 @@ class BoundsMiddleware(AgentMiddleware[Any, Any, Any]):
             "model",
             self.budget.model_cost(size, self.budget.settings.max_output_tokens),
         )
+        if self.output_limit is not None:
+            request = request.override(
+                model_settings={**request.model_settings, "max_tokens": self.output_limit}
+            )
         result = await handler(request)
         usage = [
             message.usage_metadata

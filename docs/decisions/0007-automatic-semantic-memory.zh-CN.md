@@ -2,7 +2,7 @@
 
 [English](0007-automatic-semantic-memory.md) · [文档](../README.zh-CN.md)
 
-日期：2026-10-02。状态：方向已接受；embedding 接入已实现，其余行为已写规格但尚未实现。
+日期：2026-10-02。状态：方向已接受；embedding 接入与持久化自动提取已在功能分支实现；语义召回与真实验收待完成。
 
 ## 背景
 
@@ -21,3 +21,5 @@
 ## 影响与复审
 
 个性化增强同时提供整体开启与查看/纠正/忘记控制。自动使用前需实现后台作业、并发、预算、来源、备份版本与清理。服务商输入会离开本机，本地模型可作为后续替代。较广历史截止位置牺牲无关旧历史召回，需在回执中说明。独立 smoke 不等于记忆质量评测或向量数据库验收。见[接入参考](../reference/embedding.zh-CN.md)与[证据](../development/embedding-validation.zh-CN.md)。
+
+当前实现边界与调整见[进度](../development/memory-v2-progress.zh-CN.md)；已部署 M0–M4 验收仍是历史证据，不代表自动记忆验收。

@@ -1,6 +1,7 @@
 """Concurrent polling, serialized foreground execution, and independent durable delivery."""
 
 import asyncio
+import logging
 import signal
 from typing import Any
 from uuid import uuid4
@@ -83,6 +84,9 @@ class Application:
             command,
             self.settings.queue_limit,
             kind,
+            "forwarded"
+            if message.get("forward_origin")
+            else ("external_reply" if message.get("external_reply") else "direct"),
         )
         if accepted:
             if command == "stop":
@@ -163,6 +167,19 @@ class Application:
                 except TimeoutError:
                     pass
 
+    async def memory_maintaining(self) -> None:
+        from kestri.memory_worker import MemoryWorker
+
+        worker = MemoryWorker(self.store, self.settings, self.researcher.model)
+        while True:
+            try:
+                await worker.work_once(self.settings.telegram_owner_id)
+            except Exception:
+                # Only a fixed category is logged; exception text may contain private data.
+                logging.getLogger(__name__).warning("MemoryRepositoryUnavailable")
+                await asyncio.sleep(5)
+            await asyncio.sleep(1)
+
     async def scheduling(self) -> None:
         while True:
             if await self.tasks.tick():
@@ -239,6 +256,7 @@ class Application:
             group.create_task(self.working(background=True))
             group.create_task(self.scheduling())
             group.create_task(self.delivering())
+            group.create_task(self.memory_maintaining())
             group.create_task(
                 DataService(self.store, self.researcher.workspace, self.settings).maintaining()
             )

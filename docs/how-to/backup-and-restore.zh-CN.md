@@ -42,4 +42,4 @@ uv run kestri data status
 
 ## 处理失败
 
-验证失败不改动目标。受控执行失败回滚记录并清除新证据。突然退出/断电可能留下孤立文件：保留源，检查失败目标，再换独立空数据库/工作区重试。不要删除唯一数据副本。仅接受 schema 4 备份，不接受任意 PostgreSQL dump 或导出。范围和保留政策见[数据参考](../reference/data-lifecycle.zh-CN.md)。
+验证失败不改动目标。受控执行失败回滚记录并清除新证据。突然退出/断电可能留下孤立文件：保留源，检查失败目标，再换独立空数据库/工作区重试。不要删除唯一数据副本。仅接受 schema 4 和 5 备份，不接受任意 PostgreSQL dump 或导出。范围和保留政策见[数据参考](../reference/data-lifecycle.zh-CN.md)。

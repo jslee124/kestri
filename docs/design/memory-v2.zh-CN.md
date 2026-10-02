@@ -2,9 +2,9 @@
 
 [English](memory-v2.md) · [文档](../README.zh-CN.md)
 
-日期：2026-10-02。状态：已确认产品方向与实施规格；自动记忆、向量存储、混合检索和历史工具**尚未实现**。独立实现的 [embedding 接入](../reference/embedding.zh-CN.md)只是前置能力。[ADR-0007](../decisions/0007-automatic-semantic-memory.zh-CN.md)记录显式记忆向自动记忆的转变。
+日期：2026-10-02。状态：已确认产品方向与实施规格；持久化、显式开启的自动提取已在功能分支实现；向量存储、混合检索和历史工具**尚未实现**。独立实现的 [embedding 接入](../reference/embedding.zh-CN.md)只是前置能力。[ADR-0007](../decisions/0007-automatic-semantic-memory.zh-CN.md)记录显式记忆向自动记忆的转变。
 
-提案提取模块已开始实现，准确交付边界见[实施进度](../development/memory-v2-progress.zh-CN.md)。
+提案提取与持久 worker 已实现，准确交付边界见[实施进度](../development/memory-v2-progress.zh-CN.md)。
 
 ## 目标与范围
 
@@ -85,3 +85,5 @@ PostgreSQL 来源记录是依据。核心画像是有效稳定记忆的查询视
 维护至少 100 条中文标注评测，覆盖语义改写、指代、临时情绪、假设、引用、冲突偏好、历史决定及无相关记忆问题。建议门槛：有效事实准确率 ≥95%、直接事实提取召回 ≥85%、语义 Recall@8 ≥90%、无相关记忆错误注入率 ≤5%；记录语料、标注、分母与评分版本。一次 embedding smoke 比较不能证明整体记忆质量。
 
 交付顺序：(1) 独立 embedding 接入及文档，已实现；(2) 开关/来源/jobs/自动提取与语义事实存储，离线及独立数据库检查；(3) 模型路径混合召回与并发/生命周期；(4) 历史工具与评测；(5) 隔离的真实 Telegram、重启/忘记/恢复验收。模块划分为 `MemoryExtractor`、`MemoryRepository`、`MemoryRetriever`、`HistoryRetriever` 与维护 worker。后续增量满足门槛前，产品继续使用显式记忆。
+
+已实现的提取使用 0.15 USD/作业和 1.50 USD/月上限，因为当前仅调用 DeepSeek。上文 CNY 换算仍是后续 embedding 要求。每作业 1 条新消息、最多 3 次总尝试（包括冲突），耗尽后可见失败，不无限重新入队。`/memory changes` 为只读入口，自动变更通知和独立使用开关仍暂缓。准确差异和部署/评测边界见[进度](../development/memory-v2-progress.zh-CN.md)。

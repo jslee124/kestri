@@ -74,3 +74,7 @@ This produces a source distribution and wheel in `dist/`. The wheel must include
 Use the [M0 tutorial](../tutorials/first-agent-run.md) for the minimal model/tool integration or [Telegram tutorial](../tutorials/telegram-research.md) for M1. Both need local credentials and consume credits. Keep offline, live service, and container evidence distinct in the [M1 record](../development/m1-validation.md).
 
 The [GitHub Checks workflow](../../.github/workflows/checks.yml) runs these commands and package build on Linux with Python 3.14 and a disposable PostgreSQL service. It receives no developer `.env` and calls neither DeepSeek nor Tavily nor Telegram. Inspect a completed run before claiming remote CI success.
+
+## Automatic-memory checks
+
+The same disposable PostgreSQL suite now includes [test_memory_jobs_integration.py](../../tests/test_memory_jobs_integration.py). Check that the wheel also contains `kestri/sql/005_automatic_memory.sql`. No test in this increment opts in the owner's running installation or uses real private chat with a provider.

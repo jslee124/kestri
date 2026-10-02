@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 27 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: all 29 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -102,7 +102,7 @@ Operator data lifecycle · [Detailed mechanism](../design/data-maintenance.md)
 
 [Source](../../src/kestri/embedding.py) · [Interface/configuration](../reference/embedding.md)
 
-`EmbeddingBatch` holds validated immutable vectors/usage; `EmbeddingClient.__init__` captures settings/HTTP client, and `embed` performs bounded requests and validation; `cosine_similarity` supports the fixed comparison; `run_embedding_smoke` sends only non-private test texts; `save_embedding_evidence` writes sanitized JSON. `EmbeddingSettings` validates key, numeric dimensions and Beijing endpoint. Product automatic memory is specified in [Memory v2](../design/memory-v2.md), not implemented.
+`EmbeddingBatch` holds validated immutable vectors/usage; `EmbeddingClient.__init__` captures settings/HTTP client, and `embed` performs bounded requests and validation; `cosine_similarity` supports the fixed comparison; `run_embedding_smoke` sends only non-private test texts; `save_embedding_evidence` writes sanitized JSON. `EmbeddingSettings` validates key, numeric dimensions and Beijing endpoint. Automatic extraction is implemented separately; vector recall in [Memory v2](../design/memory-v2.md) remains pending.
 
 ## errors.py
 
@@ -437,3 +437,11 @@ Commands are in [run checks](../how-to/run-checks.md). Historical M0–M4 record
 ## Documentation coverage and change ownership
 
 Coverage is traceable implementation documentation, not a formal correctness proof or stable SDK promise. New modules/methods update this map; fields/migrations update database and backup format; routing/states update execution/task guides; tools update schemas/side effects/evidence; settings update CLI; compression/memory update context. Update both languages. References own numeric contracts, design guides explain algorithms, and historical evidence preserves its original scope.
+
+## memory_repository.py
+
+[Source](../../src/kestri/memory_repository.py). `memory_command` implements deterministic opt-in/list/candidate/change views. `MemoryRepository.claim` owns ordering, foreground priority, lease/run recovery and captured versions; `snapshot` admits bounded archive/current-memory context; `ensure_active` validates generation/revision/epoch/lease; `publish` revalidates proposals and atomically writes facts/sources/events/job completion; `fail` records safe errors, retry scheduling and unresolved usage. See [runtime progress](memory-v2-progress.md).
+
+## memory_worker.py
+
+[Source](../../src/kestri/memory_worker.py). `MemoryJobControl.ensure_active` extends run activity with job authorization; `MemoryBudget.reserve` applies owner and independent maintenance caps; `MemoryWorker.work_once` claims, extracts, publishes or records bounded failure/retry. `Application.memory_maintaining` runs independently of foreground work and delivery. Migration [005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) and [persistent-job tests](../../tests/test_memory_jobs_integration.py) cover this increment. Logical backup advances to schema 5 with schema 4 compatibility.
