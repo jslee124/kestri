@@ -27,6 +27,8 @@
 
 ## 验证与部署
 
+已部署源码版本：`6a7795c094031e868fcece884392b5c16ff91323`。
+
 本地 pgvector：**259 passed**。普通 PostgreSQL：**231 passed，28 个向量专属案例跳过**。覆盖模糊目标不写入、明确选择、十六进制内容与 ID 区分、唯一自然控制、持久提示、撤销、重启、checkpoint 迁移与冲突保留。本增量还执行 Ruff 检查/格式、mypy、双语文档、可读 SQL 和 wheel/源码包检查。
 
 真实 Chrome Telegram 验收使用独立数据库和工作区，只复制正式环境的轮询 offset。已观察自动两条事实提示、自然 SQLite→PostgreSQL 纠错、模糊 Python 目标仅列出候选、明确遗忘和进程重启后的持久状态。没有把正式聊天导入合成验收库。脱敏[实测记录](evidence/memory-v2-final-live.json)和[部署流程](../how-to/deploy-memory-v2.zh-CN.md)将运行证据与质量分数、CI 分开记录。

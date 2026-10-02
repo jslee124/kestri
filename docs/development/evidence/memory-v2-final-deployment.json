@@ -43,5 +43,6 @@
     "production_restart": true,
     "production_telegram_after_restart": true,
     "settings_preserved": true
-  }
+  },
+  "source_revision": "6a7795c094031e868fcece884392b5c16ff91323"
 }

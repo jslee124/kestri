@@ -27,6 +27,8 @@ History-answer v1 used unregistered, pre-completed tool messages and is an inval
 
 ## Verification and deployment
 
+Deployed source revision: `6a7795c094031e868fcece884392b5c16ff91323`.
+
 Local pgvector: **259 passed**. Plain PostgreSQL: **231 passed, 28 vector-specific cases skipped**. Checks cover ambiguous targets without writes, explicit choice, hexadecimal content versus IDs, unique natural controls, durable notices, revocation, restart and checkpoint migration/collision preservation. Ruff checks/format, mypy, bilingual documentation, readable SQL and wheel/source package checks accompany this increment.
 
 Real Chrome Telegram acceptance uses a disposable database and workspace, with only the poll offset copied from production. It observed an automatic two-fact notice, natural SQLite-to-PostgreSQL correction, ambiguous Python target suggestions without a mutation, explicit forgetting and retained state after a process restart. Production chats were not imported into the synthetic acceptance database. The final sanitized [live record](evidence/memory-v2-final-live.json) and [deployment procedure](../how-to/deploy-memory-v2.md) record runtime evidence separately from quality scores and CI.
