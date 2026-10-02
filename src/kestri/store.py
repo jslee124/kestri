@@ -48,7 +48,8 @@ class Store:
                 await conn.execute("SELECT pg_advisory_xact_lock(hashtext('kestri-migrations'))")
                 await conn.execute(sql, prepare=False)
                 await conn.execute(
-                    files("kestri").joinpath("sql/002_tasks.sql").read_text(), prepare=False
+                    files("kestri").joinpath("sql/002_tasks.sql").read_text(),
+                    prepare=False,
                 )
                 await conn.execute(
                     files("kestri").joinpath("sql/003_memory_context.sql").read_text(),
@@ -238,7 +239,12 @@ class Store:
                 elif command == "queue_full":
                     notice = "待处理消息已达上限；此请求未启动。请稍后重发，或先停止当前执行。"
                 elif command is not None:
-                    notice = await self._command_notice(conn, command, chat_id, text)
+                    notice = await self._command_notice(
+                        conn,
+                        command,
+                        chat_id,
+                        text,
+                    )
                 else:
                     notice = "已收到，正在处理。你可以用 /stop 停止当前执行。"
                 await conn.execute(
@@ -331,7 +337,8 @@ class Store:
             if active:
                 return "当前仍有待处理或进行中请求。请先停止或等待完成，再用 /new 新建对话上下文。"
             await conn.execute(
-                ("UPDATE kestri.conversations SET thread_id=NULL WHERE chat_id=%s"), (chat_id,)
+                ("UPDATE kestri.conversations SET thread_id=NULL WHERE chat_id=%s"),
+                (chat_id,),
             )
             return "已新建对话上下文；原始消息、历史结果和证据仍然保留。"
         if command in {"runs", "status"}:
@@ -470,8 +477,15 @@ class Store:
                 if row is None or row["status"] != "running":
                     return
                 if row["cancel_requested"]:
-                    status, answer, error_type = "cancelled", "执行已停止。", "Cancelled"
-                if status == "completed" and row["kind"] in {"foreground", "background"}:
+                    status, answer, error_type = (
+                        "cancelled",
+                        "执行已停止。",
+                        "Cancelled",
+                    )
+                if status == "completed" and row["kind"] in {
+                    "foreground",
+                    "background",
+                }:
                     epoch = await (
                         await conn.execute(
                             "SELECT memory_epoch FROM kestri.conversations WHERE chat_id=%s",
@@ -668,12 +682,19 @@ class Store:
                 await conn.execute("SELECT pg_advisory_xact_lock(hashtext('kestri-budget'))")
                 run = await (
                     await conn.execute(
-                        "SELECT status,cancel_requested FROM kestri.runs WHERE id=%s", (run_id,)
+                        "SELECT status,cancel_requested FROM kestri.runs WHERE id=%s",
+                        (run_id,),
                     )
                 ).fetchone()
                 if not run or run["status"] != "running" or run["cancel_requested"]:
                     raise PolicyDenied("RunInactive")
-                month = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+                month = datetime.now(UTC).replace(
+                    day=1,
+                    hour=0,
+                    minute=0,
+                    second=0,
+                    microsecond=0,
+                )
                 total = await (
                     await conn.execute(
                         "SELECT COALESCE(sum(amount_micro_usd),0) AS amount FROM kestri.usage "
@@ -751,7 +772,12 @@ class Store:
     async def delivery_failed(
         self, row: Row, error_type: str, *, uncertain: bool, delay: int = 3
     ) -> None:
-        status = "uncertain" if uncertain else ("pending" if row["attempts"] < 3 else "failed")
+        if uncertain:
+            status = "uncertain"
+        elif row["attempts"] < 3:
+            status = "pending"
+        else:
+            status = "failed"
         await self.execute(
             "UPDATE kestri.outbox SET "
             "status=%s,error_type=%s,next_attempt=now()+make_interval(secs=>%s) WHERE id=%s",

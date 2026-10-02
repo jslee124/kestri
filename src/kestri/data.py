@@ -51,7 +51,12 @@ async def disk_operation[T](operation: Callable[..., T], *args: Any) -> T:
 
 
 def encoded(value: Any) -> bytes:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, default=str).encode("utf-8")
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        default=str,
+    ).encode("utf-8")
 
 
 def write_private(path: Path, data: bytes) -> None:
@@ -93,7 +98,9 @@ def read_private(path: Path) -> dict[str, Any]:
 
 class DataService:
     def __init__(self, store: Store, workspace: Workspace, settings: DataSettings) -> None:
-        self.store, self.workspace, self.settings = store, workspace, settings
+        self.store = store
+        self.workspace = workspace
+        self.settings = settings
 
     @asynccontextmanager
     async def exclusive(self, *, operator: bool = True, bot_id: int | None = None) -> Any:
@@ -159,7 +166,10 @@ class DataService:
                     if record["status"] != "retrieved":
                         continue
                     content, truncated = await disk_operation(
-                        self.workspace.read, str(record["run_id"]), str(record["id"]), 64_000
+                        self.workspace.read,
+                        str(record["run_id"]),
+                        str(record["id"]),
+                        64_000,
                     )
                     if truncated:
                         raise PolicyDenied("EvidenceSizeLimit")
@@ -279,13 +289,23 @@ class DataService:
                         elif table == "tasks" and row["status"] != "deleted":
                             row["status"], row["restored"] = "paused", True
                         elif table == "runs" and row["status"] in {"queued", "running"}:
-                            row["status"], row["cancel_requested"], row["error_type"] = (
+                            (
+                                row["status"],
+                                row["cancel_requested"],
+                                row["error_type"],
+                            ) = (
                                 "interrupted",
                                 True,
                                 "RestoreQuarantine",
                             )
-                        elif table == "outbox" and row["status"] in {"pending", "sending"}:
-                            row["status"], row["error_type"] = "uncertain", "RestoreQuarantine"
+                        elif table == "outbox" and row["status"] in {
+                            "pending",
+                            "sending",
+                        }:
+                            row["status"], row["error_type"] = (
+                                "uncertain",
+                                "RestoreQuarantine",
+                            )
                         elif table == "usage" and row["state"] == "reserved":
                             row["state"] = "unknown"
                         if apply:
@@ -312,7 +332,12 @@ class DataService:
                     for name, content in attachments.items():
                         run_id, evidence_id = name.split("/")
                         created.append((run_id, evidence_id))
-                        await disk_operation(self.workspace.write, run_id, evidence_id, content)
+                        await disk_operation(
+                            self.workspace.write,
+                            run_id,
+                            evidence_id,
+                            content,
+                        )
                     for table, column in (
                         ("messages", "id"),
                         ("outbox", "sequence"),
@@ -324,7 +349,9 @@ class DataService:
                                 "GREATEST(COALESCE((SELECT "
                                 "max({}) FROM kestri.{}),0),1),EXISTS(SELECT 1 FROM kestri.{}))"
                             ).format(
-                                sql.Identifier(column), sql.Identifier(table), sql.Identifier(table)
+                                sql.Identifier(column),
+                                sql.Identifier(table),
+                                sql.Identifier(table),
                             ),
                             (f"kestri.{table}", column),
                         )
@@ -408,7 +435,8 @@ class DataService:
                 return report
             if erase:
                 await conn.execute(
-                    "UPDATE kestri.memories SET status='forgotten',content='',updated_at=%s", (now,)
+                    "UPDATE kestri.memories SET status='forgotten',content='',updated_at=%s",
+                    (now,),
                 )
                 await conn.execute(
                     (
@@ -428,7 +456,8 @@ class DataService:
                 (archive_cutoff,),
             )
             await conn.execute(
-                "UPDATE kestri.outbox SET content='' WHERE created_at<%s", (archive_cutoff,)
+                "UPDATE kestri.outbox SET content='' WHERE created_at<%s",
+                (archive_cutoff,),
             )
             for table in ("task_changes", "memory_changes"):
                 await conn.execute(

@@ -44,8 +44,11 @@ class WebTools:
         client: httpx.AsyncClient,
         policy: PublicURLPolicy | None = None,
     ) -> None:
-        self.store, self.workspace, self.budget = store, workspace, budget
-        self.chat_id, self.client = chat_id, client
+        self.store = store
+        self.workspace = workspace
+        self.budget = budget
+        self.chat_id = chat_id
+        self.client = client
         self.policy = policy or PublicURLPolicy()
         self.run_id = budget.control.run_id
 
@@ -71,7 +74,12 @@ class WebTools:
         retained = content[:64_000]
         truncated = len(content) > len(retained)
         if status == "retrieved":
-            await asyncio.to_thread(self.workspace.write, self.run_id, evidence_id, retained)
+            await asyncio.to_thread(
+                self.workspace.write,
+                self.run_id,
+                evidence_id,
+                retained,
+            )
         await self.store.add_evidence(
             self.run_id,
             kind,
@@ -184,7 +192,10 @@ class WebTools:
                     url,
                     "",
                     content,
-                    {"provider": "tavily", "failure": None if content else "ExtractionFailed"},
+                    {
+                        "provider": "tavily",
+                        "failure": None if content else "ExtractionFailed",
+                    },
                     "retrieved" if content else "failed",
                     excerpt_limit=2200,
                 )

@@ -21,6 +21,21 @@ uv run python scripts/check_docs.py
 
 文档检查覆盖翻译配对、对应语言链接、本地文件链接、标题数量与工程标识符集合，不评估翻译质量、外部链接或 Markdown 锚点；这些需另行审查。
 
+## 测试组织与代码风格
+
+测试按行为命名，不再按引入它们的开发里程碑命名：
+
+| 测试模块 | 覆盖内容 | 原里程碑 |
+| --- | --- | --- |
+| `tests/test_research_integration.py` | Telegram 研究、持久化、预算、发送与恢复 | M1 |
+| `tests/test_tasks_integration.py` | 持续任务约定、调度与后台执行 | M2 |
+| `tests/test_memory_context_integration.py` | 显式记忆、撤销与对话压缩 | M3 |
+| `tests/test_data_lifecycle_integration.py` | 导出、备份、恢复、保留与清理 | M4 |
+
+`tests/helpers.py` 存放公共模拟传输和场景构建函数。`tests/conftest.py` 提供环境隔离与临时数据库 fixture。测试模块之间不互相导入。开发记录保留里程碑名称，用于定位历史验收证据。
+
+赋值每行一项，嵌套判断使用显式分支，多字段字典和多参数调用每行一项。末尾逗号使 Ruff 保持这些结构展开；行长限制仍为 100 字符。提交修改前运行上方两项 Ruff 检查。
+
 ## 包含持久化与恢复检查
 
 使用隔离、可丢弃的 PostgreSQL 实例，绝不能用个人 Kestri 数据库：测试会在每个案例前**删除 `kestri` schema**。fixture 要求回环主机名和 `kestri_test` 数据库名，但仅名称不能保证数据可丢弃。

@@ -15,7 +15,8 @@ def test_missing_or_empty_key_is_rejected(monkeypatch: pytest.MonkeyPatch) -> No
 
 
 @pytest.mark.parametrize(
-    "value", [{"max_model_calls": 0}, {"max_tool_calls": 21}, {"run_timeout_seconds": -1}]
+    "value",
+    [{"max_model_calls": 0}, {"max_tool_calls": 21}, {"run_timeout_seconds": -1}],
 )
 def test_invalid_limits_are_rejected(value: dict[str, int]) -> None:
     with pytest.raises(ValidationError):
@@ -23,5 +24,5 @@ def test_invalid_limits_are_rejected(value: dict[str, int]) -> None:
 
 
 def test_secret_is_not_in_settings_repr() -> None:
-    settings = test_settings()
-    assert settings.deepseek_api_key.get_secret_value() not in repr(settings)
+    research_settings = test_settings()
+    assert research_settings.deepseek_api_key.get_secret_value() not in repr(research_settings)

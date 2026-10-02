@@ -4,6 +4,8 @@
 
 更新日期：2026-10-02。范围：M2 实现；验证状态见 [M2 记录](../development/m2-validation.zh-CN.md)。
 
+任务解析、事务校验、时区/DST 算法与补跑细节见[任务与调度内部设计](../design/task-scheduling.zh-CN.md)。
+
 ## 配置与调度
 
 | 变量 | 默认值 | 含义 |

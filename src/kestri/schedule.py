@@ -6,7 +6,13 @@ from zoneinfo import ZoneInfo
 
 def occurrence(day: date, local_time: str, timezone: str) -> datetime | None:
     hour, minute = map(int, local_time.split(":"))
-    local = datetime(day.year, day.month, day.day, hour, minute)
+    local = datetime(
+        day.year,
+        day.month,
+        day.day,
+        hour,
+        minute,
+    )
     zone = ZoneInfo(timezone)
     # Earlier fold once; a nonexistent wall time is skipped rather than shifted silently.
     instant = local.replace(tzinfo=zone, fold=0).astimezone(UTC)
@@ -47,7 +53,8 @@ def requested_time(text: str) -> str | None:
     if clock:
         return f"{int(clock[1]):02}:{clock[2]}"
     chinese = re.search(
-        r"([零一二三四五六七八九十两\d]+)点(?:(半)|([零一二三四五六七八九十两\d]+)分)?", text
+        r"([零一二三四五六七八九十两\d]+)点(?:(半)|([零一二三四五六七八九十两\d]+)分)?",
+        text,
     )
     if chinese is None:
         return None
@@ -75,7 +82,12 @@ def requested_time(text: str) -> str | None:
 
     try:
         hour = number(chinese[1])
-        minute = 30 if chinese[2] else number(chinese[3]) if chinese[3] else 0
+        if chinese[2]:
+            minute = 30
+        elif chinese[3]:
+            minute = number(chinese[3])
+        else:
+            minute = 0
     except KeyError, ValueError:
         return None
     if re.search(r"下午|晚上|傍晚", text) and hour < 12:
@@ -90,7 +102,16 @@ def requested_weekdays(text: str) -> list[int] | None:
         return list(range(5))
     if re.search(r"每天|每日|daily|every day", text, re.I):
         return list(range(7))
-    mapping = {"一": 0, "二": 1, "三": 2, "四": 3, "五": 4, "六": 5, "日": 6, "天": 6}
+    mapping = {
+        "一": 0,
+        "二": 1,
+        "三": 2,
+        "四": 3,
+        "五": 4,
+        "六": 5,
+        "日": 6,
+        "天": 6,
+    }
     days = {mapping[match] for match in re.findall(r"(?:每周|周|星期)([一二三四五六日天])", text)}
     for index, name in enumerate(
         ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")

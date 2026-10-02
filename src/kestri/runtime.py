@@ -29,7 +29,12 @@ from kestri.settings import Settings
 from kestri.tools import checked_add
 
 RunStatus = Literal[
-    "completed", "timeout", "model_limit", "tool_limit", "provider_error", "internal_error"
+    "completed",
+    "timeout",
+    "model_limit",
+    "tool_limit",
+    "provider_error",
+    "internal_error",
 ]
 
 SYSTEM_PROMPT = """You are Kestri's M0 integration agent.
@@ -129,7 +134,13 @@ class AgentSession:
 
         last = messages[-1] if messages else None
         answer = str(last.text) if status == "completed" and isinstance(last, AIMessage) else ""
-        return TurnResult(status, answer, messages, monotonic() - started, error_type)
+        return TurnResult(
+            status,
+            answer,
+            messages,
+            monotonic() - started,
+            error_type,
+        )
 
     async def aclose(self) -> None:
         if isinstance(self.model, ChatDeepSeek):

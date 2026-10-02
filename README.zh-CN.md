@@ -44,6 +44,6 @@ Kestri 是一个在本地运行、通过 Telegram 机器人交互的个人 AI ag
 
 ## 文档
 
-从[文档指南](docs/README.zh-CN.md)开始阅读。建议顺序为产品、需求、架构、安全与数据，然后阅读架构决策。
+从[文档指南](docs/README.zh-CN.md)开始。先看[实现阅读地图](docs/development/implementation-guide.zh-CN.md)，查找各模块/方法及其详细设计。学习实现时，建议依次阅读[软件架构](docs/design/architecture.zh-CN.md)、[数据库结构](docs/reference/database.zh-CN.md)、[上下文管理](docs/design/context-management.zh-CN.md)和[工具设计](docs/design/tools.zh-CN.md)。各文档说明已实现行为，并链接到负责的源码和测试。产品、需求、安全/数据策略和架构决策提供相关背景。
 
 英语是主要文档语言。每份英语文档都有对应的简体中文翻译，范围、状态和标识符保持一致。

@@ -7,19 +7,73 @@ from kestri.task_intent import task_intent
 
 
 def test_dst_gap_skips_day_and_fold_occurs_once() -> None:
-    gap = datetime(2026, 3, 8, 6, tzinfo=UTC)
-    assert next_occurrence(gap, "02:30", "America/New_York", list(range(7))) == datetime(
-        2026, 3, 9, 6, 30, tzinfo=UTC
+    gap = datetime(
+        2026,
+        3,
+        8,
+        6,
+        tzinfo=UTC,
     )
-    fold = datetime(2026, 11, 1, 4, tzinfo=UTC)
-    first = next_occurrence(fold, "01:30", "America/New_York", list(range(7)))
-    assert first == datetime(2026, 11, 1, 5, 30, tzinfo=UTC)
-    assert next_occurrence(first, "01:30", "America/New_York", list(range(7))) == datetime(
-        2026, 11, 2, 6, 30, tzinfo=UTC
+    assert next_occurrence(
+        gap,
+        "02:30",
+        "America/New_York",
+        list(range(7)),
+    ) == datetime(
+        2026,
+        3,
+        9,
+        6,
+        30,
+        tzinfo=UTC,
+    )
+    fold = datetime(
+        2026,
+        11,
+        1,
+        4,
+        tzinfo=UTC,
+    )
+    first = next_occurrence(
+        fold,
+        "01:30",
+        "America/New_York",
+        list(range(7)),
+    )
+    assert first == datetime(
+        2026,
+        11,
+        1,
+        5,
+        30,
+        tzinfo=UTC,
+    )
+    assert next_occurrence(
+        first,
+        "01:30",
+        "America/New_York",
+        list(range(7)),
+    ) == datetime(
+        2026,
+        11,
+        2,
+        6,
+        30,
+        tzinfo=UTC,
     )
     assert (
         latest_occurrence(
-            datetime(2026, 11, 1, 6, 45, tzinfo=UTC), "01:30", "America/New_York", list(range(7))
+            datetime(
+                2026,
+                11,
+                1,
+                6,
+                45,
+                tzinfo=UTC,
+            ),
+            "01:30",
+            "America/New_York",
+            list(range(7)),
         )
         == first
     )

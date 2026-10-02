@@ -10,7 +10,9 @@ from kestri.http import post_json
 
 class DeliveryProblem(Exception):
     def __init__(self, kind: str, *, uncertain: bool, delay: int = 3) -> None:
-        self.kind, self.uncertain, self.delay = kind, uncertain, delay
+        self.kind = kind
+        self.uncertain = uncertain
+        self.delay = delay
         super().__init__(kind)
 
 
@@ -21,7 +23,10 @@ class TelegramClient:
 
     async def call(self, method: str, payload: dict[str, Any]) -> Any:
         data = await post_json(
-            self.client, f"{self._base}/{method}", payload, allow_error_json=True
+            self.client,
+            f"{self._base}/{method}",
+            payload,
+            allow_error_json=True,
         )
         if data.get("ok") is False:
             parameters = data.get("parameters") or {}
@@ -30,7 +35,9 @@ class TelegramClient:
                 raise ProviderFailure("InvalidTelegramResponse")
             if code == 429:
                 raise DeliveryProblem(
-                    "RateLimited", uncertain=False, delay=int(parameters.get("retry_after", 3))
+                    "RateLimited",
+                    uncertain=False,
+                    delay=int(parameters.get("retry_after", 3)),
                 )
             raise DeliveryProblem(f"TelegramRejected_{code}", uncertain=False)
         if data.get("ok") is not True:
@@ -73,7 +80,8 @@ class TelegramClient:
                 },
             )
         await self.call(
-            "setChatMenuButton", {"chat_id": owner_id, "menu_button": {"type": "commands"}}
+            "setChatMenuButton",
+            {"chat_id": owner_id, "menu_button": {"type": "commands"}},
         )
 
     async def poll(self, offset: int | None = None, wait_seconds: int = 25) -> list[dict[str, Any]]:

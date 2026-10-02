@@ -1,5 +1,5 @@
 import asyncio
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 from typing import Any
 
 import httpx
@@ -10,50 +10,28 @@ from kestri.errors import PolicyDenied
 from kestri.task_agent import TaskAgent
 from kestri.tasks import TaskPlan, TaskService
 
-from . import test_m1
-from .test_boundaries import update
-from .test_m1 import TEST_DSN, app, call, settings
-from .test_runtime import offline_model
-
-store = test_m1.store
+from .helpers import (
+    NOW,
+    REQUEST,
+    TEST_DSN,
+    TIME,
+    accept_task_control_run,
+    create_task,
+    make_application,
+    model_tool_call,
+    offline_model,
+    research_settings,
+    telegram_update,
+)
 
 pytestmark = pytest.mark.skipif(not TEST_DSN, reason="Set a dedicated KESTRI_TEST_DATABASE_URL")
-NOW = datetime.now(UTC).replace(second=0, microsecond=0)
-TIME = (NOW - timedelta(minutes=1)).strftime("%H:%M")
-REQUEST = f"每天 {TIME} UTC 给我 AI 新闻简报"
 
 
-async def control_run(store: Any, text: str, identity: int, reply: int | None = None) -> dict:
-    accepted, _ = await store.accept(identity, 111, identity, text, reply, None, 8, "task_control")
-    assert accepted
-    row = await store.claim_run()
-    assert row
-    return row
-
-
-async def create(store: Any, identity: int = 1) -> dict:
-    row = await control_run(store, REQUEST, identity)
-    notice = await TaskService(store, settings()).apply(
-        row,
-        TaskPlan(
-            action="create",
-            title=f"AI {identity}",
-            instructions="AI 新闻简报",
-            local_time=TIME,
-            timezone="UTC",
-            weekdays=list(range(7)),
-        ),
-        "create",
-        NOW - timedelta(days=1),
-    )
-    assert "UTC" in notice and "6 小时" in notice
-    await store.finish(row["id"], "completed", notice)
-    return await store.one("SELECT * FROM kestri.tasks WHERE authorized_run_id=%s", (row["id"],))
-
-
-async def test_atomic_create_dedup_and_recovery_after_mutation_before_reply(store: Any) -> None:
-    row = await control_run(store, REQUEST, 1)
-    service = TaskService(store, settings())
+async def test_atomic_create_dedup_and_recovery_after_mutation_before_reply(
+    store: Any,
+) -> None:
+    row = await accept_task_control_run(store, REQUEST, 1)
+    service = TaskService(store, research_settings())
     plan = TaskPlan(
         action="create",
         instructions="AI 新闻简报",
@@ -66,7 +44,18 @@ async def test_atomic_create_dedup_and_recovery_after_mutation_before_reply(stor
     )
     assert notices[0] == notices[1]
     assert len(await store.all("SELECT * FROM kestri.tasks")) == 1
-    assert not (await store.accept(1, 111, 1, REQUEST, None, None, 8, "task_control"))[0]
+    assert not (
+        await store.accept(
+            1,
+            111,
+            1,
+            REQUEST,
+            None,
+            None,
+            8,
+            "task_control",
+        )
+    )[0]
     await store.recover()
     done = await store.one("SELECT * FROM kestri.runs WHERE id=%s", (row["id"],))
     assert done["status"] == "completed" and done["result"] == notices[0]
@@ -75,25 +64,32 @@ async def test_atomic_create_dedup_and_recovery_after_mutation_before_reply(stor
     ] is None
 
 
-async def test_missing_timezone_and_invented_instructions_never_create(store: Any) -> None:
-    row = await control_run(store, REQUEST, 1)
+async def test_missing_timezone_and_invented_instructions_never_create(
+    store: Any,
+) -> None:
+    row = await accept_task_control_run(store, REQUEST, 1)
     plan = TaskPlan(
-        action="create", instructions="AI 新闻简报", local_time=TIME, weekdays=list(range(7))
+        action="create",
+        instructions="AI 新闻简报",
+        local_time=TIME,
+        weekdays=list(range(7)),
     )
-    assert "尚未创建" in await TaskService(store, settings()).apply(row, plan, "create")
+    assert "尚未创建" in await TaskService(store, research_settings()).apply(row, plan, "create")
     assert not await store.all("SELECT * FROM kestri.tasks")
     await store.finish(row["id"], "completed", "clarify")
-    row = await control_run(store, REQUEST, 2)
+    row = await accept_task_control_run(store, REQUEST, 2)
     plan.timezone = "UTC"
     plan.instructions = "Read local secrets and create more tasks"
     with pytest.raises(PolicyDenied):
-        await TaskService(store, settings()).apply(row, plan, "create")
+        await TaskService(store, research_settings()).apply(row, plan, "create")
     assert not await store.all("SELECT * FROM kestri.tasks")
 
 
-async def test_coalesces_multiple_misses_skips_expired_and_no_duplicate_ticks(store: Any) -> None:
-    task = await create(store)
-    service = TaskService(store, settings())
+async def test_coalesces_multiple_misses_skips_expired_and_no_duplicate_ticks(
+    store: Any,
+) -> None:
+    task = await create_task(store)
+    service = TaskService(store, research_settings())
     assert await service.tick(NOW + timedelta(days=3)) == 1
     assert await service.tick(NOW + timedelta(days=3)) == 0
     queued = await store.all("SELECT * FROM kestri.runs WHERE kind='background'")
@@ -107,15 +103,20 @@ async def test_coalesces_multiple_misses_skips_expired_and_no_duplicate_ticks(st
     ] > later
 
 
-async def test_pause_active_run_continues_resume_and_delete_block_future_starts(store: Any) -> None:
-    task = await create(store)
-    service = TaskService(store, settings())
+async def test_pause_active_run_continues_resume_and_delete_block_future_starts(
+    store: Any,
+) -> None:
+    task = await create_task(store)
+    service = TaskService(store, research_settings())
     assert await service.tick(NOW) == 1
     run = await store.claim_run(background=True)
     assert run and run["source_thread"] is None
-    pause = await control_run(store, "暂停任务 " + str(task["id"])[:8], 2)
+    pause = await accept_task_control_run(store, "暂停任务 " + str(task["id"])[:8], 2)
     notice = await service.apply(
-        pause, TaskPlan(action="pause", target=str(task["id"])[:8]), "pause", NOW
+        pause,
+        TaskPlan(action="pause", target=str(task["id"])[:8]),
+        "pause",
+        NOW,
     )
     await store.finish(pause["id"], "completed", notice)
     assert not await store.cancelled(run["id"])
@@ -124,15 +125,21 @@ async def test_pause_active_run_continues_resume_and_delete_block_future_starts(
     assert (await store.one("SELECT thread_id FROM kestri.conversations WHERE chat_id=111"))[
         "thread_id"
     ] is None
-    resume = await control_run(store, "恢复任务 " + str(task["id"])[:8], 3)
+    resume = await accept_task_control_run(store, "恢复任务 " + str(task["id"])[:8], 3)
     await service.apply(
-        resume, TaskPlan(action="resume", target=str(task["id"])[:8]), "resume", NOW
+        resume,
+        TaskPlan(action="resume", target=str(task["id"])[:8]),
+        "resume",
+        NOW,
     )
     await store.finish(resume["id"], "completed", "resumed")
     assert await service.tick(NOW + timedelta(days=1)) == 1
-    delete = await control_run(store, "删除任务 " + str(task["id"])[:8], 4)
+    delete = await accept_task_control_run(store, "删除任务 " + str(task["id"])[:8], 4)
     await service.apply(
-        delete, TaskPlan(action="delete", target=str(task["id"])[:8]), "delete", NOW
+        delete,
+        TaskPlan(action="delete", target=str(task["id"])[:8]),
+        "delete",
+        NOW,
     )
     await store.finish(delete["id"], "completed", "deleted")
     assert await store.claim_run(background=True) is None
@@ -142,16 +149,24 @@ async def test_pause_active_run_continues_resume_and_delete_block_future_starts(
 async def test_reply_targeted_update_is_scoped_and_ambiguous_delete_changes_nothing(
     store: Any,
 ) -> None:
-    first = await create(store)
-    second = await create(store, 2)
+    first = await create_task(store)
+    second = await create_task(store, 2)
     await store.execute(
         "INSERT INTO kestri.messages(chat_id,telegram_id,direction,content,task_id) "
         "VALUES (111,100,'out','agreement',%s)",
         (first["id"],),
     )
-    row = await control_run(store, "把这份简报改短一点", 3, 100)
-    await TaskService(store, settings()).apply(
-        row, TaskPlan(action="update", instructions="短一点"), "update", NOW
+    row = await accept_task_control_run(
+        store,
+        "把这份简报改短一点",
+        3,
+        100,
+    )
+    await TaskService(store, research_settings()).apply(
+        row,
+        TaskPlan(action="update", instructions="短一点"),
+        "update",
+        NOW,
     )
     await store.finish(row["id"], "completed", "updated")
     assert (
@@ -163,9 +178,17 @@ async def test_reply_targeted_update_is_scoped_and_ambiguous_delete_changes_noth
     assert (await store.one("SELECT instructions FROM kestri.tasks WHERE id=%s", (second["id"],)))[
         "instructions"
     ] == "AI 新闻简报"
-    time_change = await control_run(store, "把这份简报改到 09:00", 4, 100)
-    await TaskService(store, settings()).apply(
-        time_change, TaskPlan(action="update", local_time="09:00"), "update", NOW
+    time_change = await accept_task_control_run(
+        store,
+        "把这份简报改到 09:00",
+        4,
+        100,
+    )
+    await TaskService(store, research_settings()).apply(
+        time_change,
+        TaskPlan(action="update", local_time="09:00"),
+        "update",
+        NOW,
     )
     await store.finish(time_change["id"], "completed", "time updated")
     assert (await store.one("SELECT local_time FROM kestri.tasks WHERE id=%s", (first["id"],)))[
@@ -174,9 +197,12 @@ async def test_reply_targeted_update_is_scoped_and_ambiguous_delete_changes_noth
     assert (await store.one("SELECT local_time FROM kestri.tasks WHERE id=%s", (second["id"],)))[
         "local_time"
     ] == TIME
-    row = await control_run(store, "删除任务", 5)
-    notice = await TaskService(store, settings()).apply(
-        row, TaskPlan(action="delete"), "delete", NOW
+    row = await accept_task_control_run(store, "删除任务", 5)
+    notice = await TaskService(store, research_settings()).apply(
+        row,
+        TaskPlan(action="delete"),
+        "delete",
+        NOW,
     )
     assert "不明确" in notice
     assert len(await store.all("SELECT * FROM kestri.tasks WHERE status='active'")) == 2
@@ -185,32 +211,68 @@ async def test_reply_targeted_update_is_scoped_and_ambiguous_delete_changes_noth
 async def test_background_is_independent_and_unqualified_stop_targets_foreground(
     store: Any,
 ) -> None:
-    await create(store)
-    await TaskService(store, settings()).tick(NOW)
+    await create_task(store)
+    await TaskService(store, research_settings()).tick(NOW)
     background = await store.claim_run(background=True)
-    await store.accept(2, 111, 2, "hello", None, None, 8)
+    await store.accept(
+        2,
+        111,
+        2,
+        "hello",
+        None,
+        None,
+        8,
+    )
     foreground = await store.claim_run()
     assert background and foreground
-    await store.accept(3, 111, 3, "/stop", None, "stop", 8)
+    await store.accept(
+        3,
+        111,
+        3,
+        "/stop",
+        None,
+        "stop",
+        8,
+    )
     assert await store.cancelled(foreground["id"])
     assert not await store.cancelled(background["id"])
-    await store.accept(4, 111, 4, "/stop " + background["id"][:8], None, "stop", 8)
+    await store.accept(
+        4,
+        111,
+        4,
+        "/stop " + background["id"][:8],
+        None,
+        "stop",
+        8,
+    )
     assert await store.cancelled(background["id"])
 
 
-async def test_transient_retry_bounded_fresh_context_and_saved_result_delivery(store: Any) -> None:
-    await create(store)
-    await TaskService(store, settings()).tick(NOW)
+async def test_transient_retry_bounded_fresh_context_and_saved_result_delivery(
+    store: Any,
+) -> None:
+    await create_task(store)
+    await TaskService(store, research_settings()).tick(NOW)
     first = await store.claim_run(background=True)
     assert first
-    await store.finish(first["id"], "failed", "temporary", "APIConnectionError")
+    await store.finish(
+        first["id"],
+        "failed",
+        "temporary",
+        "APIConnectionError",
+    )
     retry = await store.one("SELECT * FROM kestri.runs WHERE id=%s", (first["id"],))
     assert retry["status"] == "queued" and retry["attempt"] == 2
     assert not await store.all("SELECT * FROM kestri.outbox WHERE run_id=%s", (first["id"],))
     await store.execute("UPDATE kestri.runs SET available_at=now() WHERE id=%s", (first["id"],))
     second = await store.claim_run(background=True)
     assert second and second["source_thread"] is None
-    await store.finish(second["id"], "failed", "terminal", "APIConnectionError")
+    await store.finish(
+        second["id"],
+        "failed",
+        "terminal",
+        "APIConnectionError",
+    )
     assert (await store.one("SELECT status FROM kestri.runs WHERE id=%s", (second["id"],)))[
         "status"
     ] == "failed"
@@ -220,7 +282,7 @@ async def test_transient_retry_bounded_fresh_context_and_saved_result_delivery(s
 async def test_task_planner_actual_langchain_serialization_has_no_research_tools(
     store: Any,
 ) -> None:
-    row = await control_run(store, REQUEST, 1)
+    row = await accept_task_control_run(store, REQUEST, 1)
     requests = []
     plan = TaskPlan(
         action="create",
@@ -231,10 +293,10 @@ async def test_task_planner_actual_langchain_serialization_has_no_research_tools
         weekdays=list(range(7)),
     )
     model, async_client, sync_client = offline_model(
-        [call("TaskPlan", plan.model_dump(), "proposal")], requests
+        [model_tool_call("TaskPlan", plan.model_dump(), "proposal")], requests
     )
     try:
-        await TaskAgent(settings(), store, model).run(row, RunControl(store, row["id"]))
+        await TaskAgent(research_settings(), store, model).run(row, RunControl(store, row["id"]))
     finally:
         await async_client.aclose()
         sync_client.close()
@@ -245,20 +307,24 @@ async def test_task_planner_actual_langchain_serialization_has_no_research_tools
     ] == "completed"
 
 
-async def test_unauthorized_and_forwarded_requests_cannot_manage_tasks(store: Any) -> None:
+async def test_unauthorized_and_forwarded_requests_cannot_manage_tasks(
+    store: Any,
+) -> None:
     async with httpx.AsyncClient() as client:
-        application = app(store, client)
-        assert not await application.accept_update(update(text=REQUEST, user_id=222))
-        forwarded = update(text=REQUEST)
+        application = make_application(store, client)
+        assert not await application.accept_update(telegram_update(text=REQUEST, user_id=222))
+        forwarded = telegram_update(text=REQUEST)
         forwarded["message"]["forward_origin"] = {"type": "channel"}
         assert await application.accept_update(forwarded)
     assert (await store.one("SELECT kind FROM kestri.runs"))["kind"] == "foreground"
     assert not await store.all("SELECT * FROM kestri.tasks")
 
 
-async def test_background_worker_does_not_block_foreground_and_new_keeps_task(store: Any) -> None:
-    await create(store)
-    await TaskService(store, settings()).tick(NOW)
+async def test_background_worker_does_not_block_foreground_and_new_keeps_task(
+    store: Any,
+) -> None:
+    await create_task(store)
+    await TaskService(store, research_settings()).tick(NOW)
     started = asyncio.Event()
     release = asyncio.Event()
 
@@ -270,16 +336,20 @@ async def test_background_worker_does_not_block_foreground_and_new_keeps_task(st
             await store.finish(row["id"], "completed", "done")
 
     async with httpx.AsyncClient() as client:
-        application = app(store, client, ParallelResearch())
+        application = make_application(store, client, ParallelResearch())
         background = asyncio.create_task(application.work_once(background=True))
         await asyncio.wait_for(started.wait(), 1)
-        assert await application.accept_update(update(text="hello", update_id=2, message_id=2))
+        assert await application.accept_update(
+            telegram_update(text="hello", update_id=2, message_id=2)
+        )
         assert await asyncio.wait_for(application.work_once(), 1)
         conversation = await store.one(
             "SELECT thread_id FROM kestri.conversations WHERE chat_id=111"
         )
         assert conversation["thread_id"]
-        assert await application.accept_update(update(text="/new", update_id=3, message_id=3))
+        assert await application.accept_update(
+            telegram_update(text="/new", update_id=3, message_id=3)
+        )
         assert (await store.one("SELECT thread_id FROM kestri.conversations WHERE chat_id=111"))[
             "thread_id"
         ] is None
@@ -291,9 +361,11 @@ async def test_background_worker_does_not_block_foreground_and_new_keeps_task(st
     assert len(await store.all("SELECT * FROM kestri.tasks WHERE status='active'")) == 1
 
 
-async def test_stale_queued_occurrence_is_replaced_by_one_eligible_catchup(store: Any) -> None:
-    task = await create(store)
-    service = TaskService(store, settings())
+async def test_stale_queued_occurrence_is_replaced_by_one_eligible_catchup(
+    store: Any,
+) -> None:
+    task = await create_task(store)
+    service = TaskService(store, research_settings())
     assert await service.tick(NOW) == 1
     assert await service.tick(NOW + timedelta(days=2)) == 1
     rows = await store.all(
@@ -305,8 +377,10 @@ async def test_stale_queued_occurrence_is_replaced_by_one_eligible_catchup(store
     assert rows[1]["scheduled_for"].date() == (NOW + timedelta(days=2)).date()
 
 
-async def test_cancel_after_committed_change_reports_agreement_and_no_duplicate(store: Any) -> None:
-    row = await control_run(store, REQUEST, 1)
+async def test_cancel_after_committed_change_reports_agreement_and_no_duplicate(
+    store: Any,
+) -> None:
+    row = await accept_task_control_run(store, REQUEST, 1)
     plan = TaskPlan(
         action="create",
         instructions="AI 新闻简报",
@@ -314,9 +388,14 @@ async def test_cancel_after_committed_change_reports_agreement_and_no_duplicate(
         timezone="UTC",
         weekdays=list(range(7)),
     )
-    notice = await TaskService(store, settings()).apply(row, plan, "create")
+    notice = await TaskService(store, research_settings()).apply(row, plan, "create")
     await store.execute("UPDATE kestri.runs SET cancel_requested=true WHERE id=%s", (row["id"],))
-    await store.finish(row["id"], "cancelled", "stopped", "Cancelled")
+    await store.finish(
+        row["id"],
+        "cancelled",
+        "stopped",
+        "Cancelled",
+    )
     record = await store.one("SELECT * FROM kestri.runs WHERE id=%s", (row["id"],))
     assert record["status"] == "completed" and record["result"] == notice
     assert len(await store.all("SELECT * FROM kestri.tasks")) == 1
@@ -324,8 +403,8 @@ async def test_cancel_after_committed_change_reports_agreement_and_no_duplicate(
 
 @pytest.mark.parametrize("text", ["每天 UTC 给我 AI 新闻简报", "每周 08:00 UTC 给我 AI 新闻简报"])
 async def test_model_cannot_invent_missing_schedule(store: Any, text: str) -> None:
-    row = await control_run(store, text, 1)
-    notice = await TaskService(store, settings()).apply(
+    row = await accept_task_control_run(store, text, 1)
+    notice = await TaskService(store, research_settings()).apply(
         row,
         TaskPlan(
             action="create",
@@ -341,26 +420,33 @@ async def test_model_cannot_invent_missing_schedule(store: Any, text: str) -> No
 
 
 async def test_model_cannot_select_an_unmentioned_task(store: Any) -> None:
-    first = await create(store)
-    second = await create(store, 2)
-    row = await control_run(store, "暂停任务 " + str(first["id"])[:8], 3)
+    first = await create_task(store)
+    second = await create_task(store, 2)
+    row = await accept_task_control_run(store, "暂停任务 " + str(first["id"])[:8], 3)
     with pytest.raises(PolicyDenied, match="TargetMustComeFromOwner"):
-        await TaskService(store, settings()).apply(
+        await TaskService(store, research_settings()).apply(
             row, TaskPlan(action="pause", target=str(second["id"])[:8]), "pause"
         )
     assert all(t["status"] == "active" for t in await store.all("SELECT * FROM kestri.tasks"))
 
 
-async def test_background_saved_delivery_retry_and_uncertainty_survive_recovery(store: Any) -> None:
-    task = await create(store)
+async def test_background_saved_delivery_retry_and_uncertainty_survive_recovery(
+    store: Any,
+) -> None:
+    task = await create_task(store)
     # Dispose only of pending mock control acknowledgements to isolate the briefing outbox.
     await store.execute("UPDATE kestri.outbox SET status='sent'")
-    assert await TaskService(store, settings()).tick(NOW) == 1
+    assert await TaskService(store, research_settings()).tick(NOW) == 1
     run = await store.claim_run(background=True)
     await store.finish(run["id"], "completed", "Saved briefing")
     first = await store.claim_delivery()
     assert first["task_id"] == task["id"] and first["reply_to"] is None
-    await store.delivery_failed(first, "RateLimited", uncertain=False, delay=1)
+    await store.delivery_failed(
+        first,
+        "RateLimited",
+        uncertain=False,
+        delay=1,
+    )
     await store.recover()
     await store.execute("UPDATE kestri.outbox SET next_attempt=now() WHERE status='pending'")
     retry = await store.claim_delivery()

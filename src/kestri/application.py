@@ -20,7 +20,12 @@ from kestri.settings import ResearchSettings, TelegramCredentials
 from kestri.store import Store
 from kestri.task_intent import task_intent
 from kestri.tasks import TaskService
-from kestri.telegram import DeliveryProblem, TelegramClient, authorized_message, command_for
+from kestri.telegram import (
+    DeliveryProblem,
+    TelegramClient,
+    authorized_message,
+    command_for,
+)
 from kestri.url_policy import CloudflareResolver, PublicURLPolicy
 from kestri.workspace import Workspace
 
@@ -33,8 +38,10 @@ class Application:
         telegram: TelegramClient,
         researcher: ResearchAgent,
     ) -> None:
-        self.settings, self.store = settings, store
-        self.telegram, self.researcher = telegram, researcher
+        self.settings = settings
+        self.store = store
+        self.telegram = telegram
+        self.researcher = researcher
         self.active: tuple[RunControl, asyncio.Task[None]] | None = None
         self.background_active: tuple[RunControl, asyncio.Task[None]] | None = None
         self.tasks = TaskService(store, settings)
@@ -57,9 +64,12 @@ class Application:
         memory = memory_instruction(message["text"])
         if message.get("forward_origin") or message.get("external_reply"):
             memory = None
-        kind = (
-            "memory_control" if memory else "task_control" if intent is not None else "foreground"
-        )
+        if memory:
+            kind = "memory_control"
+        elif intent is not None:
+            kind = "task_control"
+        else:
+            kind = "foreground"
         if memory:
             command = None
         if intent is not None:
@@ -120,13 +130,21 @@ class Application:
             if current is not None and current.cancelling():
                 raise asyncio.CancelledError
         except asyncio.CancelledError:
-            await self.store.finish(row["id"], "cancelled", "执行已停止。", "Cancelled")
+            await self.store.finish(
+                row["id"],
+                "cancelled",
+                "执行已停止。",
+                "Cancelled",
+            )
             current = asyncio.current_task()
             if current is not None and current.cancelling():
                 raise
         except Exception as error:
             await self.store.finish(
-                row["id"], "failed", "执行失败，未自动重跑。", type(error).__name__
+                row["id"],
+                "failed",
+                "执行失败，未自动重跑。",
+                type(error).__name__,
             )
         finally:
             if background:
@@ -286,7 +304,12 @@ async def run_telegram(settings: ResearchSettings) -> None:
                     f"Kestri polling @{identity.get('username', '(unnamed)')}; "
                     "owner-only private chat."
                 )
-                await Application(settings, store, telegram, researcher).serve()
+                await Application(
+                    settings,
+                    store,
+                    telegram,
+                    researcher,
+                ).serve()
             finally:
                 await lock_connection.execute("SELECT pg_advisory_unlock_all()")
     finally:

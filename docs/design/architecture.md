@@ -1,111 +1,155 @@
-# Architecture design
+# Implemented software architecture
 
 [简体中文](architecture.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Status: design draft; major technology and boundary decisions accepted. M1 implements foreground research, controlled information tools, canonical records, checkpoints, delivery, and Compose. M2 implements durable task agreements and independent background scheduling; M3 implements explicit personal memory and budgeted context compression; see the [memory/context reference](../reference/memory-and-context.md). Exact implemented behavior is in the [M1 reference](../reference/telegram.md) and [validation record](../development/m1-validation.md).
+Updated: 2026-10-02. Status: source-grounded description of the implemented first version. Values below are repository defaults, not provider guarantees or performance measurements. Historical decisions and acceptance evidence remain in the ADRs and development records.
 
-## System boundary
+See the [implementation guide](../development/implementation-guide.md) for module/method responsibilities and detailed topic entry points.
 
-Kestri runs its application and PostgreSQL locally through Docker Compose. Telegram is the first remote interface. DeepSeek handles model inference, and Tavily supplies search and extraction. Development may run Python directly; that mode must not be treated as proof of container isolation.
+## System and deployment boundary
+
+Kestri is one local asynchronous Python application and one PostgreSQL service. Telegram provides the owner interface; DeepSeek provides model inference; Tavily provides public search/extraction. LangChain `create_agent` builds the model/tool graph, and LangGraph checkpoint savers persist its execution state. Business authorization, scheduling, cancellation, accounting, and delivery remain Kestri responsibilities.
 
 ```mermaid
 flowchart LR
-    U[Owner] <--> T[Telegram]
-    T <--> A[Telegram adapter]
-    A --> C[Application controller]
-    S[Local scheduler] --> C
-    C <--> R[LangChain Agent / LangGraph]
-    R <--> M[DeepSeek official API]
-    R --> P[Tool policy and dispatch]
-    P --> W[Controlled information tools]
-    W <--> V[Tavily]
-    P --> F[Scoped workspace tools]
-    F <--> D[Dedicated workspace]
-    C <--> DB[(Local PostgreSQL)]
-    R <--> DB
+    Owner[Owner private chat] <--> Telegram[Telegram Bot API]
+    Telegram <--> Adapter[TelegramClient]
+    Adapter <--> App[Application loops]
+    App --> Research[ResearchAgent routing]
+    Research --> Memory[MemoryService]
+    Research --> TaskAgent[TaskAgent proposal]
+    TaskAgent --> Tasks[TaskService]
+    App --> Tasks
+    Research --> Graph[Research graph and middleware]
+    TaskAgent --> Model[DeepSeekChatModel]
+    Graph --> Model
+    Graph --> Tools[WebTools]
+    Tools --> Tavily[Tavily API]
+    Tools --> URL[PublicURLPolicy]
+    Tools --> Files[Workspace evidence text]
+    App --> Store[Store business transactions]
+    Memory --> Store
+    Tasks --> Store
+    Tools --> Store
+    Graph --> Saver[AsyncPostgresSaver]
+    Store --> DB[(PostgreSQL kestri schema)]
+    Saver --> Checkpoints[(PostgreSQL public checkpoints)]
+    App --> Data[DataService maintenance]
+    Data --> Store
+    Data --> Files
 ```
 
-The diagram shows responsibilities, not separate processes or a permission grant. Model tool requests pass through application policy. The scheduler triggers the stored agreement; the model does not decide that a time event grants new authority.
+Boxes are responsibilities, not independent deployed services. There is no public application HTTP server, shell executor, autonomous tool installation, vector database, or distributed job broker in this version.
 
-## Responsibilities
+[compose.yaml](../../compose.yaml) puts PostgreSQL on an internal database network without a host port. The app joins that network and an outbound network, mounts a writable workspace, uses a read-only root filesystem and temporary `/tmp`, drops capabilities, and runs as UID/GID 10001 through [Dockerfile](../../Dockerfile). Both services have resource limits. The app healthcheck runs `kestri data status`: it checks local database access, not Telegram polling, successful inference, or end-to-end delivery. Direct Python development does not provide the container boundary.
 
-| Component | Responsibility |
-| --- | --- |
-| Telegram adapter | Owner/chat authorization, inbound update identity, durable acceptance, message/reply association, status and result delivery |
-| Application controller | Foreground ordering, run lifecycle, cancellation, permission scope, usage accounting, and delivery coordination |
-| Agent runtime | Model/tool loop and middleware, main-thread continuity, independent task execution contexts |
-| Tool policy and dispatch | Validate identity, task scope, arguments, paths/URLs, cancellation, and budgets before side effects |
-| Information tools | Search and extract through a replaceable provider adapter, preserve provenance, bound output, and retain evidence |
-| Memory service | Explicit writes and suggestions, scope/provenance, corrections/deletions, relevant retrieval |
-| Task service and scheduler | Persist task agreements, decide due/catch-up execution, avoid duplicate local starts, handle pause/resume/delete |
-| Persistence | Checkpoints, canonical message archive, memory, tasks, runs, delivery state, and evidence metadata |
-| Workspace service | Task-scoped evidence and result files; no arbitrary host path access |
+## Entry points and module responsibilities
 
-These are logical boundaries. The initial application need not become a collection of microservices. The package uses `src/kestri`. M1 separates `telegram.py`, `application.py`, `research.py`, `web.py`, `url_policy.py`, `workspace.py`, `budget.py`, and `store.py`; its schema is in `sql/001_initial.sql`. M2 adds `task_intent.py`, `task_agent.py`, `tasks.py`, `schedule.py`, and `sql/002_tasks.sql`. A local asynchronous loop uses PostgreSQL as schedule authority; see [ADR-0004](../decisions/0004-recurring-task-execution.md) and the [task reference](../reference/tasks.md). M3 adds `memory.py`, `context.py`, and `sql/003_memory_context.sql`; [ADR-0005](../decisions/0005-explicit-memory-and-revocable-context.md) explains context invalidation and the summarization extension.
+Start reading [cli.py](../../src/kestri/cli.py), then follow the appropriate route. The module named `runtime.py` is primarily the minimal integration session; the product execution path runs through `application.py` and `research.py`.
 
-LangChain provides an agent harness built on LangGraph, which supplies persistence and execution-control primitives. Kestri must still implement its application permissions, task lifecycle, and delivery behavior. See the [official framework overview](https://docs.langchain.com/oss/python/langchain/overview) and [ADR-0001](../decisions/0001-agent-stack.md).
-
-## Execution flows
-
-### Foreground research
-
-1. Authorize and durably accept the Telegram update using its stable identity before acknowledging it as consumed.
-2. Associate any reply with a known message/run and order accepted foreground work.
-3. Seed a fresh run thread from the last completed checkpoint and include referenced result/evidence within the request budget. Inject current eligible memory into the model request and compress older state within the shared budget.
-4. Run the agent. Each requested tool operation is checked and bounded before execution.
-5. Save results and evidence references, coordinate delivery, and retain the message-to-run association.
-
-Plain conversation can answer without web tools. A substantial query receives concise status; the user can request cancellation. M1 uses one research worker, an eight-request queue bound, and independent polling/delivery loops. `/stop` and reply controls are defined in the M1 reference.
-
-### Recurring briefing
-
-1. Persist the user's agreement, explicit timezone, instructions, missed-run policy, and active/paused state.
-2. At a due time or eligible recovery event, claim one permitted run using durable task/run state.
-3. Start an independent agent context with the current task agreement, rather than the full Telegram history; M3 supplies eligible global/task memory without changing the stored agreement.
-4. Generate and persist the result; delivery consumes that saved result.
-5. Record send success, failure, or uncertainty. A transport retry does not require repeating research.
-
-Task pause affects future starts; cancellation targets an individual run. Background work has separate bounded concurrency so it does not monopolize foreground conversation. Values and restart treatment of in-flight work must be validated before release.
-
-### Memory and follow-up
-
-An explicit memory instruction is validated, stored with provenance/scope, and acknowledged. A suggested preference waits for acceptance. Corrections supersede older entries; forgetting excludes them from retrieval and re-extraction.
-
-A reply to a briefing retrieves the referenced result and necessary evidence into the foreground context. It does not merge entire background execution histories. This enables “expand the second item” in one chat without creating one unbounded model transcript.
-
-## State boundaries
-
-| State | Purpose |
-| --- | --- |
-| Canonical messages | Original inbound and outbound content and association metadata, subject to retention |
-| Checkpoints | LangGraph execution and conversation state, including compressed history |
-| Personal memory | Durable, scoped user facts/preferences with provenance and deletion status |
-| Task agreements | Explicit user authorization, schedule, timezone, content instructions, and lifecycle |
-| Runs and delivery | Claimed occurrence, execution outcome, usage, saved result, and send status |
-| Evidence and artifacts | Retrieved material, sources, truncation metadata, and generated files |
-
-LangGraph distinguishes per-thread checkpoints from cross-thread stores. Neither substitutes for an independent original-message archive or structured business state. See [official persistence documentation](https://docs.langchain.com/oss/python/langgraph/persistence) and [ADR-0003](../decisions/0003-persistence-and-state-separation.md).
-
-## External provider boundaries
-
-Expose Kestri-owned search and extraction operations rather than leaking provider-specific APIs into task definitions. Tavily has distinct [Search](https://docs.tavily.com/documentation/api-reference/endpoint/search) and [Extract](https://docs.tavily.com/documentation/api-reference/endpoint/extract) endpoints; search discovers candidates, while extraction supplies material for evidence.
-
-The application controls permitted queries/URLs, provider timeouts, metadata, and model-visible output. Search and extraction adapters must not make arbitrary network access or provider-generated summaries authoritative. The [security design](security-and-data.md) specifies the boundary.
-
-DeepSeek official API is selected. The current suggested model identifier is `deepseek-flash`; M0 has live validation for its two-turn tool workflow in both thinking modes, recorded in [M0 evidence](../development/m0-validation.md). Other workflows require their own validation. Its official documentation advertises a 1M context window; this is provider capacity, not Kestri's active request budget. Provider facts were checked on 2026-09-30 and may change. See [DeepSeek documentation](https://api-docs.deepseek.com/quick_start/pricing/).
-
-## Adjustable initial defaults
-
-These values are starting points from the design discussion, not benchmark results or immutable requirements. Implemented M0 settings are defined in [configuration reference](../reference/configuration.md); M1 implements the input admission and local spending envelope, as specified in the [M1 reference](../reference/telegram.md). M2 implements six-hour coalescing catch-up; M3 implements bounded summarization and scoped memory.
-
-| Setting | Initial value | Interpretation |
+| Module | Main interface | Responsibility |
 | --- | --- | --- |
-| Model identifier | `deepseek-flash` | M0 default verified for its model/tool workflow |
-| Active input budget | 128,000 tokens | Includes system prompt, tool definitions, memory, summaries, messages, and current tool material; reserve output separately |
-| Compression trigger | Approximately 70% of input budget | Account for fixed overhead; do not assume middleware counts all request components |
-| Experiment budget | USD 20 per month | Local estimated spending envelope for model and search use; not a predicted bill or provider-side hard cap |
-| Briefing catch-up window | 6 hours | Per-task default; coalesce missed occurrences and skip outside the window |
+| [cli.py](../../src/kestri/cli.py) | `main`, `run_data` | Parse `smoke`, `telegram`, `telegram-id`, and local `data` commands; select required settings |
+| [settings.py](../../src/kestri/settings.py) | `Settings`, `ResearchSettings`, `DataSettings`, `TelegramCredentials` | Validate separate configurations for runtime, product, maintenance, and onboarding |
+| [runtime.py](../../src/kestri/runtime.py), [models.py](../../src/kestri/models.py) | `build_model`, `AgentSession`, `DeepSeekChatModel` | Official-endpoint model construction; in-memory smoke graph; provider reasoning serialization adapter |
+| [telegram.py](../../src/kestri/telegram.py) | `TelegramClient`, `authorized_message`, `command_for` | Bot API transport/menu, owner/private-chat checks, command recognition, send uncertainty |
+| [application.py](../../src/kestri/application.py) | `run_telegram`, `Application` | Construct dependencies; run polling, execution, scheduling, delivery, and maintenance |
+| [research.py](../../src/kestri/research.py) | `ResearchAgent.run`, `BoundsMiddleware` | Route memory/task controls; otherwise build and execute research graph, enforce bounds, finalize result |
+| [context.py](../../src/kestri/context.py), [memory.py](../../src/kestri/memory.py) | `ContextSummary`, `MemoryContext`, `MemoryService` | Explicit facts, retrieval, epoch invalidation, temporary model injection, bounded compression |
+| [task_intent.py](../../src/kestri/task_intent.py), [task_agent.py](../../src/kestri/task_agent.py) | `task_intent`, `TaskAgent.run` | Recognize direct recurring-task intent; extract one structured proposal without research tools |
+| [tasks.py](../../src/kestri/tasks.py), [schedule.py](../../src/kestri/schedule.py) | `TaskService.apply`, `tick`, occurrence functions | Validate/persist agreements; daily/weekly timezone scheduling; missed-run policy and revisions |
+| [web.py](../../src/kestri/web.py), [url_policy.py](../../src/kestri/url_policy.py) | `WebTools`, `PublicURLPolicy` | Public information tools, source records, URL checks, bounded model output |
+| [workspace.py](../../src/kestri/workspace.py), [http.py](../../src/kestri/http.py) | `Workspace`, `post_json` | Identifier-scoped evidence files and bounded HTTP JSON reads |
+| [budget.py](../../src/kestri/budget.py), [store.py](../../src/kestri/store.py) | `RunControl`, `Budget`, `Store` | Revocation checks, conservative accounting, transaction-backed business state |
+| [data.py](../../src/kestri/data.py), [redaction.py](../../src/kestri/redaction.py) | `DataService`, `Redactor` | Operator backup/restore/retention; local content redaction |
 
-M3 extends LangChain’s [summarization middleware](https://docs.langchain.com/oss/python/langchain/middleware/built-in#summarization) with budgeted provider calls and historical-data framing. [M3 evidence](../development/m3-validation.md) covers forced compression, correction preservation, original archives, and real DeepSeek behavior. The request estimate remains conservative and summary quality remains model-dependent.
+Dependencies are explicit constructor arguments: model, saver, HTTP clients, store, workspace, and optional URL resolver. Tests inject mock transports and deterministic responses while exercising the real graph. `Store` owns SQL transactions; business services apply domain policy. This is a modular monolith, without an ORM or an additional generic repository interface.
 
-The task timezone has no implicit default: use an explicitly configured owner timezone or clarify it. M0 defines model/tool/output/time limits and locked dependencies in its configuration reference. Foreground concurrency, spending reservations, and delivery uncertainty are implemented in M1. M2 implements one foreground and one background worker, with a five-second scheduling check against stored agreements. M4 implements retention and conservative backup recovery; see the [data reference](../reference/data-lifecycle.md). No automatic model routing or managed agent server is selected for the first version.
+## Startup and concurrency
+
+`run_telegram()` opens business storage/migrations, creates separate Telegram/DNS/Tavily HTTP clients, fetches bot identity, rejects an existing webhook, acquires a bot advisory lease, binds the database identity, calls checkpoint saver setup, and configures the owner's menu. It then constructs `ResearchAgent` and `Application`.
+
+`serve()` first handles the restore marker, then recovers interrupted records, then starts six tasks in one `asyncio.TaskGroup`:
+
+| Loop | Responsibility | Coordination |
+| --- | --- | --- |
+| `polling()` | Long poll messages, authorize/accept, advance durable offset | Continues while model work runs; rate-limit/network delays handled locally |
+| `working()` | Claim and run one non-background execution at a time | Foreground conversation, task controls, and memory controls share this worker |
+| `working(background=True)` | Claim and run one recurring occurrence at a time | Separate from foreground worker |
+| `scheduling()` | Convert due stored agreements into background runs | Default five-second tick; PostgreSQL remains schedule authority |
+| `delivering()` | Send saved outbox contents | Ordered queue; 1.1-second pause after each attempt |
+| `DataService.maintaining()` | Apply local retention | Default hourly; defers while runs or delivery are busy |
+
+`wake_run` and `wake_delivery` are process-local wakeups, not durable work queues. Idle workers also recheck after one second; persisted rows survive lost wakeups. The default foreground and background queue limits are both 8; active/paused task count is bounded by default at 16. This is one foreground and one background worker, not one worker per task. An unhandled TaskGroup child failure tears down the other loops. SIGTERM cancels the application; process supervision uses Compose restart policy.
+
+## End-to-end foreground request
+
+```mermaid
+sequenceDiagram
+    participant T as Telegram
+    participant A as Application
+    participant S as Store
+    participant R as ResearchAgent
+    participant G as Agent graph
+    participant D as Delivery loop
+    T->>A: update and optional reply ID
+    A->>A: owner/private chat and command checks
+    A->>S: accept transaction
+    S-->>A: deduplicated run and acknowledgement saved
+    A->>S: advance update offset
+    A->>S: claim oldest foreground work
+    S-->>A: run, source_thread, memory_epoch
+    A->>R: run with RunControl
+    R->>G: seed prior completed messages, add current request
+    G->>G: compress, inject memory, check model/tool bounds
+    G-->>R: final answer or controlled failure
+    R->>S: finish transaction
+    S-->>R: result, eligible conversation head, outbox committed
+    D->>S: claim saved delivery
+    D->>T: send saved text
+    D->>S: record success, retryable failure, or uncertainty
+```
+
+Unauthorized messages are rejected before personal-state writes. Authorized duplicates do not create another run. Status commands are answered inside acceptance; ordinary input creates a run. Direct memory instructions take precedence over recurring-task intent; forwarded/external-reply messages do not become memory/task authorization.
+
+At claim time, a foreground run receives the last completed conversation head and current memory epoch. Research creates a new graph thread for this run, copies prior messages if eligible, and appends the new request. A reply can additionally insert the referenced completed result plus at most 20 evidence references. It does not merge the entire background graph.
+
+The graph alternates model decisions and fixed tools. `ResearchAgent` requires a final nonempty `AIMessage`, adds an application-generated source-status footer, bounds displayed text, redacts configured secrets, and calls `Store.finish()`. That transaction saves the outcome, classifies unresolved usage, promotes the head only for successful foreground work, and enqueues result chunks. Tool evidence may already have been retained during execution. Graph checkpoint writes and business completion are separate commits.
+
+## Task and memory control paths
+
+A task request is recognized before research. `TaskAgent` uses only the current request plus fixed extraction instructions and configured owner timezone. It supplies no research tools or old conversation; `ToolStrategy(TaskPlan)` produces a proposal with a two-model-call limit. `TaskService.apply()` rechecks direct intent, requested action, exact owner-supplied content, explicit schedule/timezone, target association, and active run state. It commits the agreement and `task_changes` acknowledgement together. A model proposal is not an authorization grant.
+
+The scheduler locks owner/task state, finds the latest eligible daily/weekly occurrence, coalesces misses within six hours, skips expired occurrences, and writes one unique `(task_id, scheduled_for)` run. Claim rechecks task status/revision and catch-up deadline. Background research starts without a foreground source thread and uses the stored agreement and eligible global/task memory. Pausing/deleting a task prevents future starts; stopping an already active execution requires `/stop`.
+
+Memory commands bypass model calls. `MemoryService.apply()` validates exact content and explicit target, records provenance, and commits a `memory_changes` acknowledgement. A successful change clears the conversation head and increments `memory_epoch`; in-flight old context cannot start further billable operations or restore the head. See [context management](context-management.md).
+
+## Completion, retry, and recovery
+
+| Situation | Implemented response |
+| --- | --- |
+| Foreground inference/tool failure | Save a safe terminal outcome; do not automatically research again; keep prior completed head |
+| Selected transient background provider failures | At most one extra attempt after 30 seconds if task remains active at the same revision; fresh graph thread; shared run/cost ledger |
+| `/stop` | Persist cancellation and cancel matching active asyncio task; submitted remote requests may still complete or bill |
+| Task/memory mutation committed before final reply | Use run-keyed change acknowledgement to report committed behavior; restart does not apply it again |
+| Process stops with running research | Mark `interrupted` on recovery; do not auto-resume checkpoint or research |
+| Saved pending delivery | Continue using saved content; no model regeneration |
+| Known failed delivery | Retry saved content within the attempt bound; a run's success state is independent |
+| Delivery response or crash leaves outcome unknown | Mark `uncertain`; no automatic resend that could duplicate a delivered message |
+| Restore | Empty-target import; quarantine memory, pause agreements, reset checkpoints, stop unfinished work, suppress stale pending updates |
+
+There is no transaction spanning PostgreSQL, Telegram, model APIs, Tavily, and disk. Local deduplication and conservative recovery narrow risks; they do not prove exactly-once remote side effects or lossless graph recovery.
+
+## Resource, data, and provider boundaries
+
+Research defaults: 8 model calls, 8 tool calls, 120-second run timeout, 30-second provider timeout, 4096 output tokens, 128,000 local input admission units, 12,000-character tool output and reply bodies. Summaries have a separate call count but share run timeout and spending. USD 0.50/run and USD 20/month are local configured estimates, not current provider prices or provider-enforced spending caps. Exact settings live in [settings.py](../../src/kestri/settings.py) and the references.
+
+`build_model()` fixes the DeepSeek API base URL and disables SDK retries. `DeepSeekChatModel` preserves `reasoning_content` during assistant-message replay; its protected SDK hook has regression tests. Research/summary/task agent calls disable cloud tracing. Tavily authentication stays in the injected HTTP client, not tool arguments. Local rows and files can contain private content despite redaction; checkpoint reasoning is excluded from logical backups.
+
+Read [database](../reference/database.md) for fields and transactions, [context management](context-management.md) for prompt composition, [tool design](tools.md) for interfaces and checks, and [security and data](security-and-data.md) for policy. Defaults and framework protected hooks need revalidation when dependencies change.
+
+## Verification and extension points
+
+[Research integration tests](../../tests/test_research_integration.py) cover acceptance, budgeting, checkpoints, cancellation, delivery, and recovery; [task tests](../../tests/test_tasks_integration.py) cover agreements/scheduling; [memory/context tests](../../tests/test_memory_context_integration.py) cover compression/revocation; [data lifecycle tests](../../tests/test_data_lifecycle_integration.py) cover backup/restore/cleanup. [Run checks](../how-to/run-checks.md) distinguishes offline/database checks from live services and remote CI.
+
+To change a provider, inspect `build_model()` or the fixed endpoints in `WebTools`; a protocol alone does not establish equivalent provider behavior. To add a tool, follow the schema/policy/accounting/evidence rules in tool design. To change state, add migration and backup-compatibility decisions together. A future transport should authorize input before invoking the shared application services rather than bypassing their business policy. These are maintenance directions, not implemented plugin or multi-channel APIs.

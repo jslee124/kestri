@@ -4,6 +4,8 @@
 
 Updated: 2026-10-02. Scope: M3 implementation; see the [validation record](../development/m3-validation.md).
 
+For the source-level execution path, see [context management](../design/context-management.md); for fields and relations, see [database structure](database.md). This reference remains the command/settings contract.
+
 ## Owner controls
 
 All commands appear in the native collapsible Telegram menu. Memory controls are deterministic application operations, without model calls. Only direct authorized owner messages can write memory; forwarded commands, research results, inference, and summaries cannot. A suggested preference requires a new explicit save instruction.
