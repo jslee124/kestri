@@ -128,6 +128,7 @@ async def test_old_backup_roundtrip_quarantines_deleted_memory_tasks_and_replay(
         "restored": False,
     }
     await save_memory(store, "回答使用中文", 5)
+    await store.accept(6, 111, 6, "/memory use on", None, "memory", 8)
     assert (
         len(
             await MemoryService(store, research_settings()).retrieve(

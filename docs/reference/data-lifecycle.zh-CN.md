@@ -42,7 +42,7 @@
 
 ## 保守恢复
 
-格式 `kestri-data-v1`、schema 5 包含业务表和已提取证据原文，排除 LangGraph checkpoint/内部思考和密钥。这是应用逻辑快照，不是 `pg_dump` 或完整崩溃状态镜像。schema 变更需明确决定迁移/兼容方式。
+格式 `kestri-data-v1`、schema 6 包含业务表和已提取证据原文，排除 LangGraph checkpoint/内部思考和密钥。这是应用逻辑快照，不是 `pg_dump` 或完整崩溃状态镜像。schema 变更需明确决定迁移/兼容方式。
 
 恢复隔离**所有导入的活跃记忆**、暂停**所有导入的未删除任务**，重置前台上下文，中断排队/运行工作，将待发送/发送中结果标为不确定，将未解决费用预留标为未知。已删除/忘记记录继续无效。`/memory` 显示隔离警告，想继续使用的事实需重新 `/remember`；`/tasks` 提示导入任务，仅对当前仍需要的约定显式恢复。旧备份无法静默恢复后来撤销的权限。
 
@@ -52,4 +52,8 @@
 
 ## 自动记忆生命周期
 
-schema 5 包含 `memory_jobs`、`memory_sources`、`memory_events`；schema 4 恢复补新列的保守默认值、新表为空。恢复总是关闭提取、增加开关代次、取消作业，隔离 active 与 candidate 记忆，不从恢复文本排入 embedding/提取。删除归档来源会级联删除引用，使依赖的自动 active/candidate 事实到期、取消受影响作业并使上下文失效。清空数据还删除全部来源引用并关闭提取。复核/到期过滤先于召回。事实与原始归档继续分离，显式事实保留独立意图。
+schema 6 包含 `memory_jobs`、`memory_sources`、`memory_events`；schema 4 恢复补新列的保守默认值、新表为空。恢复总是关闭提取、增加开关代次、取消作业，隔离 active 与 candidate 记忆，不从恢复文本排入 embedding/提取。删除归档来源会级联删除引用，使依赖的自动 active/candidate 事实到期、取消受影响作业并使上下文失效。清空数据还删除全部来源引用并关闭提取。复核/到期过滤先于召回。事实与原始归档继续分离，显式事实保留独立意图。
+
+## Schema 6 与派生索引
+
+当前备份为 schema 6、17 张业务表，包含 `memory_index_jobs`，省略可重建 `memory_embeddings`。明确兼容 schema 4/5，严格校验旧/新列。恢复要求派生索引为空、关闭记忆 use/semantic 与提取设置，取消索引作业，保留既有隔离/暂停任务政策。重新授权需要的事实后 `/memory use on`，语义能力单独开启。状态/版本/hash 变化通过迁移 6 的 trigger 删除向量，含来源到期/清空。索引作业的 hash/错误不复制事实正文。[语义参考](semantic-memory.zh-CN.md)维护索引/召回细节。

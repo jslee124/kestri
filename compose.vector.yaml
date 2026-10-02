@@ -1,0 +1,7 @@
+# Explicit opt-in deployment override; retains the original database volume.
+services:
+  postgres:
+    image: kestri-postgres-vector:17-pgvector-0.8.7
+    build:
+      context: .
+      dockerfile: docker/postgres-vector.Dockerfile

@@ -16,10 +16,76 @@ from kestri.settings import ResearchSettings
 from kestri.store import Row, Store
 
 
-async def memory_command(conn: Any, chat_id: int, text: str) -> str:
+async def memory_command(
+    conn: Any, chat_id: int, text: str, *, embedding_space: str | None = None
+) -> str:
     from kestri.memory import display, listing
 
     args = text.strip().split()[1:]
+    if len(args) == 2 and args[0] in {"use", "semantic"} and args[1] in {"on", "off"}:
+        enabled = args[1] == "on"
+        semantic = args[0] == "semantic"
+        if semantic and enabled:
+            ready = await (
+                await conn.execute("SELECT to_regclass('kestri.memory_embeddings') AS name")
+            ).fetchone()
+            if not embedding_space or not ready or not ready["name"]:
+                return "未开启：需要配置 DashScope embedding 并安装 pgvector；见语义记忆部署文档。"
+        state = await (
+            await conn.execute(
+                "SELECT * FROM kestri.conversations WHERE chat_id=%s FOR UPDATE", (chat_id,)
+            )
+        ).fetchone()
+        column = "memory_semantic_enabled" if semantic else "memory_use_enabled"
+        assert state is not None
+        if state[column] == enabled and (
+            not semantic or not enabled or state["memory_embedding_space"] == embedding_space
+        ):
+            return "设置未变更。"
+        # Column is an application constant, never user-supplied SQL.
+        await conn.execute(
+            "UPDATE kestri.conversations SET " + column + "=%s,"
+            "memory_embedding_space=CASE WHEN %s THEN %s ELSE memory_embedding_space END,"
+            "memory_retrieval_generation=memory_retrieval_generation+1,"
+            "memory_revision=memory_revision+1,memory_epoch=memory_epoch+1,thread_id=NULL "
+            "WHERE chat_id=%s",
+            (enabled, semantic and enabled, embedding_space, chat_id),
+        )
+        await conn.execute(
+            "UPDATE kestri.memory_index_jobs SET status='cancelled',"
+            "lease_until=NULL,error_type='SettingsChanged',updated_at=now() WHERE chat_id=%s "
+            "AND status IN ('queued','running','retry_wait')",
+            (chat_id,),
+        )
+        await conn.execute(
+            "UPDATE kestri.runs SET status='cancelled',cancel_requested=true,"
+            "finished_at=now() WHERE status='running' AND id IN "
+            "(SELECT run_id FROM kestri.memory_index_jobs WHERE chat_id=%s AND status='cancelled')",
+            (chat_id,),
+        )
+        await conn.execute(
+            "UPDATE kestri.usage SET state='unknown' WHERE state='reserved' AND run_id IN "
+            "(SELECT run_id FROM kestri.memory_index_jobs WHERE chat_id=%s AND status='cancelled')",
+            (chat_id,),
+        )
+        if enabled:
+            # Trigger queues existing active facts only, never raw-history extraction.
+            await conn.execute(
+                "UPDATE kestri.memories SET updated_at=updated_at WHERE chat_id=%s "
+                "AND status='active'",
+                (chat_id,),
+            )
+        return (
+            "已开启语义召回：有效记忆与查询将发送到北京 DashScope，候选筛选使用 DeepSeek。"
+            "只重建有效事实索引，不扫描旧聊天；/memory semantic off 可关闭。"
+            if semantic and enabled
+            else "已关闭语义召回，保留本地索引并回到词项召回。"
+            if semantic
+            else "已开启记忆使用。"
+            if enabled
+            else "已关闭记忆使用，停止记忆注入和索引调用；"
+            "自动提取开关独立，/memory auto off 可关闭学习。"
+        ) + "前台上下文已重置。"
     if args == ["changes"]:
         events = await (
             await conn.execute(
@@ -42,8 +108,28 @@ async def memory_command(conn: Any, chat_id: int, text: str) -> str:
                 (chat_id,),
             )
         ).fetchall()
+        indexing = await (
+            await conn.execute(
+                "SELECT status,count(*) AS n FROM kestri.memory_index_jobs WHERE chat_id=%s "
+                "GROUP BY status ORDER BY status",
+                (chat_id,),
+            )
+        ).fetchall()
+        index_errors = await (
+            await conn.execute(
+                "SELECT error_type FROM kestri.memory_index_jobs WHERE chat_id=%s "
+                "AND status='failed' "
+                "ORDER BY updated_at DESC LIMIT 3",
+                (chat_id,),
+            )
+        ).fetchall()
         return (
-            "后台作业："
+            "向量作业："
+            + ("；".join(f"{r['status']} {r['n']}" for r in indexing) or "无")
+            + "\n向量失败："
+            + ("；".join(r["error_type"] for r in index_errors) or "无")
+            + "\n"
+            + "后台作业："
             + ("；".join(f"{r['status']} {r['n']}" for r in jobs) or "无")
             + "\n最近变更：\n"
             + (
@@ -111,16 +197,20 @@ async def memory_command(conn: Any, chat_id: int, text: str) -> str:
             else "已关闭自动记忆，在途提案不能提交；已有记忆仍可使用。"
         )
     if args:
-        return "格式：/memory；/memory pending；/memory changes；/memory auto on|off。"
+        return "格式：/memory；/memory pending；/memory changes；/memory auto|use|semantic on|off。"
     state = await (
         await conn.execute(
-            "SELECT auto_memory_enabled FROM kestri.conversations WHERE chat_id=%s",
+            "SELECT * FROM kestri.conversations WHERE chat_id=%s",
             (chat_id,),
         )
     ).fetchone()
     return (
         "自动记忆："
         + ("开启" if state and state["auto_memory_enabled"] else "关闭")
+        + "；使用："
+        + ("开启" if state and state["memory_use_enabled"] else "关闭")
+        + "；语义召回："
+        + ("开启" if state and state["memory_semantic_enabled"] else "关闭")
         + "\n\n"
         + await listing(conn, chat_id)
     )

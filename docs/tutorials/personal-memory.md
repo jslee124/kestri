@@ -27,3 +27,7 @@ For optional expiry, see [memory/context reference](../reference/memory-and-cont
 ## Learn from ordinary dialogue
 
 After deploying this feature branch, send `/memory auto on`, then state a direct preference/goal normally. Let foreground work finish; inspect `/memory`, `/memory pending` and `/memory changes`. Confirm a desired candidate with `/correct ID full-content`, or dismiss it with `/forget ID`. `/memory auto off` prevents new extraction; existing facts remain usable. Old conversations are not backfilled. This uses DeepSeek; semantic recall with DashScope embeddings remains pending. See [runtime progress](../development/memory-v2-progress.md).
+
+## Enable semantic recall
+
+Deploy the optional vector-capable database/app using the [semantic guide](../reference/semantic-memory.md), then `/memory semantic on`. State an ordinary fact after automatic-learning opt-in, or explicitly save one. Wait for `/memory changes` to show successful vector jobs; ask a related question with different wording and inspect the answer's attribution. This walkthrough is an acceptance procedure, not proof of provider quality. `/memory use off` stops all injection; extraction is separately disabled by `/memory auto off`. After restore, reauthorize desired facts and explicitly enable use before recall.

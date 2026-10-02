@@ -16,8 +16,8 @@
 
 - [北京 Embedding 接入](reference/embedding.zh-CN.md)：已实现的配置、适配器和独立 smoke。
 - [接入验证](development/embedding-validation.zh-CN.md)：真实服务证据与边界。
-- [Memory v2 规格](design/memory-v2.zh-CN.md)：自动记忆、语义召回、历史检索及生命周期，自动提取已实现，语义召回待完成。
-- [Memory v2 实施进度](development/memory-v2-progress.zh-CN.md)：提取模块与持久链路已实现，语义召回待实现。
+- [Memory v2 规格](design/memory-v2.zh-CN.md)：自动记忆、语义召回、历史检索及生命周期，自动提取已实现，混合召回已实现，历史/评测待完成。
+- [Memory v2 实施进度](development/memory-v2-progress.zh-CN.md)：提取模块与持久链路已实现，混合召回已实现，历史/评测待实现。
 - [ADR-0007](decisions/0007-automatic-semantic-memory.zh-CN.md)：自动与语义记忆方向。
 
 ## 使用已实现的增量
@@ -102,3 +102,5 @@ ADR 使用带编号的文件名，记录状态、背景、决策、备选方案�
 ## 验证策略
 
 接受文档变更前，检查本地链接、英中配对、标识符一致性与格式。软件实现后，将验收标准关联到实际验证证据，区分离线检查、真实 API 行为、恢复测试与部署验收。
+
+- [语义记忆运行参考](reference/semantic-memory.zh-CN.md)：已实现向量索引/混合召回、主人开关、币种记账和可选部署；真实质量未验收。

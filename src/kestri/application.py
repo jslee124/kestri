@@ -168,17 +168,30 @@ class Application:
                     pass
 
     async def memory_maintaining(self) -> None:
+        from kestri.embedding import EmbeddingClient
+        from kestri.memory_index import MemoryIndexWorker
         from kestri.memory_worker import MemoryWorker
 
         worker = MemoryWorker(self.store, self.settings, self.researcher.model)
-        while True:
-            try:
-                await worker.work_once(self.settings.telegram_owner_id)
-            except Exception:
-                # Only a fixed category is logged; exception text may contain private data.
-                logging.getLogger(__name__).warning("MemoryRepositoryUnavailable")
-                await asyncio.sleep(5)
-            await asyncio.sleep(1)
+        config = self.settings.embedding_config()
+        async with httpx.AsyncClient(
+            timeout=self.settings.embedding_timeout_seconds, follow_redirects=False
+        ) as http:
+            indexer = (
+                MemoryIndexWorker(self.store, self.settings, EmbeddingClient(config, http))
+                if config
+                else None
+            )
+            while True:
+                try:
+                    await worker.work_once(self.settings.telegram_owner_id)
+                    if indexer:
+                        await indexer.work_once(self.settings.telegram_owner_id)
+                except Exception:
+                    # Only a fixed category is logged; raw errors may contain private data.
+                    logging.getLogger(__name__).warning("MemoryRepositoryUnavailable")
+                    await asyncio.sleep(5)
+                await asyncio.sleep(1)
 
     async def scheduling(self) -> None:
         while True:

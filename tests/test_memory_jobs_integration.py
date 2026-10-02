@@ -408,7 +408,7 @@ async def test_legacy_schema4_restore_explicit_defaults(store: Any, tmp_path: Pa
     backup = await service.backup(tmp_path / "backup.json")
     payload = read_private(backup)
     payload["schema"] = 4
-    for name in ("memory_jobs", "memory_sources", "memory_events"):
+    for name in ("memory_jobs", "memory_sources", "memory_events", "memory_index_jobs"):
         del payload["tables"][name]
     columns = {
         "conversations": (
@@ -417,6 +417,10 @@ async def test_legacy_schema4_restore_explicit_defaults(store: Any, tmp_path: Pa
             "memory_settings_generation",
             "memory_activation_watermark",
             "automatic_history_floor",
+            "memory_use_enabled",
+            "memory_semantic_enabled",
+            "memory_retrieval_generation",
+            "memory_embedding_space",
         ),
         "messages": ("provenance",),
         "memories": (

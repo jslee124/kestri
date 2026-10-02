@@ -9,10 +9,18 @@ permissions:
 
 jobs:
   offline:
+    name: offline-${{ matrix.database }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - database: postgres
+            image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+          - database: pgvector
+            image: pgvector/pgvector:0.8.7-pg17-bookworm@sha256:cd4ccfdaf62cbfeb5c6ee19ef0dd663406d4ed740c320b324d016a90e85385b3
     services:
       postgres:
-        image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+        image: ${{ matrix.image }}
         env:
           POSTGRES_PASSWORD: kestri-test-only
           POSTGRES_DB: kestri_test

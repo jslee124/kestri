@@ -8,7 +8,7 @@ Updated: 2026-10-02. Status: M0, M1, M2, M3, and M4 complete first-version deliv
 
 - [Beijing embedding connection](reference/embedding.md): implemented settings, adapter, and independent smoke.
 - [Connection validation](development/embedding-validation.md): live evidence and limits.
-- [Memory v2 specification](design/memory-v2.md): automatic facts, semantic recall, history tools, and lifecycle; automatic extraction implemented, semantic retrieval pending.
+- [Memory v2 specification](design/memory-v2.md): automatic facts, semantic recall, history tools, and lifecycle; automatic extraction implemented, hybrid retrieval implemented, history/evaluation pending.
 - [Memory v2 progress](development/memory-v2-progress.md): extractor and durable runtime implemented; semantic recall pending.
 - [ADR-0007](decisions/0007-automatic-semantic-memory.md): automatic and semantic memory direction.
 
@@ -102,3 +102,5 @@ ADRs use a numbered filename and record status, context, decision, alternatives,
 ## Verification policy
 
 Before accepting a documentation change, check local links, English/Chinese pairing, identifier consistency, and formatting. Once software exists, connect acceptance criteria to actual validation evidence. Distinguish offline checks, live API behavior, recovery tests, and deployment acceptance.
+
+- [Semantic memory runtime](reference/semantic-memory.md): implemented vector indexing/hybrid recall, owner switches, currency accounting and optional deployment; live quality remains unverified.

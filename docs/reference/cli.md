@@ -131,3 +131,7 @@ For algorithms behind these contracts, read [execution/delivery](../design/execu
 ## Automatic-memory configuration
 
 The four `ResearchSettings` extraction limits and owner commands are listed in [memory/context](memory-and-context.md). `KESTRI_MEMORY_LIMIT` now counts active explicit-command entries; queued/running foreground capacity excludes maintenance runs. No environment switch silently opts the owner into automatic extraction.
+
+## Product embedding and semantic recall
+
+`ResearchSettings` now reads optional Beijing embedding connection fields and the accounting/retrieval settings in [semantic memory](semantic-memory.md). Product dimensions are fixed at 1024; standalone `EmbeddingSettings` retains its broader smoke contract. Blank/missing product key or missing URL does not activate embeddings. Invalid supplied product configuration fails validation. `/memory semantic on` requires configured embedding and an available vector table; there is no environment opt-in to private indexing. Logical backups now use schema 6 and accept schema 4/5/6.

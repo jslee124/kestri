@@ -138,6 +138,15 @@ class ResearchSettings(Settings, DataSettings):
     input_usd_per_million: Decimal = Field(default=Decimal("0.30"), gt=0, le=100)
     output_usd_per_million: Decimal = Field(default=Decimal("1.20"), gt=0, le=100)
     search_credit_usd: Decimal = Field(default=Decimal("0.008"), gt=0, le=1)
+    embedding_base_url: str | None = None
+    embedding_model: Literal["text-embedding-v4"] = "text-embedding-v4"
+    embedding_dimensions: Literal[1024] = 1024
+    embedding_timeout_seconds: float = Field(default=20, gt=0, le=60)
+    embedding_cny_per_million: Decimal = Field(default=Decimal("0.5"), gt=0, le=100)
+    embedding_usd_per_cny: Decimal = Field(default=Decimal("0.15"), gt=0, le=1)
+    embedding_conversion_version: str = Field(default="fixed-v1", min_length=1, max_length=64)
+    memory_retrieval_timeout_seconds: float = Field(default=10, gt=0, le=30)
+    memory_dense_min_similarity: float = Field(default=0.3, ge=-1, le=1)
     memory_limit: int = Field(default=64, ge=1, le=64)
     auto_memory_limit: int = Field(default=1000, ge=1, le=1000)
     memory_candidate_limit: int = Field(default=100, ge=1, le=100)
@@ -152,6 +161,32 @@ class ResearchSettings(Settings, DataSettings):
     task_limit: int = Field(default=16, ge=1, le=64)
     background_queue_limit: int = Field(default=8, ge=1, le=32)
     scheduler_interval_seconds: float = Field(default=5, ge=1, le=60)
+
+    @field_validator("embedding_base_url")
+    @classmethod
+    def validate_product_embedding_url(cls, value: str | None) -> str | None:
+        return EmbeddingSettings.validate_embedding_url(value) if value is not None else None
+
+    @field_validator("embedding_dimensions", mode="before")
+    @classmethod
+    def parse_product_dimensions(cls, value: object) -> object:
+        return EmbeddingSettings.parse_embedding_dimensions(value)
+
+    def embedding_config(self) -> EmbeddingSettings | None:
+        if (
+            self.dashscope_api_key is None
+            or not self.dashscope_api_key.get_secret_value().strip()
+            or self.embedding_base_url is None
+        ):
+            return None
+        return EmbeddingSettings(
+            _env_file=None,
+            DASHSCOPE_API_KEY=self.dashscope_api_key,
+            embedding_base_url=self.embedding_base_url,
+            embedding_model=self.embedding_model,
+            embedding_dimensions=self.embedding_dimensions,
+            embedding_timeout_seconds=self.embedding_timeout_seconds,
+        )
 
     @field_validator("owner_timezone")
     @classmethod

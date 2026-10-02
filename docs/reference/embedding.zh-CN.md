@@ -57,3 +57,6 @@ uv run kestri embedding-smoke
 ## 官方来源与价格
 
 2026-10-02 核对：[API key 说明](https://help.aliyun.com/zh/model-studio/get-api-key)、[embedding 接口](https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api/)、[国内价格](https://help.aliyun.com/zh/model-studio/model-pricing)、[pgvector](https://github.com/pgvector/pgvector)。北京 `text-embedding-v4` 标价为每百万输入 Token 0.5 元；免费额度资格/有效期以账号控制台为准。提取和候选选择使用聊天模型，另行计费。价格与权限可能变化，当前接入没有向产品账本硬编码货币换算。
+
+
+产品向量索引/混合召回与带版本 CNY→USD 记账现已单独实现，见[语义运行参考](semantic-memory.zh-CN.md)。本篇的独立 smoke 仍不读取个人聊天或数据库，也不启用开关；上文存储设想描述接入增量的原始边界。

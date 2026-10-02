@@ -131,3 +131,7 @@ Data 输出 JSON：status 为 `counts` 与 `last_maintenance`；backup/export �
 ## 自动记忆配置
 
 四项 `ResearchSettings` 提取限制和主人命令见[记忆/上下文](memory-and-context.zh-CN.md)。`KESTRI_MEMORY_LIMIT` 现在统计活跃显式指令条目，前台排队/运行容量排除维护 run。不存在静默开启自动提取的环境开关。
+
+## 产品 embedding 与语义召回
+
+`ResearchSettings` 现读取可选北京 embedding 连接字段，以及[语义记忆](semantic-memory.zh-CN.md)中的记账/检索配置。产品维度固定 1024，独立 `EmbeddingSettings` 保留更广 smoke 契约。未提供/空产品 key 或缺 URL 不启用 embedding；非法已提供产品配置会校验失败。`/memory semantic on` 需要已配置连接与向量表，不存在环境变量静默开启私人索引。逻辑备份现在为 schema 6，接受 schema 4/5/6。

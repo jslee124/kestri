@@ -66,3 +66,7 @@
 | `KESTRI_MEMORY_CANDIDATE_LIMIT` | 100 | 1–100 |
 | `KESTRI_MEMORY_MAINTENANCE_BUDGET_USD` | 0.15 | 大于 0、不超过 1；一个提取作业的全部尝试 |
 | `KESTRI_MEMORY_MAINTENANCE_MONTHLY_USD` | 1.50 | 大于 0、不超过 20；UTC 月，并受主人总预算限制 |
+
+## 语义召回与记忆使用
+
+迁移 6 增加 `/memory semantic on|off`、`/memory use on|off`。完整控制、偏好/召回边界、配置、记账、部署和恢复契约见[语义记忆参考](semantic-memory.zh-CN.md)。自动学习和语义召回分别开启。启用语义后，用主人/范围过滤的正词项与精确向量候选、有界 ID 筛选、无无关近期填充及临时偏好替代上文最近 64 条旧路径。关闭 use 会停止新旧两种注入；恢复关闭 use，需显式开启。

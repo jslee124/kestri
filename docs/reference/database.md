@@ -2,11 +2,11 @@
 
 [简体中文](database.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: the implemented schema after migrations 1–5 and the checkpoint saver installed from `uv.lock`. This is a source-level reference, not an inspection of an owner's live database.
+Updated: 2026-10-02. Scope: the implemented schema after migrations 1–6 and the checkpoint saver installed from `uv.lock`. This is a source-level reference, not an inspection of an owner's live database.
 
 ## Storage ownership
 
-PostgreSQL holds two groups of tables. Kestri owns 17 tables in the `kestri` schema; LangGraph's `AsyncPostgresSaver` owns four checkpoint tables in `public`. Retrieved text lives separately in the application workspace. Database rows contain file identifiers and provenance, not full page bodies.
+PostgreSQL holds two groups of tables. Kestri owns 19 tables with vector support (18 without) in the `kestri` schema; LangGraph's `AsyncPostgresSaver` owns four checkpoint tables in `public`. Retrieved text lives separately in the application workspace. Database rows contain file identifiers and provenance, not full page bodies.
 
 The authoritative business definitions are [001_initial.sql](../../src/kestri/sql/001_initial.sql), [002_tasks.sql](../../src/kestri/sql/002_tasks.sql), [003_memory_context.sql](../../src/kestri/sql/003_memory_context.sql), and [004_data_lifecycle.sql](../../src/kestri/sql/004_data_lifecycle.sql). [Store](../../src/kestri/store.py) implements transactions; [DataService](../../src/kestri/data.py) implements retention and logical backup.
 
@@ -145,7 +145,7 @@ Evidence text is stored at `<workspace>/<run UUID>/<evidence UUID>.txt`, at most
 | Inbox primary key, archive unique key | Update deduplication and message association |
 | Change-table primary keys, task authorizing-run uniqueness | No second mutation acknowledgement or second task from the same authorizing run |
 
-There is no dedicated full-text, vector, `tasks.next_due`, or evidence-URL index. Most owner/task filtering is ordinary SQL plus bounded in-process ranking. The schema targets personal use; scale claims require query measurements and a separate indexing decision.
+There is no dedicated full-text or approximate-vector, `tasks.next_due`, or evidence-URL index. Most owner/task filtering is ordinary SQL plus bounded in-process ranking. The schema targets personal use; scale claims require query measurements and a separate indexing decision.
 
 ## Transactions and locking
 
@@ -179,9 +179,9 @@ Each of the three state tables also has a thread-ID index. Kestri uses run UUID 
 
 ## Migration and data lifecycle
 
-`Store.open()` executes all five idempotent migration files in order and inserts version records. It does not select only files absent from `migrations`, and there is no down-migration runner. Migration 1 introduces execution/delivery/evidence, 2 adds tasks, 3 adds memory and epochs, and 4 adds content expiration/restore markers and deferrable constraints. Treat incompatible changes as explicit migrations and review backup compatibility.
+`Store.open()` executes all six idempotent migration files in order and inserts version records. It does not select only files absent from `migrations`, and there is no down-migration runner. Migration 1 introduces execution/delivery/evidence, 2 adds tasks, 3 adds memory and epochs, and 4 adds content expiration/restore markers and deferrable constraints. Treat incompatible changes as explicit migrations and review backup compatibility.
 
-Logical backups contain 16 business tables (excluding `migrations`) and retrieved evidence text. They exclude all framework checkpoints and credentials. Restore requires an empty target, resets graph continuity, quarantines active memory, pauses tasks, interrupts unfinished work, and marks unfinished delivery uncertain. It does not restore a runnable crash image.
+Logical backups contain 17 business tables (excluding `migrations`) and retrieved evidence text. They exclude all framework checkpoints and credentials. Restore requires an empty target, resets graph continuity, quarantines active memory, pauses tasks, interrupts unfinished work, and marks unfinished delivery uncertain. It does not restore a runnable crash image.
 
 Cleanup can delete archived messages, clear request/result/acknowledgement bodies, expire evidence, and clear all graph state while idle. It retains IDs, deduplication, identity, and cost records. Read [data lifecycle](data-lifecycle.md) for exact retention and [backup and restore](../how-to/backup-and-restore.md) for operator procedures.
 
@@ -206,3 +206,9 @@ These database tests use a disposable `kestri_test` database and drop its busine
 | `memory_events` | Bigserial `id`, owner, memory/job references, operation and timestamp; no prompt text |
 
 `kestri_memory_jobs_pending(chat_id,status,available_at)` supports maintenance scans. Owner conversation locks serialize controls/claims/publication; no model HTTP occurs under these transactions. Extraction cost kind is `memory_extract`, using the existing USD ledger. Backups include 16 business tables, excluding migration metadata. Repeated startup migrations preserve candidate states. These changes still contain no vector column or pgvector extension. [Job tests](../../tests/test_memory_jobs_integration.py) verify transitions and conservative restore on disposable PostgreSQL.
+
+## Semantic-memory migration 6
+
+[006_semantic_memory.sql](../../src/kestri/sql/006_semantic_memory.sql) adds conversation `memory_use_enabled` (true for ordinary upgrades), `memory_semantic_enabled` (false), `memory_retrieval_generation` and `memory_embedding_space`. `memory_index_jobs` contains UUID ID, owner/memory references, revision/content fingerprint/space/generation, status/run/lease/attempts/availability/safe error/times; uniqueness covers memory/revision/space/generation. `memory_embeddings`, when pgvector is available, contains memory reference, revision/hash/space, `public.vector(1024)` and timestamp; primary key is memory/space, memory deletion cascades. No approximate index is created.
+
+`sync_memory_index` and its memory INSERT/UPDATE trigger enqueue facts atomically, delete stale vectors and cancel stale jobs/runs/reservations. Settings, ownership, temporal state, content version and leases are rechecked for publication and queries. There are 19 Kestri tables with vector support, 18 without; backups include 17 and omit migration metadata/derived vectors. Ordinary PostgreSQL remains supported. All six migration files run idempotently; migration 6 can add its optional vector table after server extension installation. See [semantic runtime](semantic-memory.md) for deployment permissions and lifecycle.

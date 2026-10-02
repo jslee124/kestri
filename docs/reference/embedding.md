@@ -57,3 +57,6 @@ Vectors are numerical indexes, not replacements for original memory text. Propos
 ## Official sources and pricing
 
 Verified 2026-10-02 against [API key instructions](https://help.aliyun.com/zh/model-studio/get-api-key), [embedding API](https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api/), [domestic prices](https://help.aliyun.com/zh/model-studio/model-pricing), and [pgvector](https://github.com/pgvector/pgvector). Beijing `text-embedding-v4` lists 0.5 CNY per million input tokens; account free-quota eligibility/expiry depends on the console. Extraction and candidate selection use a chat model and incur separate costs. Provider prices and access can change; current configuration does not hard-code a currency conversion into the product ledger.
+
+
+Product vector indexing/hybrid recall and versioned CNY-to-USD accounting are now implemented separately; see [semantic runtime](semantic-memory.md). The standalone smoke here still reads no private dialogue/database and enables no setting; the storage proposal above describes the original connection increment.

@@ -42,7 +42,7 @@ Only valid UUID-named backup bundles inside the workspace `backups` directory ar
 
 ## Conservative restore
 
-Format `kestri-data-v1`, schema 5, includes business tables and retrieved evidence text, and excludes LangGraph checkpoints/internal reasoning and credentials. It is a logical application snapshot, not `pg_dump` or a full crash-state image. Schema changes require an explicit migration/compatibility decision.
+Format `kestri-data-v1`, schema 6, includes business tables and retrieved evidence text, and excludes LangGraph checkpoints/internal reasoning and credentials. It is a logical application snapshot, not `pg_dump` or a full crash-state image. Schema changes require an explicit migration/compatibility decision.
 
 Restore quarantines **every imported active memory**, pauses **every imported nondeleted task**, resets foreground context, interrupts queued/running work, marks pending/sending deliveries uncertain, and converts unresolved usage reservations to unknown. Already deleted/forgotten records remain inactive. `/memory` shows quarantined facts with a warning; re-enter an intended fact with `/remember`. `/tasks` warns about imported tasks; explicitly resume only a currently intended agreement. Old backups cannot silently reinstate later-revoked authority.
 
@@ -53,3 +53,7 @@ Controlled restore failures roll back database changes and remove newly created 
 ## Automatic-memory lifecycle
 
 Schema 5 includes `memory_jobs`, `memory_sources` and `memory_events`; schema 4 restore inserts conservative new-column defaults and empty new tables. Restore always disables extraction, increments settings generation, cancels jobs and quarantines both active and candidate memories. It never schedules embedding or extraction from restored text. Archive source deletion cascades quote removal, expires dependent automatic active/candidate facts, cancels affected jobs and invalidates context. Erase also removes all source quotes and disables extraction. Automatic review/expiry filters apply before recall. Facts and raw archive remain separate; explicit facts retain their own intent.
+
+## Schema 6 and derived indexes
+
+Current bundles use schema 6 with 17 business tables including `memory_index_jobs`; rebuildable `memory_embeddings` are omitted. Schema 4/5 restore is explicitly upgraded with strict old/new column checks. Restore requires empty derived indexes, disables memory use/semantic extraction settings, cancels index jobs and preserves the existing quarantine/paused-task policy. Reauthorize desired facts, then `/memory use on`; semantic opt-in is separate. Memory status/revision/hash changes remove derived vectors through migration 6's trigger, including source expiration/erase. Index job hashes/errors do not duplicate fact text. [Semantic reference](semantic-memory.md) owns the indexing/recall details.

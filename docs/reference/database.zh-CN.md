@@ -2,11 +2,11 @@
 
 [English](database.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：迁移 1–5 完成后的实际结构，以及从 `uv.lock` 安装的 checkpoint saver。这是源码级参考，不代表检查了主人的运行数据库。
+更新：2026-10-02。范围：迁移 1–6 完成后的实际结构，以及从 `uv.lock` 安装的 checkpoint saver。这是源码级参考，不代表检查了主人的运行数据库。
 
 ## 存储归属
 
-PostgreSQL 中有两组表。Kestri 在 `kestri` schema 中维护 17 张表；LangGraph 的 `AsyncPostgresSaver` 在 `public` 中维护 4 张 checkpoint 表。获取的正文另存于应用工作区。数据库保存文件标识和来源信息，不保存完整网页正文。
+PostgreSQL 中有两组表。Kestri 在 `kestri` schema 中提供向量时维护 19 张表（无向量时 18 张）；LangGraph 的 `AsyncPostgresSaver` 在 `public` 中维护 4 张 checkpoint 表。获取的正文另存于应用工作区。数据库保存文件标识和来源信息，不保存完整网页正文。
 
 业务结构以 [001_initial.sql](../../src/kestri/sql/001_initial.sql)、[002_tasks.sql](../../src/kestri/sql/002_tasks.sql)、[003_memory_context.sql](../../src/kestri/sql/003_memory_context.sql) 和 [004_data_lifecycle.sql](../../src/kestri/sql/004_data_lifecycle.sql) 为准。[Store](../../src/kestri/store.py) 实现事务；[DataService](../../src/kestri/data.py) 实现保留策略和逻辑备份。
 
@@ -179,9 +179,9 @@ erDiagram
 
 ## 迁移与数据生命周期
 
-`Store.open()` 按顺序执行全部五份幂等迁移文件并记录版本。它不是只执行 `migrations` 中缺失的文件，也没有向下迁移器。迁移 1 引入执行/投递/证据，2 增加任务，3 增加记忆与 epoch，4 增加内容过期/恢复标记与可延迟外键。不兼容修改需要显式迁移并审查备份兼容性。
+`Store.open()` 按顺序执行全部六份幂等迁移文件并记录版本。它不是只执行 `migrations` 中缺失的文件，也没有向下迁移器。迁移 1 引入执行/投递/证据，2 增加任务，3 增加记忆与 epoch，4 增加内容过期/恢复标记与可延迟外键。不兼容修改需要显式迁移并审查备份兼容性。
 
-逻辑备份包含 16 张业务表（不含 `migrations`）和成功获取的证据正文，不含任何框架 checkpoint 或凭据。恢复要求空目标，重置图连续性，隔离有效记忆、暂停任务、中断未完成执行、将未完成投递标记为不确定。它不会恢复可继续执行的崩溃现场。
+逻辑备份包含 17 张业务表（不含 `migrations`）和成功获取的证据正文，不含任何框架 checkpoint 或凭据。恢复要求空目标，重置图连续性，隔离有效记忆、暂停任务、中断未完成执行、将未完成投递标记为不确定。它不会恢复可继续执行的崩溃现场。
 
 清理可删除消息归档，清空请求/结果/回执正文，使证据过期，并在空闲时清空全部图状态。标识、去重、身份和费用记录保留。准确保留规则见[数据生命周期](data-lifecycle.zh-CN.md)，操作流程见[备份恢复](../how-to/backup-and-restore.zh-CN.md)。
 
@@ -205,4 +205,10 @@ erDiagram
 | `memory_sources` | 记忆/归档联合主键、精确引用和 Unicode 偏移；可延迟外键；删除归档级联删除引用 |
 | `memory_events` | Bigserial `id`、主人、记忆/作业引用、操作与时间；无提示词正文 |
 
-`kestri_memory_jobs_pending(chat_id,status,available_at)` 支持维护扫描。主人对话锁串行控制/领取/提交，模型 HTTP 不在这些事务中执行。提取用量类型为 `memory_extract`，复用 USD 账本。备份包含 16 张业务表，不含迁移元数据。重复启动迁移保留候选状态。仍无向量列或 pgvector 扩展。[作业测试](../../tests/test_memory_jobs_integration.py) 在独立 PostgreSQL 验证转换和保守恢复。
+`kestri_memory_jobs_pending(chat_id,status,available_at)` 支持维护扫描。主人对话锁串行控制/领取/提交，模型 HTTP 不在这些事务中执行。提取用量类型为 `memory_extract`，复用 USD 账本。备份包含 17 张业务表，不含迁移元数据。重复启动迁移保留候选状态。仍无向量列或 pgvector 扩展。[作业测试](../../tests/test_memory_jobs_integration.py) 在独立 PostgreSQL 验证转换和保守恢复。
+
+## 语义记忆迁移 6
+
+[006_semantic_memory.sql](../../src/kestri/sql/006_semantic_memory.sql) 增加对话 `memory_use_enabled`（普通升级 true）、`memory_semantic_enabled`（false）、`memory_retrieval_generation`、`memory_embedding_space`。`memory_index_jobs` 包含 UUID ID、主人/记忆引用、版本/内容指纹/空间/代次、状态/run/租约/尝试/可用时间/安全错误/时间，记忆/版本/空间/代次唯一。服务器提供 pgvector 时，`memory_embeddings` 包含记忆引用、版本/hash/空间、`public.vector(1024)` 和时间，记忆/空间为主键，删除记忆级联删除向量。不创建近似索引。
+
+`sync_memory_index` 与记忆 INSERT/UPDATE trigger 将事实入队同事务提交，删除失效向量，取消失效作业/run/预留。发布/查询重查开关、归属、时效、内容版本和租约。提供向量时 Kestri 有 19 张表，无向量时 18 张；备份包含 17 张，不含迁移元数据/派生向量。普通 PostgreSQL 继续支持，全部六份迁移幂等执行，安装服务器扩展后，迁移 6 可补建可选向量表。部署权限和生命周期见[语义运行参考](semantic-memory.zh-CN.md)。

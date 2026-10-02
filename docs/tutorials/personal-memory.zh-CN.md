@@ -27,3 +27,7 @@
 ## 从普通聊天学习
 
 部署本功能分支后，发送 `/memory auto on`，再像平常一样陈述直接偏好/目标。等待前台工作完成，通过 `/memory`、`/memory pending`、`/memory changes` 检查。用 `/correct ID 完整内容` 确认需要的候选，或 `/forget ID` 丢弃。`/memory auto off` 阻止新提取，已有事实仍可使用。不回填旧聊天。提取使用 DeepSeek；DashScope embedding 语义召回尚待实现。见[运行进度](../development/memory-v2-progress.zh-CN.md)。
+
+## 开启语义召回
+
+按[语义指南](../reference/semantic-memory.zh-CN.md)部署可选向量数据库/app，再 `/memory semantic on`。开启自动学习后陈述普通事实，或显式保存一条。等待 `/memory changes` 显示向量作业成功，再换措辞提相关问题，检查回答归属。此教程是验收流程，不证明服务商质量。`/memory use off` 停止全部注入，自动提取另用 `/memory auto off` 关闭。恢复后重新授权需要的事实并显式开启 use，才能召回。

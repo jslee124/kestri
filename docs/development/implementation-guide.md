@@ -2,7 +2,7 @@
 
 [简体中文](implementation-guide.zh-CN.md) · [Documentation](../README.md)
 
-Updated: 2026-10-02. Scope: all 29 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
+Updated: 2026-10-02. Scope: all 32 Python source modules, module/class callable entry points, SQL, tests, and engineering configuration. Source governs behavior; internal symbols are not a promised stable public API.
 
 ## How to read
 
@@ -445,3 +445,15 @@ Coverage is traceable implementation documentation, not a formal correctness pro
 ## memory_worker.py
 
 [Source](../../src/kestri/memory_worker.py). `MemoryJobControl.ensure_active` extends run activity with job authorization; `MemoryBudget.reserve` applies owner and independent maintenance caps; `MemoryWorker.work_once` claims, extracts, publishes or records bounded failure/retry. `Application.memory_maintaining` runs independently of foreground work and delivery. Migration [005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) and [persistent-job tests](../../tests/test_memory_jobs_integration.py) cover this increment. Logical backup advances to schema 5 with schema 4 compatibility.
+
+## memory_embedding.py
+
+[Source](../../src/kestri/memory_embedding.py). `embedding_space` fingerprints encoding/configuration; `content_hash` mirrors SQL's MD5 content fingerprint; `vector_literal` validates/normalizes vector literals; `charged_embedding` gates source/size, reserves converted CNY estimates, settles validated usage and preserves unknown calls. No private text/vector enters ledger metadata.
+
+## memory_index.py
+
+[Source](../../src/kestri/memory_index.py). `IndexControl` extends run activity with source/job/settings/lease checks; `IndexBudget` applies shared maintenance limits; `MemoryIndexWorker.claim`, `ensure_active`, `publish`, `fail` and `work_once` implement the durable vector lane. Schema 6's trigger owns transactional enqueue/invalidation.
+
+## memory_retriever.py
+
+[Source](../../src/kestri/memory_retriever.py). `lexical_terms`, `lexical_rank`, `reciprocal_rank_fusion` and `bounded_query` define local ranking contracts; `MemorySelection` permits only bounded unique UUIDs; `SelectionBudget` labels foreground selection cost. `MemoryRetriever.snapshot`, `assemble`, `dense`, `select` and `retrieve` implement consistent filtering, transient profile, exact search, ID selection, fallback/cache and final version gates. `ResearchAgent` wires it into `MemoryContext`; see [semantic reference](../reference/semantic-memory.md) for limits, provisional policy and tests.

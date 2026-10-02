@@ -37,6 +37,7 @@ TABLES = (
     "memory_jobs",
     "memory_sources",
     "memory_events",
+    "memory_index_jobs",
 )
 MAX_BYTES = 64 * 1024 * 1024
 MAX_ROWS = 50_000
@@ -183,7 +184,7 @@ class DataService:
             payload = {
                 "format": FORMAT,
                 "kind": "export" if export else "backup",
-                "schema": 5,
+                "schema": 6,
                 "created_at": datetime.now(UTC).isoformat(),
                 "tables": tables,
                 "evidence_text": attachments,
@@ -196,7 +197,9 @@ class DataService:
         return path
 
     @staticmethod
-    def _upgrade_legacy_row(table: str, original: dict[str, Any]) -> dict[str, Any]:
+    def _upgrade_legacy_row(
+        table: str, original: dict[str, Any], schema: int = 4
+    ) -> dict[str, Any]:
         defaults: dict[str, dict[str, Any]] = {
             "conversations": {
                 "auto_memory_enabled": False,
@@ -216,7 +219,15 @@ class DataService:
                 "last_source_message_id": None,
             },
         }
-        additions = defaults.get(table, {})
+        additions = defaults.get(table, {}) if schema == 4 else {}
+        if table == "conversations":
+            additions = {
+                **additions,
+                "memory_use_enabled": True,
+                "memory_semantic_enabled": False,
+                "memory_retrieval_generation": 0,
+                "memory_embedding_space": None,
+            }
         # Reject a payload claiming schema 4 while smuggling new authorization fields.
         if set(original) & set(additions):
             raise PolicyDenied("LegacyBackupColumnMismatch")
@@ -224,25 +235,25 @@ class DataService:
 
     async def restore(self, path: Path, *, apply: bool = False) -> dict[str, Any]:
         payload = await disk_operation(read_private, path)
-        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5}:
+        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5, 6}:
             raise PolicyDenied("NotRestorableBackup")
         tables = payload.get("tables")
         attachments = payload.get("evidence_text")
-        legacy = payload.get("schema") == 4
-        expected_tables = (
-            set(TABLES) - {"memory_jobs", "memory_sources", "memory_events"}
-            if legacy
-            else set(TABLES)
-        )
+        schema = payload["schema"]
+        expected_tables = set(TABLES)
+        if schema < 6:
+            expected_tables -= {"memory_index_jobs"}
+        if schema == 4:
+            expected_tables -= {"memory_jobs", "memory_sources", "memory_events"}
         if (
             not isinstance(tables, dict)
             or set(tables) != expected_tables
             or not isinstance(attachments, dict)
         ):
             raise PolicyDenied("InvalidBackupTables")
-        if legacy:
+        if schema < 6:
             tables = dict(tables)
-            for name in ("memory_jobs", "memory_sources", "memory_events"):
+            for name in set(TABLES) - expected_tables:
                 tables[name] = []
         total = 0
         for rows in tables.values():
@@ -293,6 +304,15 @@ class DataService:
                     ).fetchone()
                     if row and row["n"]:
                         raise PolicyDenied("RestoreRequiresEmptyDatabase")
+                derived = await (
+                    await conn.execute("SELECT to_regclass('kestri.memory_embeddings') AS name")
+                ).fetchone()
+                if derived and derived["name"]:
+                    count = await (
+                        await conn.execute("SELECT count(*) AS n FROM kestri.memory_embeddings")
+                    ).fetchone()
+                    if count and count["n"]:
+                        raise PolicyDenied("RestoreRequiresEmptyIndexes")
                 if any(entry.name != "backups" for entry in self.workspace.root.iterdir()):
                     raise PolicyDenied("RestoreRequiresEmptyWorkspace")
                 checkpoint = await (
@@ -318,8 +338,8 @@ class DataService:
                     ).fetchall()
                     names = [c["column_name"] for c in columns]
                     for original in tables[table]:
-                        if legacy:
-                            original = self._upgrade_legacy_row(table, original)
+                        if schema < 6:
+                            original = self._upgrade_legacy_row(table, original, schema)
                         if set(original) != set(names):
                             raise PolicyDenied("BackupColumnMismatch")
                         row = dict(original)
@@ -327,8 +347,11 @@ class DataService:
                             row["thread_id"] = None
                             row["memory_epoch"] += 1
                             row["auto_memory_enabled"] = False
+                            row["memory_use_enabled"] = False
+                            row["memory_semantic_enabled"] = False
+                            row["memory_retrieval_generation"] += 1
                             row["memory_settings_generation"] += 1
-                        elif table == "memory_jobs":
+                        elif table in {"memory_jobs", "memory_index_jobs"}:
                             row["status"] = "cancelled"
                             row["lease_until"] = None
                             row["error_type"] = "RestoreQuarantine"
@@ -515,6 +538,8 @@ class DataService:
             if erase:
                 await conn.execute(
                     "UPDATE kestri.conversations SET auto_memory_enabled=false,"
+                    "memory_use_enabled=false,"
+                    "memory_semantic_enabled=false,memory_retrieval_generation=memory_retrieval_generation+1,"
                     "memory_settings_generation=memory_settings_generation+1",
                 )
                 await conn.execute("DELETE FROM kestri.memory_sources")

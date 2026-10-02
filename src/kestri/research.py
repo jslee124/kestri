@@ -35,8 +35,11 @@ from openai import OpenAIError
 
 from kestri.budget import Budget, RunControl, conservative_input_size
 from kestri.context import ContextSummary, MemoryContext
+from kestri.embedding import EmbeddingClient
 from kestri.errors import BudgetExceeded, ContextExceeded, PolicyDenied, ProviderFailure
 from kestri.memory import MemoryService
+from kestri.memory_embedding import embedding_space
+from kestri.memory_retriever import MemoryRetriever
 from kestri.settings import ResearchSettings
 from kestri.store import Row, Store
 from kestri.url_policy import PublicURLPolicy
@@ -138,6 +141,9 @@ class ResearchAgent:
         policy: PublicURLPolicy | None = None,
     ) -> None:
         self.settings = settings
+        config = settings.embedding_config()
+        if config is not None:
+            store.embedding_space = embedding_space(config)
         self.store = store
         self.workspace = workspace
         self.saver = saver
@@ -173,8 +179,25 @@ class ResearchAgent:
             self.policy,
         )
         memory_service = MemoryService(self.store, self.settings)
+        config = self.settings.embedding_config()
+        semantic = await self.store.one(
+            "SELECT memory_semantic_enabled FROM kestri.conversations WHERE chat_id=%s",
+            (row["chat_id"],),
+        )
+        retriever = (
+            MemoryRetriever(
+                self.store,
+                budget,
+                self.model,
+                EmbeddingClient(config, self.client) if config else None,
+            )
+            if semantic and semantic["memory_semantic_enabled"]
+            else None
+        )
         selected = await memory_service.retrieve(row)
-        overhead = RESEARCH_PROMPT + str([m["content"] for m in selected])
+        overhead = RESEARCH_PROMPT + (
+            "记" * 6000 if retriever else str([m["content"] for m in selected])
+        )
         middleware: list[AgentMiddleware[Any, Any, Any]] = [
             ContextSummary(
                 self.model,
@@ -182,7 +205,7 @@ class ResearchAgent:
                 web.tools(),
                 overhead,
             ),
-            MemoryContext(memory_service, row),
+            MemoryContext(memory_service, row, retriever),
             ModelCallLimitMiddleware(
                 run_limit=self.settings.max_model_calls, exit_behavior="error"
             ),

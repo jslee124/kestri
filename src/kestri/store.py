@@ -24,6 +24,7 @@ def chunks(text: str, limit: int = 3500) -> list[str]:
 
 class Store:
     def __init__(self, dsn: str, redactor: Redactor) -> None:
+        self.embedding_space: str | None = None
         self.redactor = redactor
         self.pool = AsyncConnectionPool[AsyncConnection[Row]](
             dsn,
@@ -61,6 +62,10 @@ class Store:
                 )
                 await conn.execute(
                     files("kestri").joinpath("sql/005_automatic_memory.sql").read_text(),
+                    prepare=False,
+                )
+                await conn.execute(
+                    files("kestri").joinpath("sql/006_semantic_memory.sql").read_text(),
                     prepare=False,
                 )
 
@@ -279,7 +284,7 @@ class Store:
         if command == "memory":
             from kestri.memory_repository import memory_command
 
-            return await memory_command(conn, chat_id, text)
+            return await memory_command(conn, chat_id, text, embedding_space=self.embedding_space)
         if command == "history":
             args = text.split()
             if len(args) > 1:
@@ -338,7 +343,8 @@ class Store:
                 "可直接创建每日或每周简报，使用 /tasks 查看；/task 输入任务指令。\n"
                 "暂停、恢复、修改或删除可回复任务消息；/stop 执行ID 停止指定执行。\n"
                 "/remember 内容 保存记忆；/memory 查看；/correct ID 内容 纠正；/forget ID 忘记。\n"
-                "/memory auto on|off 开关自动提取；/memory pending 查看候选；"
+                "/memory auto|use|semantic on|off 控制学习、使用、语义召回；"
+                "/memory pending 查看候选；"
                 "/memory changes 查看后台变更。\n"
                 "/history 查看最近原始记录。对话接近预算时自动压缩。\n"
                 "消息会通过 Telegram，研究内容会发送到 "
@@ -709,35 +715,59 @@ class Store:
         *,
         maintenance_monthly: int | None = None,
         maintenance_job: tuple[str, str] | None = None,
+        index_job: tuple[str, str] | None = None,
     ) -> str:
         reservation = str(uuid4())
         async with self.pool.connection() as conn:
             async with conn.transaction():
                 await conn.execute("SELECT pg_advisory_xact_lock(hashtext('kestri-budget'))")
-                if maintenance_job is not None:
+                if maintenance_job is not None or index_job is not None:
                     await conn.execute(
                         "SELECT c.chat_id FROM kestri.conversations c JOIN kestri.runs r ON "
                         "r.chat_id=c.chat_id "
                         "WHERE r.id=%s FOR UPDATE OF c",
                         (run_id,),
                     )
-                    allowed = await (
-                        await conn.execute(
-                            "SELECT 1 FROM kestri.memory_jobs j JOIN kestri.conversations c "
-                            "ON c.chat_id=j.chat_id "
-                            "JOIN kestri.messages m ON m.id=j.source_message_id WHERE j.id=%s"
-                            " AND j.lease_token=%s "
-                            "AND j.run_id=%s AND j.status='running' AND j.lease_until>now() "
-                            "AND c.auto_memory_enabled "
-                            "AND j.settings_generation=c.memory_settings_generation AND "
-                            "j.captured_revision=c.memory_revision "
-                            "AND j.captured_epoch=c.memory_epoch AND "
-                            "m.id>GREATEST(c.memory_activation_watermark,c.automatic_history_floor)",
-                            (*maintenance_job, run_id),
-                        )
-                    ).fetchone()
-                    if not allowed:
-                        raise PolicyDenied("MemoryJobChanged")
+                    if index_job is not None:
+                        allowed = await (
+                            await conn.execute(
+                                "SELECT 1 FROM kestri.memory_index_jobs j JOIN "
+                                "kestri.conversations c "
+                                "ON c.chat_id=j.chat_id JOIN kestri.memories m ON m.id=j.memory_id "
+                                "WHERE j.id=%s AND j.lease_token=%s AND j.run_id=%s "
+                                "AND j.status='running' AND j.lease_until>now() "
+                                "AND c.memory_use_enabled AND c.memory_semantic_enabled "
+                                "AND c.memory_retrieval_generation=j.generation "
+                                "AND c.memory_embedding_space=j.embedding_space "
+                                "AND m.status='active' AND m.origin!='auto_inferred' "
+                                "AND m.revision=j.revision "
+                                "AND md5(m.content)=j.content_hash "
+                                "AND (m.expires_at IS NULL OR m.expires_at>now()) "
+                                "AND (m.review_after IS NULL OR m.review_after>now())",
+                                (*index_job, run_id),
+                            )
+                        ).fetchone()
+                        if not allowed:
+                            raise PolicyDenied("MemoryIndexChanged")
+                    else:
+                        assert maintenance_job is not None
+                        allowed = await (
+                            await conn.execute(
+                                "SELECT 1 FROM kestri.memory_jobs j JOIN kestri.conversations c "
+                                "ON c.chat_id=j.chat_id "
+                                "JOIN kestri.messages m ON m.id=j.source_message_id WHERE j.id=%s"
+                                " AND j.lease_token=%s "
+                                "AND j.run_id=%s AND j.status='running' AND j.lease_until>now() "
+                                "AND c.auto_memory_enabled "
+                                "AND j.settings_generation=c.memory_settings_generation AND "
+                                "j.captured_revision=c.memory_revision "
+                                "AND j.captured_epoch=c.memory_epoch AND "
+                                "m.id>GREATEST(c.memory_activation_watermark,c.automatic_history_floor)",
+                                (*maintenance_job, run_id),
+                            )
+                        ).fetchone()
+                        if not allowed:
+                            raise PolicyDenied("MemoryJobChanged")
                 run = await (
                     await conn.execute(
                         "SELECT status,cancel_requested,kind FROM kestri.runs WHERE id=%s",
@@ -747,7 +777,7 @@ class Store:
                 if not run or run["status"] != "running" or run["cancel_requested"]:
                     raise PolicyDenied("RunInactive")
                 if run["kind"] == "memory_maintenance" and (
-                    maintenance_job is None or maintenance_monthly is None
+                    (maintenance_job is None and index_job is None) or maintenance_monthly is None
                 ):
                     raise PolicyDenied("MaintenanceBudgetUnavailable")
                 month = datetime.now(UTC).replace(
@@ -768,7 +798,7 @@ class Store:
                     used = await (
                         await conn.execute(
                             "SELECT COALESCE(sum(amount_micro_usd),0) AS amount FROM kestri.usage "
-                            "WHERE created_at >= %s AND kind='memory_extract'",
+                            "WHERE created_at >= %s AND kind IN ('memory_extract','memory_index')",
                             (month,),
                         )
                     ).fetchone()

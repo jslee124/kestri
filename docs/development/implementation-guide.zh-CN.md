@@ -2,7 +2,7 @@
 
 [English](implementation-guide.md) · [文档指南](../README.zh-CN.md)
 
-更新：2026-10-02。范围：全部 29 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
+更新：2026-10-02。范围：全部 32 个 Python 源码模块、模块/类方法入口、SQL、测试和工程配置。以当前源码为准，不宣称每个内部符号都是稳定公共 API。
 
 ## 如何阅读
 
@@ -445,3 +445,15 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 ## memory_worker.py
 
 [源码](../../src/kestri/memory_worker.py)。`MemoryJobControl.ensure_active` 在 run 活动检查上增加作业授权；`MemoryBudget.reserve` 使用主人与独立维护预算；`MemoryWorker.work_once` 领取、提取、提交或记录有限失败/重试。`Application.memory_maintaining` 独立于前台和投递运行。[005_automatic_memory.sql](../../src/kestri/sql/005_automatic_memory.sql) 与[持久作业测试](../../tests/test_memory_jobs_integration.py)覆盖本增量。逻辑备份升为 schema 5，兼容 schema 4。
+
+## memory_embedding.py
+
+[源码](../../src/kestri/memory_embedding.py)。`embedding_space` 标识编码/配置空间；`content_hash` 与 SQL MD5 内容指纹一致；`vector_literal` 校验/归一化向量文本；`charged_embedding` 检查来源/尺寸、预留换算后的 CNY 估算、结算合法用量、保留未知调用。账本元数据不含私人正文/向量。
+
+## memory_index.py
+
+[源码](../../src/kestri/memory_index.py)。`IndexControl` 在 run 活动检查上增加来源/作业/开关/租约；`IndexBudget` 使用共享维护预算；`MemoryIndexWorker.claim`、`ensure_active`、`publish`、`fail`、`work_once` 实现持久向量通道，schema 6 trigger 负责事务入队/失效。
+
+## memory_retriever.py
+
+[源码](../../src/kestri/memory_retriever.py)。`lexical_terms`、`lexical_rank`、`reciprocal_rank_fusion`、`bounded_query` 定义本地排序；`MemorySelection` 只接受有界唯一 UUID，`SelectionBudget` 标记前台筛选费用。`MemoryRetriever.snapshot`、`assemble`、`dense`、`select`、`retrieve` 实现一致过滤、临时偏好、精确搜索、ID 筛选、降级/缓存和最终版本检查。`ResearchAgent` 通过 `MemoryContext` 接入，限制、暂定策略和测试见[语义参考](../reference/semantic-memory.zh-CN.md)。

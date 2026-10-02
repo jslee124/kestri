@@ -303,12 +303,18 @@ class MemoryService:
                     )
 
     async def retrieve(self, run: Row) -> list[Row]:
+        state = await self.store.one(
+            "SELECT memory_use_enabled FROM kestri.conversations WHERE chat_id=%s",
+            (run["chat_id"],),
+        )
+        if state and not state["memory_use_enabled"]:
+            return []
         # Always apply task scope; no automatic extraction from source messages or old summaries.
         rows = await self.store.all(
             (
                 "SELECT m.* FROM kestri.memories m LEFT JOIN "
                 "kestri.tasks t ON t.id=m.task_id WHERE "
-                "m.chat_id=%s AND m.status='active' AND "
+                "m.chat_id=%s AND m.status='active' AND m.origin!='auto_inferred' AND "
                 "(m.expires_at IS NULL OR m.expires_at>now()) AND "
                 "(m.review_after IS NULL OR m.review_after>now()) AND "
                 "(m.valid_from IS NULL OR m.valid_from<=now()) AND "
