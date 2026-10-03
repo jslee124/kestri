@@ -6,6 +6,8 @@
 
 - [对话式记忆管理](reference/memory-assistant.zh-CN.md)：自然语言设置、按钮和真实回答依据。
 
+- [对话式助理控制](reference/assistant-controls.zh-CN.md)：自然语言、任务补充与统一输出。
+
 ## 第一版使用和维护
 
 - [第一版验收记录](development/first-version-acceptance.zh-CN.md)：全部要求、案例和证据边界。
@@ -118,3 +120,5 @@ ADR 使用带编号的文件名，记录状态、背景、决策、备选方案�
 - [Memory v2 部署](how-to/deploy-memory-v2.zh-CN.md)：当前机器人升级、重启证据与回退流程。
 
 - [记忆控制](reference/memory-controls.zh-CN.md)与[Memory v2 完成记录](development/memory-v2-completion.zh-CN.md)。
+
+- [Assistant controls delivery](development/assistant-controls-completion.zh-CN.md)

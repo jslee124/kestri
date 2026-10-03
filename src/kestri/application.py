@@ -13,22 +13,21 @@ from psycopg.types.json import Jsonb
 from kestri.agent.budget import RunControl
 from kestri.agent.research import ResearchAgent
 from kestri.agent.runtime import build_model
+from kestri.assistant.routing import route
 from kestri.errors import PolicyDenied, ProviderFailure
 from kestri.integrations.telegram import (
     DeliveryProblem,
     TelegramClient,
     authorized_callback,
     authorized_message,
-    command_for,
 )
 from kestri.integrations.url_policy import CloudflareResolver, PublicURLPolicy
-from kestri.memory.service import MemoryService, memory_instruction
+from kestri.memory.service import MemoryService
 from kestri.redaction import Redactor
 from kestri.settings import ResearchSettings, TelegramCredentials
 from kestri.storage.lifecycle import DataService
 from kestri.storage.store import Store
 from kestri.storage.workspace import Workspace
-from kestri.tasks.intent import task_intent
 from kestri.tasks.service import TaskService
 
 
@@ -64,34 +63,17 @@ class Application:
         if message is None:
             return False
         reply = message.get("reply_to_message") or {}
-        command = command_for(message["text"])
-        intent = (
-            task_intent(message["text"], task_reference=reply.get("message_id") is not None)
-            if command in {None, "task"}
-            else None
+        state = await self.store.one(
+            "SELECT memory_choice, memory_epoch FROM kestri.conversations WHERE chat_id = %s",
+            (message["chat"]["id"],),
         )
-        if message.get("forward_origin") or message.get("external_reply"):
-            intent = None
-        memory = memory_instruction(message["text"])
-        if message.get("forward_origin") or message.get("external_reply"):
-            memory = None
-        from kestri.memory.management import management_intent
-
-        management = (
-            not message.get("forward_origin")
-            and not message.get("external_reply")
-            and management_intent(message["text"])
+        selected = route(
+            message["text"],
+            direct=not message.get("forward_origin") and not message.get("external_reply"),
+            reply=reply.get("message_id") is not None,
+            state=state,
         )
-        if memory or management:
-            kind = "memory_control"
-        elif intent is not None:
-            kind = "task_control"
-        else:
-            kind = "foreground"
-        if memory:
-            command = None
-        if intent is not None:
-            command = None
+        command, kind = selected.command, selected.kind
         accepted, run_id = await self.store.accept(
             update["update_id"],
             message["chat"]["id"],

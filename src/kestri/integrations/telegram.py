@@ -202,7 +202,16 @@ def authorized_callback(update: dict[str, Any], owner_id: int) -> dict[str, Any]
     ):
         return None
     command = None
-    if re.fullmatch(r"mem:(?:changes|settings)", data):
+    if re.fullmatch(r"ctl:(?:tasks|status|runs|usage|help)", data):
+        command = "/" + data.split(":")[1]
+    elif re.fullmatch(r"tasks:list:[0-9]{1,4}", data):
+        command = "/tasks " + data.split(":")[2]
+    elif re.fullmatch(r"tasks:inspect:[a-f0-9]{8}", data):
+        command = "/tasks inspect " + data.split(":")[2]
+    elif re.fullmatch(r"tc:[a-f0-9]{16}:[1-5]", data):
+        _, token, choice = data.split(":")
+        command = f"选择任务 {token} {choice}"
+    elif re.fullmatch(r"mem:(?:changes|settings)", data):
         command = "/memory " + data.split(":")[1]
     elif re.fullmatch(r"mem:(?:list|pending):[0-9]{1,4}", data):
         _, action, page = data.split(":")

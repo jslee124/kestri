@@ -485,3 +485,17 @@ The [layout guide](repository-layout.md) describes six domain packages, correspo
 | [memory/presentation.py](../../src/kestri/memory/presentation.py) | Escaped HTML, local time and button metadata |
 | [memory/diagnostics.py](../../src/kestri/memory/diagnostics.py) | Revocation checks for actual injection/history evidence |
 | [storage/sql/010_memory_assistant.sql](../../src/kestri/storage/sql/010_memory_assistant.sql) | Choice and presentation metadata columns |
+
+## Unified assistant control modules
+
+Implementation entry points for routing, short-lived choices, task changes and presentation:
+
+- [assistant/routing.py](../../src/kestri/assistant/routing.py)
+- [assistant/choices.py](../../src/kestri/assistant/choices.py)
+- [assistant/views.py](../../src/kestri/assistant/views.py)
+- [assistant/presentation.py](../../src/kestri/assistant/presentation.py)
+- [tasks/dialogue.py](../../src/kestri/tasks/dialogue.py)
+- [tasks/controls.py](../../src/kestri/tasks/controls.py)
+- [tasks/presentation.py](../../src/kestri/tasks/presentation.py)
+
+[Interfaces and boundaries](../reference/assistant-controls.md)

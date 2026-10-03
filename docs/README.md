@@ -6,6 +6,8 @@ Updated: 2026-10-02. Status: M0, M1, M2, M3, and M4 complete first-version deliv
 
 - [Conversational memory](reference/memory-assistant.md)：Natural settings, buttons and actual answer evidence.
 
+- [Conversational assistant controls](reference/assistant-controls.md): natural queries, bounded task clarification and unified output.
+
 ## Embedding and next memory increment
 
 - [Beijing embedding connection](reference/embedding.md): implemented settings, adapter, and independent smoke.
@@ -118,3 +120,5 @@ Before accepting a documentation change, check local links, English/Chinese pair
 - [Memory v2 deployment](how-to/deploy-memory-v2.md): current bot upgrade, restart evidence and rollback procedure.
 
 - [Memory controls](reference/memory-controls.md) and [Memory v2 completion](development/memory-v2-completion.md).
+
+- [Assistant controls delivery](development/assistant-controls-completion.md)

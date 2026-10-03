@@ -204,6 +204,14 @@ class Store:
                         (chat_id, message_id, text, reply_to, run_id, provenance),
                     )
                 ).fetchone()
+                if command is None and kind == "foreground":
+                    await conn.execute(
+                        """
+                        UPDATE kestri.conversations SET memory_choice = NULL
+                        WHERE chat_id = %s AND memory_choice->>'mode' = 'reference'
+                        """,
+                        (chat_id,),
+                    )
                 if archived and command is None and kind == "foreground" and provenance == "direct":
                     await conn.execute(
                         "INSERT INTO "
@@ -287,6 +295,7 @@ class Store:
                     )
                 else:
                     notice = "已收到，正在处理。你可以用 /stop 停止当前执行。"
+                from kestri.assistant.presentation import presentation
                 from kestri.memory.presentation import current_presentation
 
                 for part in chunks(notice):
@@ -303,7 +312,7 @@ class Store:
                             part,
                             Jsonb(await current_presentation(conn, chat_id, part))
                             if command == "memory"
-                            else None,
+                            else (Jsonb(presentation(part)) if command is not None else None),
                         ),
                     )
         return True, run_id
@@ -363,27 +372,19 @@ class Store:
         if command in {"remember", "correct", "forget"}:
             return "记忆指令需要完整内容或目标 ID；使用 /memory 查看。"
         if command == "tasks":
-            from kestri.tasks.service import list_tasks
+            from kestri.tasks.presentation import view as task_view
 
-            return await list_tasks(conn, chat_id)
+            return await task_view(conn, chat_id, text)
+        if command in {"start", "help", "status", "runs", "usage"}:
+            from kestri.assistant.views import view as assistant_view
+
+            return await assistant_view(conn, command, chat_id, text, self.owner_timezone)
         if command == "task":
-            return "请用 /task 加完整任务指令，例如：每天 08:00 Asia/Shanghai 给我 AI 新闻简报。"
-        if command in {"start", "help"}:
-            return (
-                "我是 Kestri。可以直接提问或让我查询公开网页，也可以回复之前的结果追问。\n"
-                "/stop 停止当前执行；/status 查看状态；/runs 查看最近执行；/usage"
-                " 查看本月估算用量。\n"
-                "/new 新建对话上下文，保留原始记录。\n"
-                "可直接创建每日或每周简报，使用 /tasks 查看；/task 输入任务指令。\n"
-                "暂停、恢复、修改或删除可回复任务消息；/stop 执行ID 停止指定执行。\n"
-                "/remember 内容 保存记忆；/memory 查看；/correct ID 内容 纠正；/forget ID 忘记。\n"
-                "/memory auto|use|semantic on|off 控制学习、使用、语义召回；"
-                "/memory pending 查看候选；"
-                "/memory changes 查看后台变更。\n"
-                "/history 查看最近原始记录。对话接近预算时自动压缩。\n"
-                "消息会通过 Telegram，研究内容会发送到 "
-                "DeepSeek/Tavily。"
-            )
+            return "请说明完整任务，例如：每天早上八点给我 AI 新闻简报。"
+        if command == "clarify":
+            return "请分别发送任务修改、记忆设置或运行控制。本次没有作变更。"
+        if command == "denied":
+            return "控制只接受主人的直接消息；未作变更。"
         if command == "new":
             active = await (
                 await conn.execute(
@@ -398,54 +399,13 @@ class Store:
             if active:
                 return "当前仍有待处理或进行中请求。请先停止或等待完成，再用 /new 新建对话上下文。"
             await conn.execute(
-                ("UPDATE kestri.conversations SET thread_id=NULL WHERE chat_id=%s"),
+                (
+                    "UPDATE kestri.conversations SET thread_id=NULL,memory_choice=NULL "
+                    "WHERE chat_id=%s"
+                ),
                 (chat_id,),
             )
             return "已新建对话上下文；原始消息、历史结果和证据仍然保留。"
-        if command in {"runs", "status"}:
-            rows = await (
-                await conn.execute(
-                    (
-                        "SELECT r.id,r.status,r.error_type,r.kind,"
-                        "r.task_id, (SELECT count(*) FROM kestri.evidence "
-                        "e WHERE e.run_id=r.id) AS evidence, (SELECT "
-                        "count(*) FROM kestri.usage u WHERE u.run_id=r.id) "
-                        "AS calls, (SELECT count(*) FROM kestri.outbox o "
-                        "WHERE o.run_id=r.id AND o.status IN ('uncertain',"
-                        "'failed')) AS delivery_problems FROM kestri.runs "
-                        "r WHERE chat_id=%s ORDER BY created_at DESC LIMIT "
-                        "5"
-                    ),
-                    (chat_id,),
-                )
-            ).fetchall()
-            return "最近执行：\n" + (
-                "\n".join(
-                    f"{str(row['id'])[:8]} · {row['kind']} · {row['status']}"
-                    f" · 来源 {row['evidence']} · 操作 {row['calls']}"
-                    f" · 发送待核对 {row['delivery_problems']}"
-                    + (f" · {row['error_type']}" if row["error_type"] else "")
-                    for row in rows
-                )
-                or "暂无执行。"
-            )
-        if command == "usage":
-            row = await (
-                await conn.execute(
-                    "SELECT COALESCE(sum(amount_micro_usd),0) AS "
-                    "amount,count(*) AS calls FROM kestri.usage WHERE "
-                    "created_at>=date_trunc('month',now() AT TIME ZONE "
-                    "'UTC') AT TIME ZONE 'UTC'"
-                )
-            ).fetchone()
-            return (
-                (
-                    f"本月（UTC）本地估算/预留：${int(row['amount']) / 1_000_000:.4f}；"
-                    f"{row['calls']} 次计费操作。此值不是服务商账单，未知请求保留预留额度。"
-                )
-                if row
-                else "暂无用量。"
-            )
         return "暂不支持该命令。使用 /help 查看当前能力。"
 
     async def claim_run(self, background: bool = False) -> Row | None:
@@ -644,7 +604,7 @@ class Store:
                         ),
                         (run_id, row["chat_id"], row["memory_epoch"]),
                     )
-                from kestri.memory.presentation import current_presentation
+                from kestri.assistant.presentation import result_presentation
 
                 choice_row = await (
                     await conn.execute(
@@ -656,6 +616,7 @@ class Store:
                 if choice and choice.get("run_id") != str(run_id):
                     choice = None
                 for part in chunks(answer):
+                    display = await result_presentation(conn, row, status, part, choice)
                     await conn.execute(
                         (
                             "INSERT INTO kestri.outbox(id,chat_id,reply_to,"
@@ -668,27 +629,7 @@ class Store:
                             run_id,
                             part,
                             row["task_id"],
-                            Jsonb(await current_presentation(conn, row["chat_id"], part, choice))
-                            if row["kind"] == "memory_control"
-                            else (
-                                Jsonb(
-                                    {
-                                        "reply_markup": {
-                                            "inline_keyboard": [
-                                                [
-                                                    {
-                                                        "text": "记忆依据",
-                                                        "callback_data": "mem:why:"
-                                                        + str(run_id)[:8],
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                )
-                                if row["kind"] == "foreground" and status == "completed"
-                                else None
-                            ),
+                            Jsonb(display) if display else None,
                         ),
                     )
 

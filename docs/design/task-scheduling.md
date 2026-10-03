@@ -23,7 +23,7 @@ Control precedence is delete, pause, resume, update, list. This matters when a r
 
 ## Proposal schema and model role
 
-`TaskAgent` recomputes permitted intent, supplies only the current request and configured owner timezone, and registers `ToolStrategy(TaskPlan, handle_errors=False)` with no research tools. It allows at most two model calls, uses `BoundsMiddleware` spending/input checks, and shares the run timeout. No saver, personal memory, or old dialogue is supplied.
+`TaskAgent` recomputes permitted intent, supplies the current request or validated bounded direct-owner clarification chain, plus configured owner timezone, and registers `ToolStrategy(TaskPlan, handle_errors=False)` with no research tools. It allows at most one model call, uses `BoundsMiddleware` spending/input checks, and shares the run timeout. No saver, personal memory, or old dialogue is supplied.
 
 | `TaskPlan` field | Constraint / interpretation |
 | --- | --- |

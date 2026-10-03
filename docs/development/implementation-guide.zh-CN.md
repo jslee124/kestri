@@ -485,3 +485,17 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 | [memory/presentation.py](../../src/kestri/memory/presentation.py) | 转义 HTML、时区格式与按钮元数据 |
 | [memory/diagnostics.py](../../src/kestri/memory/diagnostics.py) | 实际注入与历史诊断的撤销检查 |
 | [storage/sql/010_memory_assistant.sql](../../src/kestri/storage/sql/010_memory_assistant.sql) | 新增选择与展示元数据列 |
+
+## 统一助理控制模块
+
+统一入口、短期选项、任务变更和展示的实现入口：
+
+- [assistant/routing.py](../../src/kestri/assistant/routing.py)
+- [assistant/choices.py](../../src/kestri/assistant/choices.py)
+- [assistant/views.py](../../src/kestri/assistant/views.py)
+- [assistant/presentation.py](../../src/kestri/assistant/presentation.py)
+- [tasks/dialogue.py](../../src/kestri/tasks/dialogue.py)
+- [tasks/controls.py](../../src/kestri/tasks/controls.py)
+- [tasks/presentation.py](../../src/kestri/tasks/presentation.py)
+
+[接口与边界](../reference/assistant-controls.zh-CN.md)

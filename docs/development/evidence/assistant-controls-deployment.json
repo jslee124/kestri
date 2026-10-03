@@ -1,0 +1,47 @@
+{
+  "scope": "isolated synthetic Telegram controls; local deployment checks",
+  "local_checks": {
+    "pgvector_passed": 314,
+    "postgres_passed": 286,
+    "postgres_vector_skipped": 28,
+    "mypy_modules": 66,
+    "routing_cases": 25,
+    "correct_routes": 25,
+    "counterexamples": 6,
+    "wrong_mutation_routes": 0
+  },
+  "isolated_live_checks": [
+    "natural_task_list",
+    "explicit_timezone_creation",
+    "ambiguous_no_mutation",
+    "choice_button_after_restart",
+    "selected_task_only_paused",
+    "explicit_timing_followups_without_model",
+    "missing_time_zone_supplement_creation",
+    "task_detail_button",
+    "mixed_control_no_mutation"
+  ],
+  "schema_migration": 10,
+  "logical_backup_schema": 8,
+  "checks": {
+    "raw_dump_restore": true,
+    "restored_record_checkpoint_counts_match": true,
+    "workspace_archive_read": true,
+    "deployed_source_hashes_match": true,
+    "production_records_checkpoints_preserved": true,
+    "production_restart": true,
+    "owner_settings_preserved": true,
+    "wheel_sdist_built": true
+  },
+  "app_image": "sha256:485c8f4ead4a7d6bc5ca84d59c8e6f06949174a19e645551d572eaf28cf63d88",
+  "rollback_image": "kestri-app:rollback-before-assistant-controls",
+  "limits": [
+    "synthetic routing regression is not a real-world misunderstanding rate",
+    "no longitudinal personalization acceptance",
+    "task model proposals can fail validation without mutation",
+    "no main merge"
+  ],
+  "source_files_verified": 64,
+  "source_manifest_sha256": "ecbd93f952d486e1fe5a2be082af5eb689fcf18f588c0cb0b90581199446547b",
+  "container_health": "healthy"
+}

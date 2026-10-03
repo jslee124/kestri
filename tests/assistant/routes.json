@@ -1,0 +1,127 @@
+[
+  {
+    "text": "我有哪些任务？",
+    "command": "tasks",
+    "kind": "foreground"
+  },
+  {
+    "text": "我现在有什么任务",
+    "command": "tasks",
+    "kind": "foreground"
+  },
+  {
+    "text": "查看我的任务",
+    "command": "tasks",
+    "kind": "foreground"
+  },
+  {
+    "text": "你现在在做什么？",
+    "command": "status",
+    "kind": "foreground"
+  },
+  {
+    "text": "现在正在做什么",
+    "command": "status",
+    "kind": "foreground"
+  },
+  {
+    "text": "开始新话题",
+    "command": "new",
+    "kind": "foreground"
+  },
+  {
+    "text": "换个话题",
+    "command": "new",
+    "kind": "foreground"
+  },
+  {
+    "text": "帮我停止当前执行",
+    "command": "stop",
+    "kind": "foreground"
+  },
+  {
+    "text": "你能做什么",
+    "command": "help",
+    "kind": "foreground"
+  },
+  {
+    "text": "本月花费",
+    "command": "usage",
+    "kind": "foreground"
+  },
+  {
+    "text": "查看最近执行记录",
+    "command": "runs",
+    "kind": "foreground"
+  },
+  {
+    "text": "暂停每天的新闻简报",
+    "command": null,
+    "kind": "task_control"
+  },
+  {
+    "text": "修改新闻简报时间",
+    "command": null,
+    "kind": "task_control"
+  },
+  {
+    "text": "每天晚上八点给我新闻简报",
+    "command": null,
+    "kind": "task_control"
+  },
+  {
+    "text": "开启自动记忆",
+    "command": null,
+    "kind": "memory_control"
+  },
+  {
+    "text": "你现在记住了我哪些事情",
+    "command": null,
+    "kind": "memory_control"
+  },
+  {
+    "text": "只依据有效记忆回答饮食偏好",
+    "command": null,
+    "kind": "foreground"
+  },
+  {
+    "text": "不要暂停新闻简报",
+    "command": null,
+    "kind": "foreground"
+  },
+  {
+    "text": "我不想删除任务",
+    "command": null,
+    "kind": "foreground"
+  },
+  {
+    "text": "如果我暂停新闻简报会怎样",
+    "command": null,
+    "kind": "foreground"
+  },
+  {
+    "text": "解释如何停止当前执行",
+    "command": null,
+    "kind": "foreground"
+  },
+  {
+    "text": "他说“开始新话题”",
+    "command": null,
+    "kind": "foreground"
+  },
+  {
+    "text": "暂停简报并删除任务",
+    "command": "clarify",
+    "kind": "foreground"
+  },
+  {
+    "text": "暂停新闻简报并开启自动记忆",
+    "command": "clarify",
+    "kind": "foreground"
+  },
+  {
+    "text": "暂停简报，然后开始新话题",
+    "command": "clarify",
+    "kind": "foreground"
+  }
+]

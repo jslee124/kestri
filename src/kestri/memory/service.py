@@ -16,7 +16,7 @@ from kestri.storage.store import Row, Store
 
 def memory_instruction(text: str) -> tuple[str, str] | None:
     if re.fullmatch(
-        r"(?:选择记忆 [a-f0-9]{16} [1-5]|(?:就)?(?:选|选择)?第?[一二三四五1-5]条"
+        r"(?:选择记忆 [a-f0-9]{16} [1-5]|(?:就)?(?:选|选择)?第?[一二三四五1-5](?:条|个|项)"
         r"(?:记忆)?)[。！!]?(?:就好)?",
         text.strip(),
     ):
@@ -117,6 +117,7 @@ class MemoryService:
                     if (
                         not state
                         or not choice
+                        or choice.get("domain", "memory") != "memory"
                         or datetime.fromisoformat(choice["expires"]) <= datetime.now(UTC)
                         or choice["epoch"] != state["memory_epoch"]
                     ):
