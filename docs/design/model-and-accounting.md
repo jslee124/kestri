@@ -83,3 +83,7 @@ Checkpoints may contain raw dialogue, tool material, and provider reasoning desp
 ## Verification and maintenance
 
 [Runtime tests](../../tests/agent/test_runtime.py) exercise model payloads and failed-session behavior; [evidence tests](../../tests/agent/test_evidence.py) cover absence of reasoning/key text and required tool proof; [research integration tests](../../tests/agent/test_research_integration.py) cover concurrent reservations, spending rejection, unresolved usage, and terminal outcomes. These verify configured arithmetic/control, not provider invoices. For SDK/model changes, review serialized payload, thinking mode, usage metadata, context estimates, timeout/retry behavior, and protected middleware hooks together.
+
+## Image input increment
+
+Migration 11 and backup schema 9 add `image_inputs` and `runs.media_group_id`. Photos, static JPEG/PNG/WebP image documents, and albums are supported; an album creates one run. Checkpoints store `image_refs`; model requests load pixels ephemerally, with 1024 additional estimated input tokens per image. Captions use `image` provenance and are excluded from automatic memory and history vector indexing. Backup/export include image bytes; restore and retention cover files. Older sections retain their original increment scope; see [image input design](image-input.md) for current fields, states, limits, and validation.

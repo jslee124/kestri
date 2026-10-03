@@ -8,6 +8,8 @@ Updated: 2026-10-02. Status: M0, M1, M2, M3, and M4 complete first-version deliv
 
 - [Conversational assistant controls](reference/assistant-controls.md): natural queries, bounded task clarification and unified output.
 
+- [Image input](design/image-input.md): Telegram photos, image files, albums, follow-up, limits, and lifecycle.
+
 ## Embedding and next memory increment
 
 - [Beijing embedding connection](reference/embedding.md): implemented settings, adapter, and independent smoke.

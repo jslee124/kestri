@@ -74,3 +74,47 @@ class Workspace:
             if isinstance(error.__cause__, FileNotFoundError):
                 return
             raise
+
+    def write_image(self, run_id: str, image_id: str, data: bytes) -> None:
+        filename = f"{UUID(image_id)}.image"
+        with self.directory(run_id) as directory:
+            descriptor = os.open(
+                filename,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                0o600,
+                dir_fd=directory,
+            )
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+
+    def read_image(self, run_id: str, image_id: str, limit: int) -> bytes:
+        import stat
+
+        filename = f"{UUID(image_id)}.image"
+        with self.directory(run_id, create=False) as directory:
+            descriptor = os.open(
+                filename, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory
+            )
+            with os.fdopen(descriptor, "rb") as stream:
+                info = os.fstat(stream.fileno())
+                if not stat.S_ISREG(info.st_mode) or info.st_size > limit:
+                    raise PolicyDenied("ImageFileBoundary")
+                data = stream.read(limit + 1)
+        if len(data) > limit:
+            raise PolicyDenied("ImageSizeLimit")
+        return data
+
+    def remove_image(self, run_id: str, image_id: str) -> None:
+        filename = f"{UUID(image_id)}.image"
+        try:
+            with self.directory(run_id, create=False) as directory:
+                try:
+                    os.unlink(filename, dir_fd=directory)
+                except FileNotFoundError:
+                    pass
+        except PolicyDenied as error:
+            if isinstance(error.__cause__, FileNotFoundError):
+                return
+            raise

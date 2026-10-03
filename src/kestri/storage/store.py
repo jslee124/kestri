@@ -85,6 +85,10 @@ class Store:
                     files("kestri").joinpath("storage/sql/010_memory_assistant.sql").read_text(),
                     prepare=False,
                 )
+                await conn.execute(
+                    files("kestri").joinpath("storage/sql/011_image_inputs.sql").read_text(),
+                    prepare=False,
+                )
 
     async def close(self) -> None:
         await self.pool.close()
@@ -139,6 +143,9 @@ class Store:
         queue_limit: int,
         kind: str = "foreground",
         provenance: str = "direct",
+        *,
+        image_file: str | None = None,
+        media_group_id: str | None = None,
     ) -> tuple[bool, str | None]:
         """Called only after authorization. Deduplication and state changes are atomic."""
         text = self.redactor.text(text)
@@ -168,15 +175,27 @@ class Store:
                     ("SELECT chat_id FROM kestri.conversations WHERE chat_id=%s FOR UPDATE"),
                     (chat_id,),
                 )
-                if command is None:
+                album_member = False
+                if image_file and media_group_id:
+                    group = await (
+                        await conn.execute(
+                            "SELECT id,status,available_at>now() AS collecting FROM kestri.runs "
+                            "WHERE chat_id=%s AND media_group_id=%s FOR UPDATE",
+                            (chat_id, media_group_id),
+                        )
+                    ).fetchone()
+                    if group:
+                        if group["status"] != "queued" or not group["collecting"]:
+                            command = "image_late"
+                        else:
+                            run_id = str(group["id"])
+                            album_member = True
+                if command is None and not album_member:
                     row = await (
                         await conn.execute(
-                            (
-                                "SELECT count(*) AS n FROM kestri.runs WHERE "
-                                "chat_id=%s AND kind NOT IN "
-                                "('background','memory_maintenance') AND status IN "
-                                "('queued','running')"
-                            ),
+                            "SELECT count(*) AS n FROM kestri.runs WHERE chat_id=%s "
+                            "AND kind NOT IN ('background','memory_maintenance') "
+                            "AND status IN ('queued','running')",
                             (chat_id,),
                         )
                     ).fetchone()
@@ -185,17 +204,61 @@ class Store:
                     else:
                         run_id = str(uuid4())
                         await conn.execute(
+                            """
+                            INSERT INTO kestri.runs (
+                                id,chat_id,message_id,request,reply_to,status,kind,
+                                media_group_id,available_at
+                            ) VALUES (%s,%s,%s,%s,%s,'queued',%s,%s,
+                                now()+make_interval(secs=>%s))
+                            """,
                             (
-                                "INSERT INTO kestri.runs(id,chat_id,message_id,"
-                                "request,reply_to,status,kind) VALUES (%s,%s,%s,%s,"
-                                "%s,'queued',%s)"
+                                run_id,
+                                chat_id,
+                                message_id,
+                                text,
+                                reply_to,
+                                kind,
+                                media_group_id if image_file else None,
+                                2 if image_file and media_group_id else 0,
                             ),
-                            (run_id, chat_id, message_id, text, reply_to, kind),
                         )
-                        await conn.execute(
-                            ("UPDATE kestri.inbox SET run_id=%s WHERE update_id=%s"),
-                            (run_id, update_id),
-                        )
+                if run_id and command is None:
+                    await conn.execute(
+                        "UPDATE kestri.inbox SET run_id=%s WHERE update_id=%s",
+                        (run_id, update_id),
+                    )
+                    if image_file:
+                        count = await (
+                            await conn.execute(
+                                "SELECT count(*) AS n FROM kestri.image_inputs WHERE run_id=%s",
+                                (run_id,),
+                            )
+                        ).fetchone()
+                        if count and count["n"] >= 10:
+                            command = "image_limit"
+                            await conn.execute(
+                                "UPDATE kestri.runs SET status='failed',cancel_requested=true,"
+                                "error_type='ImageCountLimit',finished_at=now() WHERE id=%s",
+                                (run_id,),
+                            )
+                        else:
+                            await conn.execute(
+                                """
+                                INSERT INTO kestri.image_inputs (
+                                    id,run_id,chat_id,message_id,file_id,caption
+                                ) VALUES (%s,%s,%s,%s,%s,%s)
+                                """,
+                                (uuid4(), run_id, chat_id, message_id, image_file, text),
+                            )
+                            if media_group_id:
+                                await conn.execute(
+                                    "UPDATE kestri.runs SET available_at=LEAST("
+                                    "now()+interval '2 seconds',created_at+interval '10 seconds'),"
+                                    "request=COALESCE((SELECT string_agg(caption,chr(10) "
+                                    "ORDER BY message_id) FROM kestri.image_inputs "
+                                    "WHERE run_id=%s AND caption!=''),'') WHERE id=%s",
+                                    (run_id, run_id),
+                                )
                 archived = await (
                     await conn.execute(
                         "INSERT INTO kestri.messages(chat_id,telegram_id,direction,content,"
@@ -212,7 +275,13 @@ class Store:
                         """,
                         (chat_id,),
                     )
-                if archived and command is None and kind == "foreground" and provenance == "direct":
+                if (
+                    archived
+                    and command is None
+                    and kind == "foreground"
+                    and provenance == "direct"
+                    and not image_file
+                ):
                     await conn.execute(
                         "INSERT INTO "
                         "kestri.memory_jobs(id,chat_id,source_message_id,settings_generation)"
@@ -221,7 +290,13 @@ class Store:
                         "WHERE chat_id=%s AND auto_memory_enabled",
                         (uuid4(), archived["id"], chat_id),
                     )
-                if command == "stop":
+                if album_member and command is None:
+                    return True, run_id
+                if command == "image_late":
+                    notice = "这张图片到达时相册收集已结束；未加入分析。请将完整相册重新发送。"
+                elif command == "image_limit":
+                    notice = "相册超过 10 张图片，本次分析未启动；请拆分后重新发送。"
+                elif command == "stop":
                     stop_args = text.split(maxsplit=1)
                     if len(stop_args) == 2 and stop_args[0].split("@")[0].lower() == "/stop":
                         matches = await (
@@ -446,13 +521,21 @@ class Store:
                     )
                 row = await (
                     await conn.execute(
-                        (
-                            "SELECT * FROM kestri.runs WHERE status='queued' "
-                            "AND NOT cancel_requested AND available_at<=now() "
-                            "AND kind!='memory_maintenance' AND (kind='background')=%s ORDER "
-                            "BY created_at "
-                            "LIMIT 1 FOR UPDATE SKIP LOCKED"
-                        ),
+                        """
+                        SELECT r.* FROM kestri.runs AS r
+                        WHERE r.status = 'queued' AND NOT r.cancel_requested
+                          AND r.available_at <= now() AND r.kind != 'memory_maintenance'
+                          AND (r.kind = 'background') = %s
+                          AND (r.kind = 'background' OR NOT EXISTS (
+                              SELECT 1 FROM kestri.runs AS waiting
+                              WHERE waiting.chat_id = r.chat_id AND waiting.status = 'queued'
+                                AND waiting.media_group_id IS NOT NULL
+                                AND waiting.available_at > now()
+                                AND waiting.created_at < r.created_at
+                          ))
+                        ORDER BY r.created_at
+                        LIMIT 1 FOR UPDATE SKIP LOCKED
+                        """,
                         (background,),
                     )
                 ).fetchone()

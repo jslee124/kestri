@@ -92,3 +92,7 @@ Base Compose runs a non-root application with read-only root, writable named wor
 Canonical records live in the `kestri` schema; LangGraph owns separate checkpoint tables. Workspace text is organized by generated run/evidence UUIDs with no-follow relative file operations. M3 implements personal-memory expiry and revocation; M4 adds idle retention, export, private backup, and quarantined restore. See the [data lifecycle reference](data-lifecycle.md). `docker compose stop` preserves volumes; `down -v` deletes durable data and should not be used as a routine stop command.
 
 M2 adds `/tasks` and `/task` alongside every existing command in the native collapsible menu; see the [task reference](tasks.md) for task control and scheduling rules.
+
+## Image input increment
+
+Migration 11 and backup schema 9 add `image_inputs` and `runs.media_group_id`. Photos, static JPEG/PNG/WebP image documents, and albums are supported; an album creates one run. Checkpoints store `image_refs`; model requests load pixels ephemerally, with 1024 additional estimated input tokens per image. Captions use `image` provenance and are excluded from automatic memory and history vector indexing. Backup/export include image bytes; restore and retention cover files. Older sections retain their original increment scope; see [image input design](../design/image-input.md) for current fields, states, limits, and validation.

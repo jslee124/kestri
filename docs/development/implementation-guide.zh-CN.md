@@ -499,3 +499,24 @@ Smoke 工具 · [详细机制](../design/tools.zh-CN.md)
 - [tasks/presentation.py](../../src/kestri/tasks/presentation.py)
 
 [接口与边界](../reference/assistant-controls.zh-CN.md)
+
+## 图片输入实现
+
+机制、限制与生命周期见[图片输入设计](../design/image-input.zh-CN.md)。
+
+| 入口 | 职责 |
+| --- | --- |
+| `agent/images.py: inspect_image` | 验证实际格式、静态帧、尺寸、大小和哈希。 |
+| `agent/images.py: image_references` | 验证和去重 UUID 引用，限制上下文图片数量。 |
+| `ImageInputs.prepare` | 执行时下载待处理文件，恢复已完成写入并持久化元数据。 |
+| `ImageContext.awrap_model_call` | 检查引用归属和文件校验，只替换模型请求消息，不修改检查点。 |
+| `TelegramClient.download_image` | 限制 getFile 下载路径、重定向和流字节。 |
+| `image_file_id` / `authorized_message` | 选择一个照片尺寸或图片文件，授权后归一化说明。 |
+| `Store.accept` / `Store.claim_run` | 持久化收集、队列准入、去重、迟到提示和按顺序派发。 |
+| `Workspace.write_image/read_image/remove_image` | 用 UUID 和禁止跟随链接的目录句柄操作私有二进制文件。 |
+| `ContextSummary` / `conservative_input_size` | 摘要保留图片引用，预算包含视觉 token 估算。 |
+| `DataService.backup/restore/cleanup` | schema 9 字节与严格元数据校验，过期、恢复隔离和可重试删除。 |
+| `storage/sql/011_image_inputs.sql` | 图片记录及每聊天唯一相册标识。 |
+| `tests/agent/test_images.py` / `test_image_input_integration.py` | 离线传输及像素边界验证、隔离数据库验收。 |
+
+摘要扩展依赖锁定版 LangChain 通过实例调用 `_build_new_messages` 的行为；真实 `abefore_model` 更新路径有回归测试。图片归一化中间件位于预算中间件之后，防止按 base64 字符估算费用。

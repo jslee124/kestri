@@ -92,3 +92,7 @@
 原始记录位于 `kestri` schema，LangGraph 管理独立 checkpoint 表。工作区文本按生成的执行/证据 UUID 组织，使用不跟随链接的相对文件操作。M3 实现记忆过期和撤销，M4 实现空闲清理、导出、私有备份与隔离恢复。见[数据生命周期参考](data-lifecycle.zh-CN.md)。`docker compose stop` 保留卷；`down -v` 删除持久数据，不作为日常停止命令。
 
 M2 新增 `/tasks`、`/task` 并保留全部原有命令，均在原生可展开菜单中显示；详细任务控制与调度规则见[任务参考](tasks.zh-CN.md)。
+
+## 图片输入增量
+
+迁移 11 和备份 schema 9 增加 `image_inputs` 与 `runs.media_group_id`。支持照片、静态 JPEG/PNG/WebP 图片文件和多图相册；相册合并为一次执行。检查点保存 `image_refs`，模型请求临时加载像素；预算每图额外计 1024 输入 token。图片说明使用 `image` 来源，不参与自动记忆或历史向量索引。备份和导出包含图片字节，恢复及清理覆盖图片。旧章节保留原有增量范围；当前字段、状态、限制和验证见[图片输入设计](../design/image-input.zh-CN.md)。

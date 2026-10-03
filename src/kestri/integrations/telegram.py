@@ -97,6 +97,31 @@ class TelegramClient:
             raise ProviderFailure("InvalidUpdates")
         return result
 
+    async def download_image(self, file_id: str, limit: int) -> bytes:
+        import re
+
+        result = await self.call("getFile", {"file_id": file_id})
+        path = result.get("file_path") if isinstance(result, dict) else None
+        if (
+            not isinstance(path, str)
+            or not re.fullmatch(r"[A-Za-z0-9_/-]+\.[A-Za-z0-9]+", path)
+            or any(part in {"", ".", ".."} for part in path.split("/"))
+        ):
+            raise ProviderFailure("InvalidTelegramFilePath")
+        size = result.get("file_size")
+        if isinstance(size, int) and size > limit:
+            raise ProviderFailure("ImageSizeLimit")
+        url = self._base.replace("/bot", "/file/bot", 1) + "/" + path
+        async with self.client.stream("GET", url, follow_redirects=False) as response:
+            if response.status_code != 200:
+                raise ProviderFailure("ImageDownloadFailed")
+            data = bytearray()
+            async for chunk in response.aiter_bytes():
+                data.extend(chunk)
+                if len(data) > limit:
+                    raise ProviderFailure("ImageSizeLimit")
+        return bytes(data)
+
     async def send(
         self,
         chat_id: int,
@@ -145,11 +170,37 @@ def authorized_message(update: dict[str, Any], owner_id: int) -> dict[str, Any] 
         or sender.get("is_bot", False)
         or chat.get("type") != "private"
         or chat.get("id") != owner_id
-        or not isinstance(message.get("text"), str)
+        or (not isinstance(message.get("text"), str) and image_file_id(message) is None)
         or not isinstance(message.get("message_id"), int)
     ):
         return None
+    if image_file_id(message) is not None:
+        caption = message.get("caption")
+        return {**message, "text": caption if isinstance(caption, str) else ""}
     return message
+
+
+def image_file_id(message: dict[str, Any]) -> str | None:
+    photos = message.get("photo")
+    if isinstance(photos, list) and photos:
+        choices = [
+            photo
+            for photo in photos
+            if isinstance(photo, dict)
+            and isinstance(photo.get("file_id"), str)
+            and isinstance(photo.get("width"), int)
+            and isinstance(photo.get("height"), int)
+        ]
+        if choices:
+            return str(max(choices, key=lambda photo: photo["width"] * photo["height"])["file_id"])
+    document = message.get("document")
+    if (
+        isinstance(document, dict)
+        and str(document.get("mime_type", "")).startswith("image/")
+        and isinstance(document.get("file_id"), str)
+    ):
+        return str(document["file_id"])
+    return None
 
 
 def command_for(text: str) -> str | None:

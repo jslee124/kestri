@@ -1,6 +1,8 @@
 """Operator-only data lifecycle. Restore is deliberately quarantined and never replays work."""
 
 import asyncio
+import base64
+import binascii
 import hashlib
 import json
 import os
@@ -29,6 +31,7 @@ TABLES = (
     "messages",
     "outbox",
     "evidence",
+    "image_inputs",
     "usage",
     "events",
     "task_changes",
@@ -152,6 +155,7 @@ class DataService:
     async def backup(self, path: Path | None = None, *, export: bool = False) -> Path:
         tables: dict[str, list[dict[str, Any]]] = {}
         attachments: dict[str, str] = {}
+        image_files: dict[str, str] = {}
         size = total = 0
         async with self.exclusive() as conn:
             for table in TABLES:
@@ -182,13 +186,33 @@ class DataService:
                     if size > MAX_BYTES // 2:
                         raise PolicyDenied("BackupSizeLimit")
                     attachments[f"{record['run_id']}/{record['id']}"] = content
+            for record in tables["image_inputs"]:
+                if record["status"] != "ready":
+                    continue
+                from kestri.agent.images import MAX_IMAGE_BYTES, inspect_image
+
+                data = await disk_operation(
+                    self.workspace.read_image,
+                    str(record["run_id"]),
+                    str(record["id"]),
+                    MAX_IMAGE_BYTES,
+                )
+                metadata = await disk_operation(inspect_image, data)
+                if any(record[key] != value for key, value in metadata.items()):
+                    raise PolicyDenied("BackupImageMismatch")
+                content = base64.b64encode(data).decode("ascii")
+                size += len(content)
+                if size > MAX_BYTES // 2:
+                    raise PolicyDenied("BackupSizeLimit")
+                image_files[f"{record['run_id']}/{record['id']}"] = content
             payload = {
                 "format": FORMAT,
                 "kind": "export" if export else "backup",
-                "schema": 8,
+                "schema": 9,
                 "created_at": datetime.now(UTC).isoformat(),
                 "tables": tables,
                 "evidence_text": attachments,
+                "image_bytes": image_files,
                 "checkpoints": "excluded-reset-on-restore",
             }
             raw = encoded(payload)
@@ -236,12 +260,14 @@ class DataService:
 
     async def restore(self, path: Path, *, apply: bool = False) -> dict[str, Any]:
         payload = await disk_operation(read_private, path)
-        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5, 6, 7, 8}:
+        if payload.get("kind") != "backup" or payload.get("schema") not in {4, 5, 6, 7, 8, 9}:
             raise PolicyDenied("NotRestorableBackup")
         tables = payload.get("tables")
         attachments = payload.get("evidence_text")
         schema = payload["schema"]
         expected_tables = set(TABLES)
+        if schema < 9:
+            expected_tables -= {"image_inputs"}
         if schema < 7:
             expected_tables -= {"history_index_jobs"}
         if schema < 6:
@@ -254,7 +280,7 @@ class DataService:
             or not isinstance(attachments, dict)
         ):
             raise PolicyDenied("InvalidBackupTables")
-        if schema < 7:
+        if schema < 9:
             tables = dict(tables)
             for name in set(TABLES) - expected_tables:
                 tables[name] = []
@@ -285,9 +311,36 @@ class DataService:
                 raise PolicyDenied("InvalidBackupEvidenceID")
             if not isinstance(content, str) or len(content) > 64_000:
                 raise PolicyDenied("EvidenceSizeLimit")
+        image_files = payload.get("image_bytes", {}) if schema < 9 else payload.get("image_bytes")
+        images_by_path = {f"{r['run_id']}/{r['id']}": r for r in tables["image_inputs"]}
+        if len(images_by_path) != len(tables["image_inputs"]):
+            raise PolicyDenied("DuplicateBackupImage")
+        expected_images = {name for name, r in images_by_path.items() if r["status"] == "ready"}
+        if not isinstance(image_files, dict) or set(image_files) != expected_images:
+            raise PolicyDenied("BackupImageMismatch")
+        run_owners = {r["id"]: r["chat_id"] for r in tables["runs"]}
+        for record in tables["image_inputs"]:
+            if run_owners.get(record["run_id"]) != record["chat_id"]:
+                raise PolicyDenied("BackupImageOwnerMismatch")
+            if any(str(UUID(record[key])) != record[key] for key in ("id", "run_id")):
+                raise PolicyDenied("InvalidBackupImageID")
+        for name, content in image_files.items():
+            from kestri.agent.images import MAX_IMAGE_BYTES, ImageInputFailure, inspect_image
+
+            if not isinstance(content, str) or len(content) > (MAX_IMAGE_BYTES + 2) // 3 * 4:
+                raise PolicyDenied("BackupImageSizeLimit")
+            try:
+                data = base64.b64decode(content, validate=True)
+                metadata = await disk_operation(inspect_image, data)
+            except (binascii.Error, ValueError, ImageInputFailure) as error:
+                raise PolicyDenied("InvalidBackupImage") from error
+            record = images_by_path[name]
+            if any(record[key] != value for key, value in metadata.items()):
+                raise PolicyDenied("BackupImageMismatch")
         report = {
             "rows": total,
             "evidence_files": len(attachments),
+            "image_files": len(image_files),
             "applied": apply,
             "restore_policy": (
                 "memories quarantined; tasks paused; no execution or delivery replay; "
@@ -295,6 +348,7 @@ class DataService:
             ),
         }
         created: list[tuple[str, str]] = []
+        created_images: list[tuple[str, str]] = []
         try:
             async with self.exclusive(bot_id=bot_id) as conn:
                 for table in TABLES:
@@ -358,10 +412,20 @@ class DataService:
                                 if field in original:
                                     raise PolicyDenied("LegacyBackupColumnMismatch")
                                 original[field] = None
+                        if schema < 9 and table == "runs":
+                            original = dict(original)
+                            if "media_group_id" in original:
+                                raise PolicyDenied("LegacyBackupColumnMismatch")
+                            original["media_group_id"] = None
                         if set(original) != set(names):
                             raise PolicyDenied("BackupColumnMismatch")
                         row = dict(original)
-                        if table == "conversations":
+                        if table == "image_inputs":
+                            row["file_id"] = ""
+                            if row["status"] == "pending":
+                                row["status"] = "expired"
+                                row["caption"] = ""
+                        elif table == "conversations":
                             row["memory_choice"] = None
                             row["thread_id"] = None
                             row["memory_epoch"] += 1
@@ -435,6 +499,15 @@ class DataService:
                             evidence_id,
                             content,
                         )
+                    for name, content in image_files.items():
+                        run_id, image_id = name.split("/")
+                        created_images.append((run_id, image_id))
+                        await disk_operation(
+                            self.workspace.write_image,
+                            run_id,
+                            image_id,
+                            base64.b64decode(content, validate=True),
+                        )
                     for table, column in (
                         ("messages", "id"),
                         ("outbox", "sequence"),
@@ -454,6 +527,12 @@ class DataService:
                             (f"kestri.{table}", column),
                         )
         except BaseException:
+            for run_id, image_id in created_images:
+                await disk_operation(self.workspace.remove_image, run_id, image_id)
+                try:
+                    (self.workspace.root / run_id).rmdir()
+                except OSError:
+                    pass
             for run_id, evidence_id in created:
                 await disk_operation(self.workspace.remove, run_id, evidence_id)
                 directory = self.workspace.root / run_id
@@ -529,6 +608,15 @@ class DataService:
                 )
             ).fetchone()
             report["evidence"] = evidence["n"] if evidence else 0
+            image_count = await (
+                await conn.execute(
+                    "SELECT count(*) AS n FROM kestri.image_inputs WHERE status!='expired' "
+                    "AND (created_at<%s OR run_id IN "
+                    "(SELECT id FROM kestri.runs WHERE created_at<%s))",
+                    (evidence_cutoff, archive_cutoff),
+                )
+            ).fetchone()
+            report["images"] = image_count["n"] if image_count else 0
             if not apply:
                 return report
             if erase:
@@ -612,7 +700,13 @@ class DataService:
                 "WHERE status='deleted' AND updated_at<%s",
                 (archive_cutoff,),
             )
-            if report["messages"] or report["run_content"] or report["evidence"] or erase:
+            if (
+                report["messages"]
+                or report["run_content"]
+                or report["evidence"]
+                or report["images"]
+                or erase
+            ):
                 await conn.execute(
                     (
                         "UPDATE kestri.conversations SET "
@@ -643,6 +737,14 @@ class DataService:
                 "FROM kestri.runs WHERE history_expired)"
             )
             await conn.execute(
+                "UPDATE kestri.image_inputs SET status='expired',cleanup_pending=true,"
+                "file_id='',caption='',mime_type=NULL,width=NULL,height=NULL,"
+                "byte_size=NULL,sha256=NULL WHERE status!='expired' AND "
+                "(created_at<%s OR run_id IN (SELECT id FROM kestri.runs WHERE created_at<%s))",
+                (evidence_cutoff, archive_cutoff),
+            )
+            await conn.execute("UPDATE kestri.runs SET media_group_id=NULL WHERE history_expired")
+            await conn.execute(
                 (
                     "INSERT INTO kestri.meta(key,value) VALUES ('maintenance',%s) ON "
                     "CONFLICT(key) DO UPDATE SET value=EXCLUDED.value"
@@ -656,6 +758,16 @@ class DataService:
             await disk_operation(self.workspace.remove, str(record["run_id"]), str(record["id"]))
             await self.store.execute(
                 "UPDATE kestri.evidence SET metadata='{}' WHERE id=%s", (record["id"],)
+            )
+        images = await self.store.all(
+            "SELECT id,run_id FROM kestri.image_inputs WHERE cleanup_pending"
+        )
+        for record in images:
+            await disk_operation(
+                self.workspace.remove_image, str(record["run_id"]), str(record["id"])
+            )
+            await self.store.execute(
+                "UPDATE kestri.image_inputs SET cleanup_pending=false WHERE id=%s", (record["id"],)
             )
         report["backup_files"] = await disk_operation(self.prune_backups, now, erase)
         await self.store.execute(

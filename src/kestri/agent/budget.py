@@ -83,4 +83,10 @@ def conservative_input_size(messages: list[Any], tools: list[Any]) -> int:
             for tool in tools
         ],
     }
-    return len(json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8")) + 2048
+    from kestri.agent.images import IMAGE_TOKENS, image_references
+
+    return (
+        len(json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8"))
+        + 2048
+        + IMAGE_TOKENS * len(image_references(messages))
+    )

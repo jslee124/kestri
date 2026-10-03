@@ -371,6 +371,10 @@ async def test_legacy_schema4_restore_explicit_defaults(store: Any, tmp_path: Pa
     backup = await service.backup(tmp_path / "backup.json")
     payload = read_private(backup)
     payload["schema"] = 4
+    del payload["tables"]["image_inputs"]
+    del payload["image_bytes"]
+    for row in payload["tables"]["runs"]:
+        del row["media_group_id"]
     for name in (
         "memory_jobs",
         "memory_sources",

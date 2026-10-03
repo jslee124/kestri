@@ -20,6 +20,7 @@ from kestri.integrations.telegram import (
     TelegramClient,
     authorized_callback,
     authorized_message,
+    image_file_id,
 )
 from kestri.integrations.url_policy import CloudflareResolver, PublicURLPolicy
 from kestri.memory.service import MemoryService
@@ -67,13 +68,14 @@ class Application:
             "SELECT memory_choice, memory_epoch FROM kestri.conversations WHERE chat_id = %s",
             (message["chat"]["id"],),
         )
+        image = image_file_id(message)
         selected = route(
             message["text"],
             direct=not message.get("forward_origin") and not message.get("external_reply"),
             reply=reply.get("message_id") is not None,
             state=state,
         )
-        command, kind = selected.command, selected.kind
+        command, kind = (None, "foreground") if image else (selected.command, selected.kind)
         accepted, run_id = await self.store.accept(
             update["update_id"],
             message["chat"]["id"],
@@ -83,9 +85,13 @@ class Application:
             command,
             self.settings.queue_limit,
             kind,
-            "forwarded"
+            "image"
+            if image
+            else "forwarded"
             if message.get("forward_origin")
             else ("external_reply" if message.get("external_reply") else "direct"),
+            image_file=image,
+            media_group_id=message.get("media_group_id") if image else None,
         )
         if accepted:
             if command == "stop":
@@ -353,6 +359,7 @@ async def run_telegram(settings: ResearchSettings) -> None:
                     PublicURLPolicy(CloudflareResolver(dns_http))
                     if settings.url_dns_mode == "cloudflare"
                     else PublicURLPolicy(),
+                    telegram=telegram,
                 )
                 print(
                     f"Kestri polling @{identity.get('username', '(unnamed)')}; "

@@ -220,3 +220,7 @@ Migration 8 adds persistent `history_index_jobs`; logical schema 7 includes this
 Migration 9 pins framework checkpoint placement to `public` and preserves legacy tables created in `kestri`; collisions roll back. It adds no business table or logical-backup field. See [controls and checkpoint storage](memory-controls.md).
 
 [Current conversational memory additions](memory-assistant.md)：Migration 10, logical backup schema 8, natural settings, short-lived choices and answer diagnostics. Older sections retain their historical scope.
+
+## Image input increment
+
+Migration 11 and backup schema 9 add `image_inputs` and `runs.media_group_id`. Photos, static JPEG/PNG/WebP image documents, and albums are supported; an album creates one run. Checkpoints store `image_refs`; model requests load pixels ephemerally, with 1024 additional estimated input tokens per image. Captions use `image` provenance and are excluded from automatic memory and history vector indexing. Backup/export include image bytes; restore and retention cover files. Older sections retain their original increment scope; see [image input design](../design/image-input.md) for current fields, states, limits, and validation.

@@ -102,3 +102,7 @@ After database commit, cleanup lists pending evidence, removes each UUID-scoped 
 [Data lifecycle integration tests](../../tests/storage/test_data_lifecycle_integration.py) cover empty-target validation, corruption/permissions/owner rejection, quarantine, transaction/file failures, sequence behavior, busy deferral, erasure/retention, no-follow cleanup, and cancellation/lease handling. They establish controlled boundaries, not every abrupt crash point or external-copy deletion. A backup-schema change needs an explicit compatibility decision; older bundles are not auto-upgraded by a version-neutral importer.
 
 [Current conversational memory additions](../reference/memory-assistant.md)：Migration 10, logical backup schema 8, natural settings, short-lived choices and answer diagnostics. Older sections retain their historical scope.
+
+## Image input increment
+
+Migration 11 and backup schema 9 add `image_inputs` and `runs.media_group_id`. Photos, static JPEG/PNG/WebP image documents, and albums are supported; an album creates one run. Checkpoints store `image_refs`; model requests load pixels ephemerally, with 1024 additional estimated input tokens per image. Captions use `image` provenance and are excluded from automatic memory and history vector indexing. Backup/export include image bytes; restore and retention cover files. Older sections retain their original increment scope; see [image input design](image-input.md) for current fields, states, limits, and validation.

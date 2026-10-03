@@ -63,3 +63,7 @@ schema 6 包含 `memory_jobs`、`memory_sources`、`memory_events`；schema 4 �
 迁移 8 增加持久 `history_index_jobs`；逻辑 schema 7 备份包含此表并继续省略向量，恢复取消历史作业，旧 schema 4/5/6 补空作业。预算及租约契约见[历史参考](../reference/history-retrieval.zh-CN.md)。
 
 [当前对话式记忆增量](memory-assistant.zh-CN.md)：迁移 10、逻辑备份 schema 8、自然语言设置、短期目标选择与回答诊断。旧版本章节保留原有范围。
+
+## 图片输入增量
+
+迁移 11 和备份 schema 9 增加 `image_inputs` 与 `runs.media_group_id`。支持照片、静态 JPEG/PNG/WebP 图片文件和多图相册；相册合并为一次执行。检查点保存 `image_refs`，模型请求临时加载像素；预算每图额外计 1024 输入 token。图片说明使用 `image` 来源，不参与自动记忆或历史向量索引。备份和导出包含图片字节，恢复及清理覆盖图片。旧章节保留原有增量范围；当前字段、状态、限制和验证见[图片输入设计](../design/image-input.zh-CN.md)。

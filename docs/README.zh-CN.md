@@ -8,6 +8,8 @@
 
 - [对话式助理控制](reference/assistant-controls.zh-CN.md)：自然语言、任务补充与统一输出。
 
+- [图片输入](design/image-input.zh-CN.md)：Telegram 照片、图片文件、相册、追问、限制与生命周期。
+
 ## 第一版使用和维护
 
 - [第一版验收记录](development/first-version-acceptance.zh-CN.md)：全部要求、案例和证据边界。

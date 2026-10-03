@@ -102,3 +102,7 @@ Apply 删除过期归档，清空旧 run 请求/结果并标记 history expired�
 [数据生命周期集成测试](../../tests/storage/test_data_lifecycle_integration.py)覆盖空目标、损坏/权限/主人拒绝、隔离、事务/文件失败、序列、忙时推迟、清除/保留、no-follow 清理、取消/租约。它们证明受控边界，不证明全部突然崩溃点或外部副本删除。备份 schema 修改需明确兼容性决策，旧格式不会由无版本差异 importer 自动升级。
 
 [当前对话式记忆增量](../reference/memory-assistant.zh-CN.md)：迁移 10、逻辑备份 schema 8、自然语言设置、短期目标选择与回答诊断。旧版本章节保留原有范围。
+
+## 图片输入增量
+
+迁移 11 和备份 schema 9 增加 `image_inputs` 与 `runs.media_group_id`。支持照片、静态 JPEG/PNG/WebP 图片文件和多图相册；相册合并为一次执行。检查点保存 `image_refs`，模型请求临时加载像素；预算每图额外计 1024 输入 token。图片说明使用 `image` 来源，不参与自动记忆或历史向量索引。备份和导出包含图片字节，恢复及清理覆盖图片。旧章节保留原有增量范围；当前字段、状态、限制和验证见[图片输入设计](image-input.zh-CN.md)。

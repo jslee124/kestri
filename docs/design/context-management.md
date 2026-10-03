@@ -159,3 +159,7 @@ Consider: save “answer in Chinese”; ask for a sourced topic; reply “expand
 
 
 Automatic extraction now uses the independent persistent worker described in [progress](../development/memory-v2-progress.md). Explicit controls can also correct/forget a candidate; forgetting advances a broad automatic-history cutoff. Review deadlines, like expiry, invalidate the head/epoch before model use. Keyword recall remains unchanged until vector integration.
+
+## Image input increment
+
+Migration 11 and backup schema 9 add `image_inputs` and `runs.media_group_id`. Photos, static JPEG/PNG/WebP image documents, and albums are supported; an album creates one run. Checkpoints store `image_refs`; model requests load pixels ephemerally, with 1024 additional estimated input tokens per image. Captions use `image` provenance and are excluded from automatic memory and history vector indexing. Backup/export include image bytes; restore and retention cover files. Older sections retain their original increment scope; see [image input design](image-input.md) for current fields, states, limits, and validation.

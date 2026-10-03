@@ -499,3 +499,24 @@ Implementation entry points for routing, short-lived choices, task changes and p
 - [tasks/presentation.py](../../src/kestri/tasks/presentation.py)
 
 [Interfaces and boundaries](../reference/assistant-controls.md)
+
+## Image input implementation
+
+See [image input design](../design/image-input.md) for contracts, limits, and lifecycle.
+
+| Entry point | Responsibility |
+| --- | --- |
+| `agent/images.py: inspect_image` | Verify decoded format, static frames, dimensions, size and hash. |
+| `agent/images.py: image_references` | Validate and deduplicate UUID references; enforce context image count. |
+| `ImageInputs.prepare` | Download pending files at execution time; adopt interrupted writes and persist metadata. |
+| `ImageContext.awrap_model_call` | Authorize references and verify bytes; override model messages without modifying checkpoints. |
+| `TelegramClient.download_image` | Bound getFile/download paths, redirects and streamed bytes. |
+| `image_file_id` / `authorized_message` | Select one photo size or image document; authorize and normalize captions. |
+| `Store.accept` / `Store.claim_run` | Durable collection, queue admission, deduplication, late-member notices and ordered dispatch. |
+| `Workspace.write_image/read_image/remove_image` | Private binary files under UUID/no-follow directory handles. |
+| `ContextSummary` / `conservative_input_size` | Retain image references through summaries; include visual token estimates. |
+| `DataService.backup/restore/cleanup` | Schema 9 bytes and strict metadata validation; expiration, quarantine and retryable unlink. |
+| `storage/sql/011_image_inputs.sql` | Image records and unique album identity per chat. |
+| `tests/agent/test_images.py` / `test_image_input_integration.py` | Offline transport/pixel boundaries and isolated database acceptance. |
+
+The summary extension depends on the locked LangChain implementation calling `_build_new_messages` through the instance; the real `abefore_model` update path is regression-tested. Image hydration follows budget middleware so base64 characters are not treated as text tokens.

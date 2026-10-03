@@ -27,6 +27,10 @@ async def view(conn: Any, command: str, chat_id: int, text: str, timezone: str |
         return (
             "Kestri 使用帮助\n\n"
             "直接提问、查询公开网页，或回复之前的结果继续讨论。\n\n"
+            "图片分析\n"
+            "• 发送照片或图片文件，可附上问题\n"
+            "• 一次发送多张图作比较，随后可追问第二张图\n"
+            "支持静态 JPEG/PNG/WebP；最多 10 张，每张 10 MiB，合计 20 MiB。\n\n"
             "日常控制\n"
             "• 我有哪些任务？\n• 现在在做什么？\n• 停止当前执行\n• 开始新话题\n\n"
             "个人记忆\n"

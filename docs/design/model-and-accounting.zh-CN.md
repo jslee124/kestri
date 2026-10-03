@@ -83,3 +83,7 @@
 ## 验证与维护
 
 [Runtime 测试](../../tests/agent/test_runtime.py)覆盖模型载荷和失败会话；[证据测试](../../tests/agent/test_evidence.py)覆盖不含推理/key 和必需工具证明；[研究集成测试](../../tests/agent/test_research_integration.py)覆盖并发预留、超额拒绝、未知用量和最终结果。这验证配置算术/控制，不验证服务账单。更换 SDK/模型时一起审查载荷、thinking mode、usage metadata、上下文估计、timeout/retry 和中间件受保护接口。
+
+## 图片输入增量
+
+迁移 11 和备份 schema 9 增加 `image_inputs` 与 `runs.media_group_id`。支持照片、静态 JPEG/PNG/WebP 图片文件和多图相册；相册合并为一次执行。检查点保存 `image_refs`，模型请求临时加载像素；预算每图额外计 1024 输入 token。图片说明使用 `image` 来源，不参与自动记忆或历史向量索引。备份和导出包含图片字节，恢复及清理覆盖图片。旧章节保留原有增量范围；当前字段、状态、限制和验证见[图片输入设计](image-input.zh-CN.md)。
