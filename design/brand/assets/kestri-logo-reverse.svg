@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-labelledby="title">
 <title id="title">Kestri horizontal logo</title>
-<g transform="translate(12 10) scale(.58)"><defs><mask id="mark-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512"><defs><clipPath id="bust-crop"><path d="M330 70 H680 V375 Q505 449 330 375 Z"/></clipPath></defs>
-<g transform="translate(26 22) scale(1.32) translate(-330 -70)">
-<g clip-path="url(#bust-crop)"><path id="bust-outline" fill="#FFFFFF" d="M365 289 L620 275 Q652 332 646 412 L356 412 Q341 351 365 289 Z"/>
-<path id="bust-breast" fill="#000000" d="M419 289 L620 286 L629 412 L418 412 L389 345 Z"/>
+<g transform="translate(12 10) scale(.58)"><defs><mask id="mark-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512"><defs><clipPath id="bust-crop"><path d="M190 60 H700 V540 Q445 610 190 540 Z"/></clipPath></defs>
+<g transform="translate(12 16) scale(.95) translate(-190 -60)">
+<g clip-path="url(#bust-crop)"><path id="bust-outline" fill="#FFFFFF" d="M392 306 C321 335 257 399 221 484 L205 640 H663 C685 528 675 445 642 362 L639 289 Z"/>
+<path id="bust-breast" fill="#000000" d="M424 312 C395 357 384 410 366 474 L371 640 H626 C660 540 655 444 626 381 L625 313 Z"/>
 <path id="head-crown" fill="#FFFFFF" d="M350 337 C336 278 346 226 364 190 L351 202 L377 150 L363 164 C404 111 459 82 515 87 C601 84 656 133 659 206 C662 241 650 282 638 311 L644 361 L390 385 Z"/>
 <path id="face" fill="#000000" d="M381 314 C390 284 404 261 432 238 L419 243 C441 207 474 179 518 174 L493 155 C533 153 571 171 591 204 L600 192 L608 220 C621 203 639 195 648 207 C654 220 650 254 640 284 L630 345 L627 398 L441 408 Z"/>
 <path id="near-cheek" fill="#FFFFFF" d="M501 222 C481 244 472 264 464 300 C488 280 503 257 515 229 Z"/>
@@ -17,7 +17,7 @@
 <path id="beak-hook" fill="#FFFFFF" d="M535 243 C553 248 570 256 574 275 L577 294 C595 280 608 255 589 241 C570 230 559 254 535 243 Z"/>
 <path id="beak-edge" fill="#FFFFFF" d="M535 243 C553 248 568 259 574 275 C565 261 551 253 535 243 Z"/>
 <ellipse id="nostril" fill="#FFFFFF" cx="559" cy="236" rx="4" ry="5" transform="rotate(25 559 236)"/>
-<path id="bust-wing" fill="#FFFFFF" d="M356 335 Q405 330 448 368 Q464 388 465 412 L356 412 Z"/></g></g></mask></defs>
+<path id="bust-wing" fill="#FFFFFF" d="M376 306 C310 313 255 394 221 474 L205 640 H398 C450 566 492 475 485 395 C474 347 423 315 376 306 Z"/></g></g></mask></defs>
 <rect width="512" height="512" fill="#FFFCF6" mask="url(#mark-cutout)"/></g>
 <g transform="translate(350 68) scale(1.08)"><g id="wordmark" fill="none" stroke="#FFFCF6" stroke-width="25" stroke-linecap="round" stroke-linejoin="round">
 <path id="letter-k" d="M20 20 V145 M89 65 L22 108 M49 91 L96 145"/>

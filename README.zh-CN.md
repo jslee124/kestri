@@ -1,9 +1,11 @@
 # Kestri
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="design/brand/assets/kestri-logo-dark.svg">
-  <img src="design/brand/assets/kestri-logo.svg" alt="Kestri 红隼吉祥物与字标" width="420">
-</picture>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="design/brand/assets/kestri-logo-dark.png">
+    <img src="design/brand/assets/kestri-logo.png" alt="Kestri 红隼吉祥物与字标" width="420">
+  </picture>
+</p>
 
 [English](README.md)
 

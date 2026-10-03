@@ -1,11 +1,13 @@
-"""Build the official Kestri vector assets from shared, editable geometry.
+"""Build Kestri assets using the exact approved portrait and vector lettering.
 
 Run from any directory with Python 3. PNG exports are produced separately by
-render_assets.cjs. No font, embedded bitmap, network, or third-party package is
-needed to build the SVG files.
+render_assets.cjs. Color logo SVGs embed the original PNG to preserve its details.
+The mascot and secondary monochrome variants remain vector drawings.
 """
 
+import base64
 import re
+import struct
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -180,18 +182,29 @@ def mark() -> str:
             path(
                 "bust-outline",
                 "orange",
-                "M365 289 L620 275 Q652 332 646 412 L356 412 Q341 351 365 289 Z",
+                "M392 306 C321 335 257 399 221 484 L205 640 H663 "
+                "C685 528 675 445 642 362 L639 289 Z",
             ),
-            path("bust-breast", "cream", "M419 289 L620 286 L629 412 L418 412 L389 345 Z"),
+            path(
+                "bust-breast",
+                "cream",
+                "M424 312 C395 357 384 410 366 474 L371 640 H626 "
+                "C660 540 655 444 626 381 L625 313 Z",
+            ),
             head(),
-            path("bust-wing", "orange", "M356 335 Q405 330 448 368 Q464 388 465 412 L356 412 Z"),
+            path(
+                "bust-wing",
+                "orange",
+                "M376 306 C310 313 255 394 221 474 L205 640 H398 "
+                "C450 566 492 475 485 395 C474 347 423 315 376 306 Z",
+            ),
         ]
     )
     # Clip only the lower bust; the crown, eyes and cheek markings remain intact.
     return (
         '<defs><clipPath id="bust-crop"><path '
-        'd="M330 70 H680 V375 Q505 449 330 375 Z"/></clipPath></defs>\n'
-        '<g transform="translate(26 22) scale(1.32) translate(-330 -70)">\n'
+        'd="M190 60 H700 V540 Q445 610 190 540 Z"/></clipPath></defs>\n'
+        '<g transform="translate(12 16) scale(.95) translate(-190 -60)">\n'
         f'<g clip-path="url(#bust-crop)">{bust}</g></g>'
     )
 
@@ -248,7 +261,15 @@ def sheet_symbol(content: str, prefix: str) -> str:
 
 def main() -> None:
     ASSETS.mkdir(exist_ok=True)
-    mark_color = mark()
+    portrait = (ROOT / "kestri-portrait-source.png").read_bytes()
+    portrait_width, portrait_height = struct.unpack(">II", portrait[16:24])
+    if portrait_width != portrait_height:
+        raise ValueError("The approved portrait must be square")
+    embedded_portrait = "data:image/png;base64," + base64.b64encode(portrait).decode("ascii")
+    mark_color = (
+        f'<image width="512" height="512" href="{embedded_portrait}" '
+        'preserveAspectRatio="xMidYMid meet"/>'
+    )
     mark_ink = monochrome_mark(COLORS["ink"])
     mark_reverse = monochrome_mark(COLORS["white"])
     files = {
@@ -269,10 +290,10 @@ def main() -> None:
         ),
         "kestri-avatar.svg": svg(
             "Kestri avatar",
-            1024,
-            1024,
-            f'<rect width="1024" height="1024" fill="{COLORS["white"]}"/>\n'
-            f'<g transform="translate(102.4 102.4) scale(1.6)">{mark_color}</g>',
+            portrait_width,
+            portrait_height,
+            f'<image width="{portrait_width}" height="{portrait_height}" '
+            f'href="{embedded_portrait}" preserveAspectRatio="xMidYMid meet"/>',
         ),
     }
     for suffix, symbol, color in [
