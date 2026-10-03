@@ -1,10 +1,15 @@
 # Kestri
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="design/brand/assets/kestri-logo-dark.svg">
+  <img src="design/brand/assets/kestri-logo.svg" alt="Kestri 红隼吉祥物与字标" width="420">
+</picture>
+
 [English](README.md)
 
 Kestri 是一个在本地运行、通过 Telegram 机器人交互的个人 AI agent，旨在帮助用户处理日常问题、信息研究、个人偏好，以及明确委托的持续任务。
 
-工作名来自 **kestrel（红隼）**，未来可以发展为角色或吉祥物。
+名称来自 **kestrel（红隼）**，以一只好奇的小红隼作为吉祥物。[视觉规范](design/brand/README.zh-CN.md)提供正式标志、吉祥物、头像及使用说明，素材包含 SVG 和 PNG 格式。
 
 ## 项目状态
 

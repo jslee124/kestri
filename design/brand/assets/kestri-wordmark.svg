@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="200" viewBox="0 0 560 200" role="img" aria-labelledby="title">
+<title id="title">Kestri wordmark</title>
+<g transform="translate(12 12)"><g id="wordmark" fill="none" stroke="#30343B" stroke-width="25" stroke-linecap="round" stroke-linejoin="round">
+<path id="letter-k" d="M20 20 V145 M89 65 L22 108 M49 91 L96 145"/>
+<path id="letter-e" d="M142 105 H206 C206 49 133 48 133 106 C133 145 171 160 201 137"/>
+<path id="letter-s" d="M301 74 C285 55 242 58 243 84 C244 109 307 101 307 129 C307 153 264 159 242 141"/>
+<path id="letter-t" d="M350 31 V121 Q350 150 380 143 M327 70 H377"/>
+<path id="letter-r" d="M423 145 V72 M423 98 Q441 61 470 70"/>
+<path id="letter-i" d="M513 74 V145"/>
+<circle id="letter-i-dot" cx="513" cy="28" r="14" fill="#30343B" stroke="none"/>
+</g></g>
+</svg>

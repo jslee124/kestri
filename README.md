@@ -1,10 +1,15 @@
 # Kestri
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="design/brand/assets/kestri-logo-dark.svg">
+  <img src="design/brand/assets/kestri-logo.svg" alt="Kestri — kestrel mascot and wordmark" width="420">
+</picture>
+
 [简体中文](README.zh-CN.md)
 
 Kestri is a local personal AI agent, accessible through a Telegram bot. It is intended to help with everyday questions, information research, personal preferences, and explicitly delegated recurring tasks.
 
-The working name comes from **kestrel**, with the possibility of a character or mascot in the future.
+The name comes from **kestrel**, represented by Kestri's curious little bird mascot. The [visual identity guide](design/brand/README.md) provides the official logo, mascot, avatar, and usage guidelines in SVG and PNG formats.
 
 ## Project status
 

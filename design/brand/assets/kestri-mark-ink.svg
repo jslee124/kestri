@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<title id="title">Kestri ink mark</title>
+<defs><mask id="mark-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512"><defs><clipPath id="bust-crop"><path d="M330 70 H680 V375 Q505 449 330 375 Z"/></clipPath></defs>
+<g transform="translate(26 22) scale(1.32) translate(-330 -70)">
+<g clip-path="url(#bust-crop)"><path id="bust-outline" fill="#FFFFFF" d="M365 289 L620 275 Q652 332 646 412 L356 412 Q341 351 365 289 Z"/>
+<path id="bust-breast" fill="#000000" d="M419 289 L620 286 L629 412 L418 412 L389 345 Z"/>
+<path id="head-crown" fill="#FFFFFF" d="M350 337 C336 278 346 226 364 190 L351 202 L377 150 L363 164 C404 111 459 82 515 87 C601 84 656 133 659 206 C662 241 650 282 638 311 L644 361 L390 385 Z"/>
+<path id="face" fill="#000000" d="M381 314 C390 284 404 261 432 238 L419 243 C441 207 474 179 518 174 L493 155 C533 153 571 171 591 204 L600 192 L608 220 C621 203 639 195 648 207 C654 220 650 254 640 284 L630 345 L627 398 L441 408 Z"/>
+<path id="near-cheek" fill="#FFFFFF" d="M501 222 C481 244 472 264 464 300 C488 280 503 257 515 229 Z"/>
+<path id="far-cheek" fill="#FFFFFF" d="M619 258 C616 281 620 304 626 330 C637 307 642 282 638 263 Z"/>
+<ellipse id="near-eye" fill="#FFFFFF" cx="507" cy="194" rx="26" ry="28" transform="rotate(-12 507 194)"/>
+<ellipse id="far-eye" fill="#FFFFFF" cx="631" cy="232" rx="17" ry="27" transform="rotate(20 631 232)"/>
+<circle id="near-eye-highlight" fill="#000000" cx="514" cy="184" r="6"/>
+<circle id="far-eye-highlight" fill="#000000" cx="636" cy="225" r="4.5"/>
+<path id="beak-upper" fill="#FFFFFF" d="M535 243 C546 220 566 216 584 229 C593 235 598 245 598 253 L575 267 L549 253 Z"/>
+<path id="beak-hook" fill="#FFFFFF" d="M535 243 C553 248 570 256 574 275 L577 294 C595 280 608 255 589 241 C570 230 559 254 535 243 Z"/>
+<path id="beak-edge" fill="#FFFFFF" d="M535 243 C553 248 568 259 574 275 C565 261 551 253 535 243 Z"/>
+<ellipse id="nostril" fill="#FFFFFF" cx="559" cy="236" rx="4" ry="5" transform="rotate(25 559 236)"/>
+<path id="bust-wing" fill="#FFFFFF" d="M356 335 Q405 330 448 368 Q464 388 465 412 L356 412 Z"/></g></g></mask></defs>
+<rect width="512" height="512" fill="#30343B" mask="url(#mark-cutout)"/>
+</svg>

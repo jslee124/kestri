@@ -9,7 +9,11 @@ LINKS = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 
 
 def main() -> int:
-    paths = sorted(ROOT.glob("README*.md")) + sorted((ROOT / "docs").rglob("*.md"))
+    paths = (
+        sorted(ROOT.glob("README*.md"))
+        + sorted((ROOT / "docs").rglob("*.md"))
+        + sorted((ROOT / "design").rglob("*.md"))
+    )
     errors: list[str] = []
     for path in paths:
         content = path.read_text(encoding="utf-8")
