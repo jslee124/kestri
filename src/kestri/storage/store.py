@@ -298,18 +298,37 @@ class Store:
                 from kestri.assistant.presentation import presentation
                 from kestri.memory.presentation import current_presentation
 
+                task_id = None
+                detail = re.fullmatch(r"/tasks inspect ([a-f0-9-]{8,36})", text)
+                if command == "tasks" and detail:
+                    matches = await (
+                        await conn.execute(
+                            """
+                            SELECT id FROM kestri.tasks
+                            WHERE chat_id = %s AND status != 'deleted' AND id::text LIKE %s
+                            LIMIT 2
+                            """,
+                            (chat_id, detail[1] + "%"),
+                        )
+                    ).fetchall()
+                    if len(matches) == 1:
+                        task_id = matches[0]["id"]
+
                 for part in chunks(notice):
                     await conn.execute(
-                        (
-                            "INSERT INTO kestri.outbox(id,chat_id,reply_to,"
-                            "run_id,content,presentation) VALUES (%s,%s,%s,%s,%s,%s)"
-                        ),
+                        """
+                        INSERT INTO kestri.outbox (
+                            id, chat_id, reply_to, run_id, content, task_id, presentation
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        """,
                         (
                             uuid4(),
                             chat_id,
                             message_id,
                             run_id,
                             part,
+                            task_id,
                             Jsonb(await current_presentation(conn, chat_id, part))
                             if command == "memory"
                             else (Jsonb(presentation(part)) if command is not None else None),

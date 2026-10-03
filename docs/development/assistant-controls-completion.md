@@ -6,7 +6,7 @@ Updated: 2026-10-03. Natural language, commands and buttons share conservative r
 
 ## Checks
 
-pgvector: 314 passed; ordinary PostgreSQL: 286 passed, 28 vector checks skipped. Ruff, strict mypy for 66 modules, documentation and SQL checks passed; wheel/sdist built. Deterministic routing samples: 25/25; six counterexamples did not route to mutation. This labeled regression is not a measured real-world wrong-operation rate.
+pgvector: 315 passed; ordinary PostgreSQL: 287 passed, 28 vector checks skipped. Ruff, strict mypy for 66 modules, documentation and SQL checks passed; wheel/sdist built. Deterministic routing samples: 25/25; six counterexamples did not route to mutation. This labeled regression is not a measured real-world wrong-operation rate.
 
 Real Telegram used an isolated database/workspace with automatic and semantic memory disabled: natural task query, explicit-zone creation, ambiguous no-change, choice button after restart, selected-only pause, consecutive timing changes, missing time/zone supplementation, details button and mixed-control no-change. Acceptance found and fixed explicit-timezone extraction guidance, duplicated creation notices and model dependence for referenced timing changes. Ordinary task proposals can still fail validation; failure never claims a successful mutation.
 

@@ -1,8 +1,8 @@
 {
   "scope": "isolated synthetic Telegram controls; local deployment checks",
   "local_checks": {
-    "pgvector_passed": 314,
-    "postgres_passed": 286,
+    "pgvector_passed": 315,
+    "postgres_passed": 287,
     "postgres_vector_skipped": 28,
     "mypy_modules": 66,
     "routing_cases": 25,
@@ -31,9 +31,11 @@
     "production_records_checkpoints_preserved": true,
     "production_restart": true,
     "owner_settings_preserved": true,
-    "wheel_sdist_built": true
+    "wheel_sdist_built": true,
+    "production_telegram_after_restart": true,
+    "detail_reply_task_association_regression": true
   },
-  "app_image": "sha256:485c8f4ead4a7d6bc5ca84d59c8e6f06949174a19e645551d572eaf28cf63d88",
+  "app_image": "sha256:d86154c78d7f5ee868ad34f5e667462d1fa35c066dc025ea43e639eb7b47a9dc",
   "rollback_image": "kestri-app:rollback-before-assistant-controls",
   "limits": [
     "synthetic routing regression is not a real-world misunderstanding rate",
@@ -42,6 +44,6 @@
     "no main merge"
   ],
   "source_files_verified": 64,
-  "source_manifest_sha256": "ecbd93f952d486e1fe5a2be082af5eb689fcf18f588c0cb0b90581199446547b",
+  "source_manifest_sha256": "5f94795ae73f868864bb30c532edfc7c3082965dcdc60201e73b9e8b7459664f",
   "container_health": "healthy"
 }

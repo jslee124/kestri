@@ -10,7 +10,7 @@ Updated: 2026-10-02. Implementation: [task_intent.py](../../src/kestri/tasks/int
 
 The recognizer rejects code fences, selected quotation markers, and explanatory/conditional phrases such as Chinese explanation/translation/example/how/if language and English `explain`, `translate`, `example`, `how to`, `if `. Creation requires recurring wording, delegation wording, a permitted leading form, and no leading update/control wording. Control requests require a permitted leading form, an action match within the first 20 characters, and either explicit `/task`, a reply association, or task/briefing vocabulary.
 
-Control precedence is delete, pause, resume, update, list. This matters when a request mentions multiple actions. Unsupported or unmatched text routes to ordinary research rather than creating a pending task. Clarification is a result, not a durable multi-turn form; the owner must send a new complete instruction.
+Control precedence is delete, pause, resume, update, list. This matters when a request mentions multiple actions. Unsupported or unmatched text routes to ordinary research rather than creating a pending task. The unified entry uses expiring durable target/timing choices; see [conversational controls](../reference/assistant-controls.md).
 
 | Example | Recognition / independent validation |
 | --- | --- |

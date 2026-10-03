@@ -229,3 +229,25 @@ async def test_ambiguous_clarify_proposal_can_complete_selected_action(store: An
     assert (await store.one("SELECT count(*) AS n FROM kestri.tasks WHERE status = 'active'"))[
         "n"
     ] == 1
+
+
+async def test_readonly_detail_reply_identifies_only_its_task(store: Any) -> None:
+    first = await create_task(store, 1)
+    second = await create_task(store, 2)
+    await store.accept(3, 111, 3, f"/tasks inspect {str(second['id'])[:8]}", None, "tasks", 8)
+    details = await store.one("SELECT * FROM kestri.outbox WHERE task_id = %s", (second["id"],))
+    assert details
+    await store.delivered(details, 300)
+    row = await accept_task_control_run(store, "暂停", 4)
+    await store.execute("UPDATE kestri.runs SET reply_to = 300 WHERE id = %s", (row["id"],))
+    row["reply_to"] = 300
+    answer = await TaskService(store, research_settings()).apply(
+        row, TaskPlan(action="pause"), "pause"
+    )
+    assert "已暂停" in answer
+    assert (await store.one("SELECT status FROM kestri.tasks WHERE id = %s", (first["id"],)))[
+        "status"
+    ] == "active"
+    assert (await store.one("SELECT status FROM kestri.tasks WHERE id = %s", (second["id"],)))[
+        "status"
+    ] == "paused"
