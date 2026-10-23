@@ -21,6 +21,8 @@ Base Compose publishes no database port. The app is non-root, has a read-only ro
 
 For the deployed Memory v2 vector installation, keep `-f compose.yaml -f compose.vector.yaml` on build/up commands. Using only the base file can replace the extension-enabled PostgreSQL image. Follow [Memory v2 deployment](deploy-memory-v2.md) for upgrade, backup and rollback instructions.
 
+The custom vector image starts directly as `postgres` and does not include `gosu`. Existing named-volume ownership is preserved. If you use a host bind mount instead, make it writable by that user beforehand; startup will not repair directory ownership as root.
+
 ## Everyday use and recovery
 
 In Telegram, use the collapsible Menu for every registered command. Ask a public research question, reply to its answer, create an explicit daily/weekly task, and save facts through `/remember`. `/status` and `/runs` inspect execution and delivery; `/usage` reports local estimated spending. `/stop` cancels the foreground run, or accepts a run ID. `/new` resets idle conversation context while preserving memory, tasks, and archives. The [task](../reference/tasks.md) and [memory](../reference/memory-and-context.md) references explain controls.

@@ -8,3 +8,5 @@ RUN apk add --no-cache --virtual .vector-build build-base \
     && make -C /tmp/pgvector install with_llvm=no \
     && apk del .vector-build \
     && rm -rf /tmp/pgvector /tmp/pgvector.tar.gz
+RUN apk upgrade --no-cache && rm /usr/local/bin/gosu
+USER postgres
